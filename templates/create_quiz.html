@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Create Quiz</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+rel="stylesheet">
+
+<style>
+
+body{
+    margin:0;
+    font-family:'Poppins',sans-serif;
+    background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+    color:white;
+}
+
+nav{
+    display:flex;
+    justify-content:space-between;
+    padding:20px;
+}
+
+.logo{
+    color:#a855f7;
+    font-size:22px;
+    font-weight:600;
+}
+
+.container{
+    max-width:750px;
+    margin:30px auto;
+    padding:20px;
+}
+
+.section{
+    background:rgba(255,255,255,0.06);
+    padding:18px;
+    border-radius:15px;
+    margin-top:15px;
+}
+
+.mode-buttons{
+    display:flex;
+    gap:10px;
+}
+
+.mode-buttons button{
+    flex:1;
+    padding:12px;
+    border-radius:12px;
+    border:none;
+    background:rgba(255,255,255,0.1);
+    color:white;
+    cursor:pointer;
+}
+
+.active{
+    background:linear-gradient(135deg,#a855f7,#6d28d9);
+}
+
+input,
+select{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:12px;
+    border:none;
+    background:rgba(255,255,255,0.1);
+    color:white;
+}
+
+.option{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.btn{
+    width:100%;
+    padding:12px;
+    border-radius:12px;
+    border:none;
+    background:linear-gradient(135deg,#a855f7,#6d28d9);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.question-box{
+    background:rgba(255,255,255,0.08);
+    padding:10px;
+    border-radius:10px;
+    margin-top:10px;
+}
+
+@media(max-width:600px){
+
+    .mode-buttons{
+        flex-direction:column;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">
+
+🧠 Quiz Pro
+
+</div>
+
+<button onclick="window.location.href='/home'">
+
+⬅ Home
+
+</button>
+
+</nav>
+
+<div class="container">
+
+<h2>
+
+Create Quiz
+
+</h2>
+
+<!-- MODE -->
+
+<div class="section">
+
+<div class="mode-buttons">
+
+<button id="manualBtn"
+class="active"
+onclick="showManual()">
+
+Manual
+
+</button>
+
+<button id="aiBtn"
+onclick="showAI()">
+
+AI Mode
+
+</button>
+
+</div>
+
+</div>
+
+<!-- MANUAL -->
+
+<div id="manual"
+class="section">
+
+<input id="question"
+placeholder="Enter Question">
+
+<div class="option">
+
+<input id="opt1"
+placeholder="Option 1">
+
+<input type="radio"
+name="correct"
+value="0">
+
+</div>
+
+<div class="option">
+
+<input id="opt2"
+placeholder="Option 2">
+
+<input type="radio"
+name="correct"
+value="1">
+
+</div>
+
+<div class="option">
+
+<input id="opt3"
+placeholder="Option 3">
+
+<input type="radio"
+name="correct"
+value="2">
+
+</div>
+
+<div class="option">
+
+<input id="opt4"
+placeholder="Option 4">
+
+<input type="radio"
+name="correct"
+value="3">
+
+</div>
+
+<button class="btn"
+onclick="addQuestion()">
+
+Add Question
+
+</button>
+
+</div>
+
+<!-- AI -->
+
+<div id="ai"
+class="section"
+style="display:none;">
+
+<input id="topic"
+placeholder="Enter Topic">
+
+<input id="qcount"
+type="number"
+placeholder="Number of Questions">
+
+<select id="level">
+
+<option value="">
+Select Difficulty
+</option>
+
+<option value="easy">
+Easy
+</option>
+
+<option value="medium">
+Medium
+</option>
+
+<option value="hard">
+Hard
+</option>
+
+</select>
+
+<button class="btn"
+onclick="generateAI()">
+
+Generate AI Questions
+
+</button>
+
+</div>
+
+<!-- QUESTIONS -->
+
+<div class="section">
+
+<h3>
+
+Questions
+
+</h3>
+
+<div id="questions"></div>
+
+</div>
+
+<!-- DETAILS -->
+
+<div class="section">
+
+<h3>
+
+Quiz Details
+
+</h3>
+
+<input id="title"
+placeholder="Quiz Title">
+
+<input id="desc"
+placeholder="Description">
+
+</div>
+
+<!-- SETTINGS -->
+
+<div class="section">
+
+<h3>
+
+Settings
+
+</h3>
+
+<div style="display:flex; gap:10px;">
+
+<input id="hours"
+type="number"
+placeholder="Hours">
+
+<input id="minutes"
+type="number"
+placeholder="Minutes">
+
+</div>
+
+<label>
+
+<input type="checkbox"
+id="negativeCheck"
+onclick="toggleNegative()">
+
+Enable Negative Marking
+
+</label>
+
+<input id="negativeValue"
+placeholder="Negative Marks"
+style="display:none;">
+
+<br><br>
+
+<button class="btn"
+onclick="saveQuiz()">
+
+Save Quiz
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+let questions = [];
+
+/* NEGATIVE */
+
+function toggleNegative(){
+
+    let check =
+    document.getElementById(
+    "negativeCheck"
+    ).checked;
+
+    document.getElementById(
+    "negativeValue"
+    ).style.display =
+
+    check
+    ?
+    "block"
+    :
+    "none";
+
+}
+
+/* MODE */
+
+function showManual(){
+
+    manual.style.display =
+    "block";
+
+    ai.style.display =
+    "none";
+
+    manualBtn.classList.add(
+    "active"
+    );
+
+    aiBtn.classList.remove(
+    "active"
+    );
+
+}
+
+function showAI(){
+
+    manual.style.display =
+    "none";
+
+    ai.style.display =
+    "block";
+
+    aiBtn.classList.add(
+    "active"
+    );
+
+    manualBtn.classList.remove(
+    "active"
+    );
+
+}
+
+/* ADD QUESTION */
+
+function addQuestion(){
+
+let q =
+document.getElementById(
+"question"
+).value.trim();
+
+let options = [
+
+opt1.value.trim(),
+
+opt2.value.trim(),
+
+opt3.value.trim(),
+
+opt4.value.trim()
+
+];
+
+let correct =
+document.querySelector(
+'input[name="correct"]:checked'
+);
+
+if(
+!q ||
+options.includes("") ||
+!correct
+){
+
+alert("Fill all fields");
+
+return;
+
+}
+
+questions.push({
+
+q:q,
+
+options:options,
+
+correct:
+parseInt(correct.value)
+
+});
+
+renderQuestions();
+
+/* RESET */
+
+question.value = "";
+
+opt1.value = "";
+
+opt2.value = "";
+
+opt3.value = "";
+
+opt4.value = "";
+
+document.querySelectorAll(
+'input[name="correct"]'
+).forEach(r=>r.checked=false);
+
+}
+
+/* AI */
+
+function generateAI(){
+
+alert(
+"AI Coming Soon 🚀"
+);
+
+}
+
+/* RENDER QUESTIONS */
+
+function renderQuestions(){
+
+let box =
+document.getElementById(
+"questions"
+);
+
+box.innerHTML = "";
+
+questions.forEach((q,i)=>{
+
+box.innerHTML += `
+
+<div class="question-box">
+
+<b>
+
+Q${i+1}:
+
+</b>
+
+${q.q}
+
+<br><br>
+
+${q.options.map((o,index)=>`
+
+${index==q.correct?"✅":""}
+
+${o}
+
+<br>
+
+`).join("")}
+
+</div>
+
+`;
+
+});
+
+}
+
+/* SAVE QUIZ */
+
+function saveQuiz(){
+
+let title =
+document.getElementById(
+"title"
+).value.trim();
+
+let desc =
+document.getElementById(
+"desc"
+).value.trim();
+
+let hoursVal =
+parseInt(
+document.getElementById(
+"hours"
+).value || 0
+);
+
+let minutesVal =
+parseInt(
+document.getElementById(
+"minutes"
+).value || 0
+);
+
+let totalTime =
+(hoursVal * 60)
++
+minutesVal;
+
+let negativeEnabled =
+document.getElementById(
+"negativeCheck"
+).checked;
+
+let negativeMarks =
+document.getElementById(
+"negativeValue"
+).value;
+
+if(title.length < 3){
+
+    alert("Enter title");
+
+    return;
+
+}
+
+if(questions.length == 0){
+
+    alert("Add questions");
+
+    return;
+
+}
+
+if(totalTime <= 0){
+
+    alert("Enter duration");
+
+    return;
+
+}
+
+let code =
+
+"QUIZ" +
+
+Math.floor(
+Math.random()*100000
+);
+
+/* DATABASE SAVE */
+
+fetch("/save-quiz",{
+
+    method:"POST",
+
+    headers:{
+        "Content-Type":"application/json"
+    },
+
+    body:JSON.stringify({
+
+        code:code,
+
+        title:title,
+
+        description:desc,
+
+        questions:questions,
+
+        duration:totalTime,
+
+        negative:negativeEnabled,
+
+        negativeMarks:
+        negativeMarks || 0
+
+    })
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+    console.log(data);
+
+    if(data.success){
+
+        alert(
+        "✅ Quiz Saved"
+        );
+
+        window.location.href =
+        "/home";
+
+    }
+
+    else{
+
+        alert(
+        "❌ Save Failed"
+        );
+
+    }
+
+})
+
+.catch(err=>{
+
+    console.log(err);
+
+    alert(
+    "❌ Server Error"
+    );
+
+});
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,840 @@
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Quiz Details</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+color:white;
+min-height:100vh;
+}
+
+nav{
+padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
+}
+
+.logo{
+font-size:24px;
+font-weight:600;
+color:#a855f7;
+}
+
+.home-btn{
+border:none;
+background:#a855f7;
+color:white;
+padding:10px 18px;
+border-radius:10px;
+cursor:pointer;
+font-size:14px;
+font-weight:600;
+}
+
+.container{
+width:92%;
+margin:20px auto;
+display:grid;
+grid-template-columns:2fr 1fr;
+gap:16px;
+}
+
+.left,
+.right{
+background:rgba(255,255,255,0.06);
+padding:20px;
+border-radius:20px;
+backdrop-filter:blur(12px);
+}
+
+.quiz-title{
+font-size:32px;
+font-weight:600;
+}
+
+.quiz-desc{
+margin-top:8px;
+color:#d1d5db;
+font-size:14px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:12px;
+margin-top:22px;
+}
+
+.stat-box{
+background:rgba(255,255,255,0.05);
+padding:15px;
+border-radius:14px;
+text-align:center;
+}
+
+.stat-box p{
+margin-top:8px;
+font-size:24px;
+color:#a855f7;
+font-weight:600;
+}
+
+.action-buttons{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:22px;
+}
+
+.btn{
+border:none;
+padding:12px 18px;
+border-radius:12px;
+cursor:pointer;
+color:white;
+font-size:14px;
+font-weight:600;
+}
+
+.start-btn{
+background:#22c55e;
+}
+
+.stop-btn{
+background:#f59e0b;
+}
+
+.edit-btn{
+background:#3b82f6;
+}
+
+.save-btn{
+background:#16a34a;
+display:none;
+}
+
+.delete-btn{
+background:#ef4444;
+}
+
+.copy-btn{
+background:#8b5cf6;
+margin-top:10px;
+}
+
+.link-box{
+margin-top:25px;
+}
+
+.link-input{
+width:100%;
+padding:12px;
+border:none;
+outline:none;
+border-radius:12px;
+background:#111827;
+color:white;
+font-size:13px;
+}
+
+.questions-section{
+margin-top:28px;
+}
+
+.question-box{
+background:rgba(255,255,255,0.05);
+padding:15px;
+border-radius:15px;
+margin-bottom:14px;
+}
+
+.option{
+background:rgba(255,255,255,0.05);
+padding:10px;
+border-radius:10px;
+margin-top:7px;
+font-size:14px;
+}
+
+.correct{
+background:#16a34a;
+}
+
+.analytics-box{
+background:rgba(255,255,255,0.05);
+padding:18px;
+border-radius:15px;
+margin-bottom:14px;
+text-align:center;
+}
+
+.live{
+color:#22c55e !important;
+}
+
+.stopped{
+color:#ef4444 !important;
+}
+
+.result-btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:#f59e0b;
+color:white;
+font-size:15px;
+cursor:pointer;
+font-weight:600;
+}
+
+.edit-input{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+outline:none;
+border-radius:10px;
+background:#111827;
+color:white;
+font-size:14px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">
+🧠 QuizHub
+</div>
+
+<button class="home-btn"
+onclick="window.location.href='/home'">
+
+⬅ Home
+
+</button>
+
+</nav>
+
+<div class="container">
+
+<div class="left">
+
+<h1 class="quiz-title"
+id="quizTitle">
+
+Loading...
+
+</h1>
+
+<p class="quiz-desc"
+id="quizDesc">
+
+Please wait...
+
+</p>
+
+<div class="stats">
+
+<div class="stat-box">
+
+<h3>Questions</h3>
+
+<p id="questionCount">
+0
+</p>
+
+</div>
+
+<div class="stat-box">
+
+<h3>Duration</h3>
+
+<p id="duration">
+0m
+</p>
+
+</div>
+
+<div class="stat-box">
+
+<h3>Negative</h3>
+
+<p id="negative">
+No
+</p>
+
+</div>
+
+</div>
+
+<div class="action-buttons">
+
+<button class="btn start-btn"
+onclick="startQuiz()">
+
+▶ Start Exam
+
+</button>
+
+<button class="btn stop-btn"
+onclick="stopQuiz()">
+
+⏹ Stop Exam
+
+</button>
+
+<button class="btn edit-btn"
+onclick="editQuiz()">
+
+✏ Edit Quiz
+
+</button>
+
+<button class="btn save-btn"
+id="saveBtn"
+onclick="saveQuiz()">
+
+💾 Save
+
+</button>
+
+<button class="btn delete-btn"
+onclick="deleteQuiz()">
+
+🗑 Delete Quiz
+
+</button>
+
+</div>
+
+<div class="link-box">
+
+<h3>
+🔗 Quiz Link
+</h3>
+
+<input type="text"
+id="quizLink"
+class="link-input"
+readonly>
+
+<button class="btn copy-btn"
+onclick="copyLink()">
+
+📋 Copy Link
+
+</button>
+
+</div>
+
+<div class="link-box">
+
+<h3>
+🔑 Quiz Code
+</h3>
+
+<input type="text"
+id="quizCode"
+class="link-input"
+readonly>
+
+<button class="btn copy-btn"
+onclick="copyCode()">
+
+📋 Copy Code
+
+</button>
+
+</div>
+
+<div class="questions-section">
+
+<h2>
+📚 Questions
+</h2>
+
+<div id="questionsContainer">
+Loading...
+</div>
+
+</div>
+
+</div>
+
+<div class="right">
+
+<h2>
+📊 Analytics
+</h2>
+
+<div class="analytics-box">
+
+<h3>
+Quiz Code
+</h3>
+
+<p id="codeText">
+----
+</p>
+
+</div>
+
+<div class="analytics-box">
+
+<h3>
+Status
+</h3>
+
+<p id="statusText"
+class="live">
+
+NOT STARTED
+
+</p>
+
+</div>
+
+<div class="analytics-box">
+
+<h3>
+Total Marks
+</h3>
+
+<p id="marks">
+0
+</p>
+
+</div>
+
+<button class="result-btn"
+onclick="openResults()">
+
+📈 View Results
+
+</button>
+
+
+
+</div>
+
+</div>
+
+<script>
+
+let quizData = null;
+
+const urlParams =
+new URLSearchParams(window.location.search);
+
+const code =
+urlParams.get("code");
+
+/* LOAD */
+
+window.onload = ()=>{
+
+loadQuiz();
+
+};
+
+/* LOAD QUIZ */
+
+function loadQuiz(){
+
+fetch("/get-quiz?code=" + code)
+
+.then(res=>res.json())
+
+.then(response=>{
+
+quizData = response.quiz;
+
+document.getElementById("quizTitle").innerText =
+quizData.title;
+
+document.getElementById("quizDesc").innerText =
+quizData.description;
+
+document.getElementById("questionCount").innerText =
+quizData.questions.length;
+
+document.getElementById("duration").innerText =
+quizData.duration + "m";
+
+document.getElementById("negative").innerText =
+quizData.negative ? "Yes" : "No";
+
+document.getElementById("codeText").innerText =
+quizData.quiz_code;
+
+document.getElementById("marks").innerText =
+quizData.questions.length;
+
+let link =
+
+window.location.origin +
+
+"/play_quiz?code=" +
+
+quizData.quiz_code;
+
+document.getElementById("quizLink").value =
+link;
+
+document.getElementById("quizCode").value =
+quizData.quiz_code;
+
+renderQuestions();
+
+});
+
+}
+
+/* RENDER QUESTIONS */
+
+function renderQuestions(){
+
+let container =
+document.getElementById("questionsContainer");
+
+container.innerHTML = "";
+
+quizData.questions.forEach((q,index)=>{
+
+let html = `
+
+<div class="question-box">
+
+<h4>
+
+Q${index+1}.
+
+<span id="q_${index}">
+${q.q}
+</span>
+
+</h4>
+
+`;
+
+q.options.forEach((opt,i)=>{
+
+html += `
+
+<div class="option
+${i == q.correct ? 'correct' : ''}">
+
+<span id="o_${index}_${i}">
+${opt}
+</span>
+
+</div>
+
+`;
+
+});
+
+html += `</div>`;
+
+container.innerHTML += html;
+
+});
+
+}
+
+/* EDIT */
+
+function editQuiz(){
+
+document.getElementById(
+"saveBtn"
+).style.display = "inline-block";
+
+quizData.questions.forEach((q,index)=>{
+
+document.getElementById(
+`q_${index}`
+).innerHTML = `
+
+<input
+class="edit-input"
+id="question_${index}"
+value="${q.q}">
+
+`;
+
+q.options.forEach((opt,i)=>{
+
+document.getElementById(
+`o_${index}_${i}`
+).innerHTML = `
+
+<input
+class="edit-input"
+id="option_${index}_${i}"
+value="${opt}">
+
+`;
+
+});
+
+});
+
+/* AUTO FOCUS */
+
+setTimeout(()=>{
+
+document.getElementById(
+"question_0"
+).focus();
+
+},200);
+
+}
+
+/* SAVE */
+
+function saveQuiz(){
+
+quizData.questions.forEach((q,index)=>{
+
+q.q =
+document.getElementById(
+`question_${index}`
+).value;
+
+q.options[0] =
+document.getElementById(
+`option_${index}_0`
+).value;
+
+q.options[1] =
+document.getElementById(
+`option_${index}_1`
+).value;
+
+q.options[2] =
+document.getElementById(
+`option_${index}_2`
+).value;
+
+q.options[3] =
+document.getElementById(
+`option_${index}_3`
+).value;
+
+});
+
+/* SAVE LOCAL */
+
+localStorage.setItem(
+
+code,
+
+JSON.stringify(quizData)
+
+);
+
+/* OPTIONAL SERVER SAVE */
+
+fetch("/update-quiz",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+code:code,
+
+quiz:quizData
+
+})
+
+})
+
+.catch(()=>{});
+
+/* RELOAD */
+
+renderQuestions();
+
+document.getElementById(
+"saveBtn"
+).style.display = "none";
+
+alert("✅ Quiz Saved");
+
+}
+
+/* COPY LINK */
+
+function copyLink(){
+
+navigator.clipboard.writeText(
+
+document.getElementById(
+"quizLink"
+).value
+
+);
+
+alert("Quiz Link Copied");
+
+}
+
+/* COPY CODE */
+
+function copyCode(){
+
+navigator.clipboard.writeText(
+
+document.getElementById(
+"quizCode"
+).value
+
+);
+
+alert("Quiz Code Copied");
+
+}
+
+/* START */
+
+function startQuiz(){
+
+fetch("/start-quiz",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+code:code
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+if(data.success){
+
+alert("✅ Exam Started");
+
+}
+
+});
+
+}
+
+/* STOP */
+
+function stopQuiz(){
+
+fetch("/stop-quiz",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+code:code
+})
+
+});
+
+}
+
+/* DELETE */
+
+function deleteQuiz(){
+
+fetch("/delete-quiz",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+code:code
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+if(data.success){
+
+window.location.href =
+"/home";
+
+}
+
+});
+
+}
+
+/* RESULT */
+
+function openResults(){
+
+window.location.href =
+"/result?code=" + code;
+
+}
+
+</script>
+<script>
+
+/* VIEW RESULTS */
+
+function openResults(){
+
+window.location.href =
+"/result?code=" + code;
+
+}
+
+</script>
+</body>
+</html>
+```

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Play Quiz</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+color:white;
+min-height:100vh;
+overflow-x:hidden;
+}
+
+nav{
+padding:15px 25px;
+background:rgba(255,255,255,0.05);
+}
+
+.logo{
+font-size:28px;
+font-weight:600;
+color:#a855f7;
+}
+
+.container{
+max-width:950px;
+margin:25px auto;
+padding:15px;
+}
+
+/* JOIN */
+
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.92);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:9999;
+}
+
+.popup-box{
+width:430px;
+background:rgba(255,255,255,0.08);
+padding:35px;
+border-radius:25px;
+backdrop-filter:blur(15px);
+}
+
+.popup-box h2{
+text-align:center;
+margin-bottom:20px;
+font-size:30px;
+}
+
+.popup-box input{
+width:100%;
+padding:15px;
+margin-top:14px;
+border:none;
+outline:none;
+border-radius:14px;
+background:rgba(255,255,255,0.08);
+color:white;
+}
+
+.popup-box button{
+width:100%;
+padding:15px;
+margin-top:20px;
+border:none;
+border-radius:14px;
+background:#9333ea;
+color:white;
+font-size:16px;
+cursor:pointer;
+}
+
+.waiting{
+display:none;
+min-height:80vh;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+text-align:center;
+}
+
+.quiz-box{
+display:none;
+background:rgba(255,255,255,0.06);
+padding:28px;
+border-radius:25px;
+}
+
+.top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:25px;
+}
+
+.quiz-title{
+font-size:30px;
+font-weight:600;
+}
+
+.timer{
+background:#ef4444;
+padding:12px 20px;
+border-radius:12px;
+font-size:20px;
+font-weight:bold;
+}
+
+.question{
+font-size:25px;
+margin-bottom:20px;
+line-height:1.6;
+}
+
+.option{
+background:rgba(255,255,255,0.07);
+padding:18px;
+border-radius:15px;
+margin-top:14px;
+cursor:pointer;
+border:2px solid transparent;
+transition:0.3s;
+}
+
+.option:hover{
+background:#7c3aed;
+}
+
+.selected{
+background:#9333ea;
+border:2px solid #c084fc;
+}
+
+.btns{
+display:flex;
+gap:12px;
+margin-top:30px;
+}
+
+.btn{
+padding:14px 24px;
+border:none;
+border-radius:14px;
+cursor:pointer;
+font-weight:600;
+color:white;
+}
+
+.prev{
+background:#3b82f6;
+}
+
+.next{
+background:#22c55e;
+}
+
+.finish{
+background:#ef4444;
+}
+
+.complete-page{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+z-index:99999;
+}
+
+.complete-card{
+width:500px;
+padding:45px;
+border-radius:30px;
+background:rgba(255,255,255,0.08);
+text-align:center;
+}
+
+.complete-card h1{
+font-size:50px;
+color:#22c55e;
+}
+
+.home-btn{
+margin-top:30px;
+padding:15px 30px;
+border:none;
+border-radius:15px;
+background:#9333ea;
+color:white;
+font-size:17px;
+cursor:pointer;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">
+🧠 QuizHub
+</div>
+
+</nav>
+
+<!-- JOIN -->
+
+<div class="popup"
+id="popup">
+
+<div class="popup-box">
+
+<h2>
+Join Exam
+</h2>
+
+<input type="text"
+id="name"
+placeholder="Enter Name">
+
+<input type="text"
+id="roll"
+placeholder="Enter Roll Number">
+
+<input type="text"
+id="dept"
+placeholder="Enter Department">
+
+<input type="text"
+id="quizCodeInput"
+placeholder="Enter Quiz Code">
+
+<button onclick="joinQuiz()">
+
+Enter Exam
+
+</button>
+
+</div>
+
+</div>
+
+<div class="container">
+
+<div class="waiting"
+id="waitingBox">
+
+<h1>
+⏳ Waiting For Teacher
+</h1>
+
+<p style="margin-top:15px;">
+Exam will start when teacher clicks Start Exam
+</p>
+
+</div>
+
+<div class="quiz-box"
+id="quizBox">
+
+<div class="top">
+
+<div>
+
+<div class="quiz-title"
+id="title">
+Quiz
+</div>
+
+<div id="studentInfo"
+style="margin-top:8px;color:#ccc;">
+</div>
+
+</div>
+
+<div class="timer"
+id="timer">
+00:00
+</div>
+
+</div>
+
+<div id="progress"
+style="margin-bottom:20px;color:#ccc;">
+</div>
+
+<div class="question"
+id="question">
+</div>
+
+<div id="options"></div>
+
+<div class="btns">
+
+<button class="btn prev"
+onclick="previousQuestion()">
+
+⬅ Previous
+
+</button>
+
+<button class="btn next"
+onclick="nextQuestion()">
+
+Next ➡
+
+</button>
+
+<button class="btn finish"
+onclick="finishQuiz()">
+
+Finish Exam
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let code = "";
+let quiz = null;
+
+let current = 0;
+let answers = [];
+
+let timeLeft = 0;
+
+let started = false;
+let examEnded = false;
+
+let timerInterval = null;
+
+/* JOIN */
+
+async function joinQuiz(){
+
+let name =
+document.getElementById("name").value.trim();
+
+let roll =
+document.getElementById("roll").value.trim();
+
+let dept =
+document.getElementById("dept").value.trim();
+
+code =
+document.getElementById("quizCodeInput").value.trim();
+
+if(!name || !roll || !dept || !code){
+
+alert("Fill all fields");
+
+return;
+
+}
+
+/* CHECK STUDENT ALREADY GAVE EXAM */
+
+try{
+
+let checkResponse =
+await fetch("/check-result?code=" + code + "&roll=" + roll);
+
+let checkData =
+await checkResponse.json();
+
+if(checkData.exists){
+
+alert("❌ You already attended this exam");
+
+return;
+
+}
+
+}
+catch(err){
+
+console.log(err);
+
+}
+
+sessionStorage.setItem("name",name);
+sessionStorage.setItem("roll",roll);
+sessionStorage.setItem("dept",dept);
+
+document.getElementById("popup").style.display =
+"none";
+
+document.getElementById("waitingBox").style.display =
+"flex";
+
+loadQuiz();
+
+}
+
+/* LOAD QUIZ */
+
+async function loadQuiz(){
+
+try{
+
+let response =
+await fetch("/get-quiz?code=" + code);
+
+let data =
+await response.json();
+
+if(!data.success){
+
+alert("Quiz Not Found");
+
+location.reload();
+
+return;
+
+}
+
+quiz = data.quiz;
+
+timeLeft = quiz.duration * 60;
+
+}
+catch(err){
+
+console.log(err);
+
+alert("Server Error");
+
+}
+
+}
+
+/* CHECK START */
+
+async function checkQuizStart(){
+
+if(!quiz || started || examEnded) return;
+
+try{
+
+let response =
+await fetch("/get-quiz?code=" + code);
+
+let data =
+await response.json();
+
+if(data.success && data.quiz.is_started){
+
+startQuiz();
+
+}
+
+}
+catch(err){
+
+console.log(err);
+
+}
+
+}
+
+setInterval(checkQuizStart,2000);
+
+/* START QUIZ */
+
+function startQuiz(){
+
+started = true;
+
+document.getElementById("waitingBox").style.display =
+"none";
+
+document.getElementById("quizBox").style.display =
+"block";
+
+document.getElementById("title").innerText =
+quiz.title;
+
+document.getElementById("studentInfo").innerHTML =
+
+`
+👤 ${sessionStorage.getItem("name")}
+|
+🎓 ${sessionStorage.getItem("roll")}
+|
+🏢 ${sessionStorage.getItem("dept")}
+`;
+
+showQuestion();
+
+startTimer();
+
+}
+
+/* TIMER */
+
+function startTimer(){
+
+timerInterval =
+setInterval(()=>{
+
+let min =
+Math.floor(timeLeft / 60);
+
+let sec =
+timeLeft % 60;
+
+document.getElementById("timer").innerText =
+
+`${min}:${sec < 10 ? "0"+sec : sec}`;
+
+timeLeft--;
+
+if(timeLeft < 0){
+
+endExam("⏰ EXAM COMPLETED");
+
+}
+
+},1000);
+
+}
+
+/* SHOW QUESTION */
+
+function showQuestion(){
+
+let q =
+quiz.questions[current];
+
+document.getElementById("progress").innerText =
+
+`Question ${current+1}
+of
+${quiz.questions.length}`;
+
+document.getElementById("question").innerText =
+q.q;
+
+let box =
+document.getElementById("options");
+
+box.innerHTML = "";
+
+q.options.forEach((opt,index)=>{
+
+let active =
+
+answers[current] == index
+
+?
+
+"selected"
+
+:
+
+"";
+
+box.innerHTML += `
+
+<div class="
+option ${active}
+"
+onclick="
+selectOption(${index})
+">
+
+${opt}
+
+</div>
+
+`;
+
+});
+
+}
+
+/* SELECT */
+
+function selectOption(index){
+
+answers[current] = index;
+
+showQuestion();
+
+}
+
+/* NEXT */
+
+function nextQuestion(){
+
+if(current < quiz.questions.length - 1){
+
+current++;
+
+showQuestion();
+
+}
+
+}
+
+/* PREVIOUS */
+
+function previousQuestion(){
+
+if(current > 0){
+
+current--;
+
+showQuestion();
+
+}
+
+}
+
+/* FINISH */
+
+function finishQuiz(){
+
+let ok =
+confirm(
+"Are you sure you want to finish exam?"
+);
+
+if(ok){
+
+endExam("✅ EXAM COMPLETED");
+
+}
+
+}
+
+/* END EXAM */
+
+async function endExam(message){
+
+if(examEnded) return;
+
+examEnded = true;
+
+clearInterval(timerInterval);
+
+/* SCORE */
+
+let finalScore = 0;
+
+quiz.questions.forEach((q,index)=>{
+
+if(answers[index] == q.correct){
+
+finalScore++;
+
+}
+
+});
+
+/* SAVE RESULT */
+
+try{
+
+let response = await fetch("/save-result",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+code: code,
+
+name:
+sessionStorage.getItem("name"),
+
+roll:
+sessionStorage.getItem("roll"),
+
+department:
+sessionStorage.getItem("dept"),
+
+marks: finalScore,
+
+total:
+quiz.questions.length
+
+})
+
+});
+
+let result =
+await response.json();
+
+console.log(result);
+
+}
+catch(err){
+
+console.log("SAVE ERROR:",err);
+
+}
+
+/* COMPLETE SCREEN */
+
+document.body.innerHTML = `
+
+<div class="complete-page">
+
+<div class="complete-card">
+
+<h1>
+${message}
+</h1>
+
+<p style="
+margin-top:20px;
+font-size:22px;
+">
+
+Your Exam Submitted Successfully
+
+</p>
+
+<h2 style="
+margin-top:30px;
+color:#a855f7;
+font-size:40px;
+">
+
+Score :
+${finalScore}
+/
+${quiz.questions.length}
+
+</h2>
+
+<button class="home-btn"
+onclick="goResultPage()">
+
+📈 VIEW RESULT
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+/* RESULT PAGE */
+
+function goResultPage(){
+
+window.location.href =
+"/result?code=" + code;
+
+}
+
+</script>
+
+</body>
+</html>

@@ -1,1 +1,800 @@
 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>QuizHub</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+
+font-family:'Poppins',sans-serif;
+
+background:
+linear-gradient(
+135deg,
+#070414,
+#140b2c,
+#1b1140
+);
+
+min-height:100vh;
+
+overflow-x:hidden;
+
+color:white;
+
+position:relative;
+
+}
+
+/* BACKGROUND */
+
+.bg{
+
+position:absolute;
+
+width:100%;
+height:100%;
+
+overflow:hidden;
+
+z-index:-1;
+
+}
+
+.circle{
+
+position:absolute;
+
+border-radius:50%;
+
+filter:blur(90px);
+
+animation:move 10s infinite alternate;
+
+}
+
+.circle1{
+
+width:350px;
+height:350px;
+
+background:#9333ea;
+
+top:-120px;
+left:-100px;
+
+}
+
+.circle2{
+
+width:280px;
+height:280px;
+
+background:#3b82f6;
+
+bottom:-100px;
+right:-70px;
+
+animation-delay:2s;
+
+}
+
+.circle3{
+
+width:250px;
+height:250px;
+
+background:#ec4899;
+
+top:40%;
+left:40%;
+
+animation-delay:4s;
+
+}
+
+@keyframes move{
+
+100%{
+transform:
+translateY(40px)
+translateX(30px);
+}
+
+}
+
+/* NAVBAR */
+
+nav{
+
+width:100%;
+
+padding:20px 8%;
+
+display:flex;
+
+justify-content:space-between;
+align-items:center;
+
+position:relative;
+z-index:10;
+
+}
+
+.logo{
+
+font-size:38px;
+
+font-weight:800;
+
+background:
+linear-gradient(
+90deg,
+#c084fc,
+#ec4899
+);
+
+-webkit-background-clip:text;
+
+-webkit-text-fill-color:transparent;
+
+}
+
+.nav-btn{
+
+padding:12px 28px;
+
+border:none;
+
+border-radius:15px;
+
+background:
+linear-gradient(
+135deg,
+#9333ea,
+#7c3aed
+);
+
+color:white;
+
+font-size:16px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:0.4s;
+
+text-decoration:none;
+
+box-shadow:
+0 0 20px rgba(168,85,247,0.5);
+
+}
+
+.nav-btn:hover{
+
+transform:scale(1.08);
+
+box-shadow:
+0 0 40px rgba(168,85,247,0.9);
+
+}
+
+/* HERO */
+
+.hero{
+
+min-height:90vh;
+
+display:flex;
+
+justify-content:center;
+align-items:center;
+
+padding:40px 8%;
+
+gap:60px;
+
+flex-wrap:wrap;
+
+}
+
+/* LEFT */
+
+.left{
+
+flex:1;
+
+min-width:320px;
+
+animation:fadeLeft 1s ease;
+
+}
+
+@keyframes fadeLeft{
+
+from{
+opacity:0;
+transform:translateX(-50px);
+}
+
+to{
+opacity:1;
+transform:translateX(0);
+}
+
+}
+
+.heading{
+
+font-size:75px;
+
+font-weight:800;
+
+line-height:1.1;
+
+margin-bottom:20px;
+
+}
+
+.heading span{
+
+background:
+linear-gradient(
+90deg,
+#c084fc,
+#ec4899
+);
+
+-webkit-background-clip:text;
+
+-webkit-text-fill-color:transparent;
+
+}
+
+.typing{
+
+font-size:24px;
+
+color:#d1d5db;
+
+height:40px;
+
+margin-bottom:25px;
+
+overflow:hidden;
+
+white-space:nowrap;
+
+border-right:3px solid #c084fc;
+
+width:0;
+
+animation:
+typing 5s steps(40,end) infinite alternate,
+blink .7s infinite;
+
+}
+
+@keyframes typing{
+
+from{
+width:0;
+}
+
+to{
+width:100%;
+}
+
+}
+
+@keyframes blink{
+
+50%{
+border-color:transparent;
+}
+
+}
+
+.desc{
+
+font-size:18px;
+
+line-height:1.9;
+
+color:#d1d5db;
+
+max-width:650px;
+
+}
+
+/* BUTTONS */
+
+.buttons{
+
+margin-top:35px;
+
+display:flex;
+
+gap:20px;
+
+flex-wrap:wrap;
+
+}
+
+.main-btn{
+
+padding:16px 34px;
+
+border:none;
+
+border-radius:18px;
+
+font-size:17px;
+
+font-weight:600;
+
+cursor:pointer;
+
+transition:0.4s;
+
+text-decoration:none;
+
+}
+
+.start-btn{
+
+background:
+linear-gradient(
+135deg,
+#9333ea,
+#7c3aed
+);
+
+color:white;
+
+box-shadow:
+0 0 25px rgba(168,85,247,0.5);
+
+}
+
+.start-btn:hover{
+
+transform:translateY(-5px);
+
+box-shadow:
+0 0 45px rgba(168,85,247,0.9);
+
+}
+
+.demo-btn{
+
+background:
+rgba(255,255,255,0.08);
+
+border:1px solid rgba(255,255,255,0.2);
+
+color:white;
+
+backdrop-filter:blur(10px);
+
+}
+
+.demo-btn:hover{
+
+background:
+rgba(255,255,255,0.15);
+
+transform:translateY(-5px);
+
+}
+
+/* RIGHT */
+
+.right{
+
+flex:1;
+
+min-width:320px;
+
+display:flex;
+
+justify-content:center;
+
+animation:fadeRight 1s ease;
+
+}
+
+@keyframes fadeRight{
+
+from{
+opacity:0;
+transform:translateX(50px);
+}
+
+to{
+opacity:1;
+transform:translateX(0);
+}
+
+}
+
+.card{
+
+width:420px;
+
+background:
+rgba(255,255,255,0.08);
+
+backdrop-filter:blur(18px);
+
+border:
+1px solid rgba(255,255,255,0.1);
+
+padding:35px;
+
+border-radius:35px;
+
+box-shadow:
+0 0 40px rgba(168,85,247,0.2);
+
+position:relative;
+
+overflow:hidden;
+
+}
+
+.card::before{
+
+content:"";
+
+position:absolute;
+
+width:180px;
+height:180px;
+
+background:
+rgba(168,85,247,0.25);
+
+border-radius:50%;
+
+top:-60px;
+right:-60px;
+
+filter:blur(40px);
+
+}
+
+.card h2{
+
+font-size:40px;
+
+margin-bottom:15px;
+
+}
+
+.card p{
+
+color:#d1d5db;
+
+line-height:1.8;
+
+margin-bottom:25px;
+
+}
+
+/* FEATURES */
+
+.features{
+
+margin-top:20px;
+
+display:grid;
+
+grid-template-columns:
+1fr 1fr;
+
+gap:18px;
+
+}
+
+.feature{
+
+background:
+rgba(255,255,255,0.07);
+
+padding:18px;
+
+border-radius:18px;
+
+transition:0.4s;
+
+border:
+1px solid rgba(255,255,255,0.08);
+
+}
+
+.feature:hover{
+
+transform:
+translateY(-8px)
+scale(1.03);
+
+background:
+rgba(255,255,255,0.12);
+
+box-shadow:
+0 0 20px rgba(168,85,247,0.3);
+
+}
+
+.feature h3{
+
+font-size:18px;
+
+margin-bottom:8px;
+
+color:#c084fc;
+
+}
+
+.feature p{
+
+font-size:13px;
+
+line-height:1.6;
+
+}
+
+/* FOOTER */
+
+.footer{
+
+text-align:center;
+
+padding:20px;
+
+color:#aaa;
+
+font-size:14px;
+
+}
+
+/* MOBILE */
+
+@media(max-width:900px){
+
+.hero{
+
+padding-top:40px;
+
+}
+
+.heading{
+
+font-size:55px;
+
+text-align:center;
+
+}
+
+.typing{
+
+font-size:18px;
+
+}
+
+.desc{
+
+text-align:center;
+
+font-size:16px;
+
+}
+
+.buttons{
+
+justify-content:center;
+
+}
+
+.right{
+
+margin-top:30px;
+
+}
+
+.card{
+
+width:100%;
+
+}
+
+.features{
+
+grid-template-columns:1fr;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="bg">
+
+<div class="circle circle1"></div>
+<div class="circle circle2"></div>
+<div class="circle circle3"></div>
+
+</div>
+
+<!-- NAV -->
+
+<nav>
+
+<div class="logo">
+🧠 QuizHub
+</div>
+
+<a href="/auth"
+class="nav-btn">
+
+Login
+
+</a>
+
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+
+<!-- LEFT -->
+
+<div class="left">
+
+<h1 class="heading">
+
+Create
+<span>
+Smart Exams
+</span>
+
+For Modern Students 🚀
+
+</h1>
+
+<div class="typing">
+
+AI Powered Online Quiz Platform
+
+</div>
+
+<p class="desc">
+
+QuizHub helps teachers and students conduct powerful online exams with live rankings, anti-duplicate protection, smart analytics, Excel exports, and stunning modern UI experience.
+
+</p>
+
+<div class="buttons">
+
+<a href="/auth"
+class="main-btn start-btn">
+
+🚀 Get Started
+
+</a>
+
+
+
+</div>
+
+</div>
+
+<!-- RIGHT -->
+
+<div class="right">
+
+<div class="card">
+
+<h2>
+Welcome ✨
+</h2>
+
+<p>
+
+Conduct beautiful online exams with modern technology, live scoreboards, ranking systems and secure student management.
+
+</p>
+
+<div class="features">
+
+<div class="feature">
+
+<h3>
+⚡ Fast Exams
+</h3>
+
+<p>
+Launch quizzes instantly with unique codes.
+</p>
+
+</div>
+
+<div class="feature">
+
+<h3>
+📈 Live Ranking
+</h3>
+
+<p>
+Track toppers and real-time results beautifully.
+</p>
+
+</div>
+
+<div class="feature">
+
+<h3>
+🔒 Secure System
+</h3>
+
+<p>
+Prevent duplicate attempts automatically.
+</p>
+
+</div>
+
+<div class="feature">
+
+<h3>
+📥 Excel Export
+</h3>
+
+<p>
+Download student results in Excel format.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<div class="footer">
+
+Made with ❤️ for next generation online exams
+
+</div>
+
+</body>
+
+</html>
+

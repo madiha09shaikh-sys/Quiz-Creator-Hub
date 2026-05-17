@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuizHub - Home</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+/* RESET */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Poppins',sans-serif;
+background:linear-gradient(135deg,#070414,#140b2c,#1b1140);
+color:white;
+min-height:100vh;
+overflow-x:hidden;
+position:relative;
+}
+
+/* BACKGROUND GLOW */
+.circle{
+position:absolute;
+border-radius:50%;
+filter:blur(90px);
+z-index:-1;
+animation:float 8s infinite ease-in-out;
+opacity:0.6;
+}
+
+.circle1{
+width:340px;
+height:340px;
+background:#9333ea;
+top:-120px;
+left:-100px;
+}
+
+.circle2{
+width:280px;
+height:280px;
+background:#3b82f6;
+bottom:-120px;
+right:-90px;
+animation-delay:2s;
+}
+
+@keyframes float{
+50%{transform:translateY(30px);}
+}
+
+/* NAV */
+nav{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:20px 8%;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(15px);
+border-bottom:1px solid rgba(255,255,255,0.08);
+position:sticky;
+top:0;
+z-index:999;
+}
+
+.logo{
+font-size:32px;
+font-weight:800;
+background:linear-gradient(90deg,#c084fc,#ec4899);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.nav-right{
+display:flex;
+gap:15px;
+align-items:center;
+flex-wrap:wrap;
+}
+
+.user{
+color:#ddd;
+}
+
+/* BUTTONS */
+.btn{
+padding:12px 20px;
+border-radius:14px;
+font-weight:600;
+text-decoration:none;
+color:white;
+transition:0.3s;
+}
+
+.profile-btn{
+background:linear-gradient(135deg,#9333ea,#7c3aed);
+box-shadow:0 0 18px rgba(168,85,247,0.4);
+}
+
+.logout-btn{
+background:linear-gradient(135deg,#ec4899,#db2777);
+box-shadow:0 0 18px rgba(236,72,153,0.4);
+}
+
+.btn:hover{
+transform:translateY(-3px);
+}
+
+/* HERO */
+.hero{
+text-align:center;
+padding:80px 20px 40px;
+}
+
+.hero h1{
+font-size:60px;
+font-weight:800;
+background:linear-gradient(90deg,#fff,#c084fc,#ec4899);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin-bottom:15px;
+}
+
+.hero p{
+color:#d1d5db;
+max-width:750px;
+margin:auto;
+line-height:1.9;
+}
+
+/* ACTIONS */
+.actions{
+margin-top:35px;
+display:flex;
+justify-content:center;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.action-btn{
+padding:15px 30px;
+border-radius:18px;
+font-weight:600;
+text-decoration:none;
+color:white;
+transition:0.3s;
+}
+
+.create{
+background:linear-gradient(135deg,#9333ea,#7c3aed);
+box-shadow:0 0 25px rgba(168,85,247,0.5);
+}
+
+.join{
+background:linear-gradient(135deg,#ec4899,#db2777);
+box-shadow:0 0 25px rgba(236,72,153,0.5);
+}
+
+.action-btn:hover{
+transform:translateY(-5px) scale(1.03);
+}
+
+/* QUIZ SECTION */
+.quiz-section{
+padding:40px 8%;
+}
+
+.quiz-heading{
+text-align:center;
+font-size:36px;
+margin-bottom:30px;
+background:linear-gradient(90deg,#fff,#c084fc);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+/* GRID */
+.quiz-list{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+gap:25px;
+}
+
+/* CARD */
+.quiz-card{
+background:rgba(255,255,255,0.07);
+backdrop-filter:blur(16px);
+border:1px solid rgba(255,255,255,0.1);
+padding:25px;
+border-radius:25px;
+transition:0.4s;
+position:relative;
+overflow:hidden;
+}
+
+.quiz-card::before{
+content:"";
+position:absolute;
+width:200px;
+height:200px;
+background:rgba(168,85,247,0.15);
+border-radius:50%;
+top:-70px;
+right:-70px;
+}
+
+.quiz-card:hover{
+transform:translateY(-10px);
+box-shadow:0 0 40px rgba(168,85,247,0.4);
+}
+
+/* BADGE */
+.badge{
+display:inline-block;
+padding:6px 14px;
+border-radius:20px;
+background:linear-gradient(135deg,#9333ea,#7c3aed);
+font-size:12px;
+margin-bottom:15px;
+}
+
+/* FOOTER */
+.quiz-footer{
+display:flex;
+justify-content:space-between;
+margin-top:15px;
+font-size:14px;
+color:#ddd;
+}
+
+.open-btn{
+padding:8px 14px;
+border-radius:12px;
+background:linear-gradient(135deg,#9333ea,#7c3aed);
+}
+
+/* EMPTY */
+.empty{
+text-align:center;
+padding:60px 20px;
+color:#ccc;
+}
+
+/* MOBILE */
+@media(max-width:700px){
+.hero h1{font-size:38px;}
+nav{flex-direction:column;gap:10px;}
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="circle circle1"></div>
+<div class="circle circle2"></div>
+
+<!-- NAV -->
+<nav>
+<div class="logo">🧠 QuizHub</div>
+
+<div class="nav-right">
+<div class="user">👋 {{user}}</div>
+<a class="btn profile-btn" href="/profile">👤 Profile</a>
+<a class="btn logout-btn" href="/logout">✨ Logout</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+<h1>Smart Quiz Dashboard 🚀</h1>
+<p>
+Create quizzes, join exams, track performance and manage everything in a modern AI-powered platform.
+</p>
+
+<div class="actions">
+<a href="/create" class="action-btn create">➕ Create Quiz</a>
+<a href="/join" class="action-btn join">🎯 Join Quiz</a>
+</div>
+</div>
+
+<!-- QUIZZES -->
+<div class="quiz-section">
+
+<h2 class="quiz-heading">📚 Your Quizzes</h2>
+
+<div class="quiz-list">
+
+{% for q in quizzes %}
+<div class="quiz-card">
+
+<div class="badge">🔥 LIVE</div>
+
+<h3>{{ q.title }}</h3>
+<p>{{ q.description }}</p>
+
+<div class="quiz-footer">
+<span>🆔 {{ q.quiz_code }}</span>
+<a class="open-btn" href="/quiz_detail?code={{ q.quiz_code }}">Open →</a>
+</div>
+
+</div>
+{% endfor %}
+
+</div>
+
+{% if quizzes|length == 0 %}
+<div class="empty">
+<h3>No Quizzes Yet 😅</h3>
+<p>Create your first quiz now</p>
+</div>
+{% endif %}
+
+</div>
+
+</body>
+</html>
