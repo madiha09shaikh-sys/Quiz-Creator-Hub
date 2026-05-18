@@ -317,10 +317,7 @@ def create():
 
 # ================= JOIN =================
 
-@app.route("/join")
-def join():
 
-    return render_template("join_quiz.html")
 
 # ================= SAVE QUIZ =================
 
