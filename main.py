@@ -328,32 +328,10 @@ def join():
 
 # ================= SAVE QUIZ =================
 
-@app.route("/save-quiz", methods=["POST"])
-def save_quiz():
+# ================= START QUIZ =================
 
-    if "email" not in session:
-
-        return jsonify({
-            "success": False
-        })
-
-    data = request.get_json()
-
-    code = data.get("code")
-
-    title = data.get("title")
-
-    description = data.get("description")
-
-    questions = json.dumps(
-        data.get("questions")
-    )
-
-    duration = data.get("duration")
-
-    negative = data.get("negative")
-
-    negativeMarks = data.get("negativeMarks")
+@app.route("/start-quiz/<code>")
+def start_quiz(code):
 
     conn = get_db()
 
@@ -361,51 +339,23 @@ def save_quiz():
 
     cursor.execute("""
 
-INSERT INTO quizzes (
+    UPDATE quizzes
 
-    user_email,
+    SET is_started=TRUE
 
-    quiz_code,
+    WHERE quiz_code=%s
 
-    title,
+    """, (code,))
 
-    description,
+    conn.commit()
 
-    questions,
+    cursor.close()
 
-    duration,
+    conn.close()
 
-    negative,
-
-    negativeMarks,
-
-    is_started
-
-)
-
-VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
-
-""", (
-
-    session["email"],
-
-    code,
-
-    title,
-
-    description,
-
-    questions,
-
-    duration,
-
-    negative,
-
-    negativeMarks,
-
-    False
-
-))
+    return jsonify({
+        "success": True
+    })
 
     conn.commit()
 
