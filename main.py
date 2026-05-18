@@ -361,47 +361,51 @@ def save_quiz():
 
     cursor.execute("""
 
-    INSERT INTO quizzes (
+INSERT INTO quizzes (
 
-        user_email,
+    user_email,
 
-        quiz_code,
+    quiz_code,
 
-        title,
+    title,
 
-        description,
+    description,
 
-        questions,
+    questions,
 
-        duration,
+    duration,
 
-        negative,
+    negative,
 
-        negativeMarks
+    negativeMarks,
 
-    )
+    is_started
 
-    VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+)
 
-    """, (
+VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
 
-        session["email"],
+""", (
 
-        code,
+    session["email"],
 
-        title,
+    code,
 
-        description,
+    title,
 
-        questions,
+    description,
 
-        duration,
+    questions,
 
-        negative,
+    duration,
 
-        negativeMarks
+    negative,
 
-    ))
+    negativeMarks,
+
+    False
+
+))
 
     conn.commit()
 
