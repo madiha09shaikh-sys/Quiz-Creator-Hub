@@ -1,4 +1,3 @@
-................................
 <!DOCTYPE html>
 <html lang="en">
 
@@ -89,6 +88,10 @@ border-radius:14px;
 background:rgba(255,255,255,0.08);
 color:white;
 font-size:15px;
+}
+
+.popup-box input::placeholder{
+color:#ccc;
 }
 
 .popup-box button{
@@ -225,12 +228,19 @@ padding:45px;
 border-radius:30px;
 text-align:center;
 backdrop-filter:blur(15px);
+box-shadow:0 0 35px rgba(168,85,247,0.6);
 }
 
 .complete-card h1{
 font-size:52px;
 color:#22c55e;
 margin-bottom:15px;
+}
+
+.complete-card p{
+font-size:18px;
+color:#ddd;
+margin-top:12px;
 }
 
 .home-btn{
@@ -258,8 +268,6 @@ cursor:pointer;
 </div>
 
 </nav>
-
-<!-- JOIN -->
 
 <div class="popup"
 id="popup">
@@ -296,22 +304,30 @@ Enter Exam
 
 <div class="container">
 
-<!-- WAITING -->
-
 <div class="waiting"
 id="waitingBox">
 
-<h1 style="font-size:20px;margin-bottom:15px;">
+<h1 style="
+font-size:20px;
+font-weight:700;
+margin-bottom:12px;
+">
 ⏳ Waiting For Teacher To Start Exam
 </h1>
 
-<p style="color:#ccc;">
-Exam will automatically start for all students
+<p style="
+font-size:14px;
+color:#d1d5db;
+line-height:1.8;
+margin-bottom:40px;
+">
+Exam will start automatically when teacher clicks
+<b style="color:#a855f7;">
+Start Exam
+</b>
 </p>
 
 </div>
-
-<!-- QUIZ -->
 
 <div class="quiz-box"
 id="quizBox">
@@ -380,20 +396,18 @@ Finish Exam
 <script>
 
 let code = "";
-
 let quiz = null;
 
 let current = 0;
-
 let answers = [];
 
 let timeLeft = 0;
 
-let started = false;
-
+let examStarted = false;
 let timerInterval = null;
+let checkInterval = null;
 
-/* JOIN */
+/* JOIN QUIZ */
 
 function joinQuiz(){
 
@@ -412,7 +426,6 @@ document.getElementById("quizCodeInput").value.trim();
 if(!name || !roll || !dept || !code){
 
 alert("Fill all fields");
-
 return;
 
 }
@@ -429,8 +442,6 @@ document.getElementById("waitingBox").style.display =
 
 loadQuiz();
 
-setInterval(checkQuizStarted,2000);
-
 }
 
 /* LOAD QUIZ */
@@ -446,30 +457,58 @@ fetch("/get-quiz?code=" + code)
 if(!data.success){
 
 alert("Quiz Not Found");
-
 location.reload();
-
 return;
 
 }
 
 quiz = data.quiz;
 
+document.getElementById("title").innerText =
+quiz.title;
+
+document.getElementById("studentInfo").innerHTML =
+
+sessionStorage.getItem("name") +
+" | " +
+sessionStorage.getItem("roll") +
+" | " +
+sessionStorage.getItem("dept");
+
 timeLeft = quiz.duration * 60;
+
+answers = new Array(
+quiz.questions.length
+).fill(null);
+
+/* IMPORTANT FIX */
+
+if(quiz.is_started){
+
+startExam();
+
+}else{
+
+waitForStart();
+
+}
 
 })
 
 .catch(err=>{
 
 console.log(err);
+alert("Server Error");
 
 });
 
 }
 
-/* CHECK START */
+/* WAIT FOR TEACHER */
 
-function checkQuizStarted(){
+function waitForStart(){
+
+checkInterval = setInterval(()=>{
 
 fetch("/get-quiz?code=" + code)
 
@@ -479,36 +518,11 @@ fetch("/get-quiz?code=" + code)
 
 if(data.success){
 
-quiz = data.quiz;
+if(data.quiz.is_started){
 
-if(quiz.is_started && !started){
+clearInterval(checkInterval);
 
-started = true;
-
-document.getElementById("waitingBox").style.display =
-"none";
-
-document.getElementById("quizBox").style.display =
-"block";
-
-document.getElementById("title").innerText =
-quiz.title;
-
-document.getElementById("studentInfo").innerHTML =
-
-sessionStorage.getItem("name") +
-
-" | " +
-
-sessionStorage.getItem("roll") +
-
-" | " +
-
-sessionStorage.getItem("dept");
-
-loadQuestion();
-
-startTimer();
+startExam();
 
 }
 
@@ -522,22 +536,79 @@ console.log(err);
 
 });
 
+},2000);
+
 }
 
-/* LOAD QUESTION */
+/* START EXAM */
 
-function loadQuestion(){
+function startExam(){
 
-let q = quiz.questions[current];
+if(examStarted) return;
+
+examStarted = true;
+
+document.getElementById("waitingBox").style.display =
+"none";
+
+document.getElementById("quizBox").style.display =
+"block";
+
+renderQuestion();
+
+startTimer();
+
+}
+
+/* TIMER */
+
+function startTimer(){
+
+timerInterval = setInterval(()=>{
+
+timeLeft--;
+
+let min =
+Math.floor(timeLeft / 60);
+
+let sec =
+timeLeft % 60;
+
+document.getElementById("timer").innerText =
+
+String(min).padStart(2,"0")
++
+":"
++
+String(sec).padStart(2,"0");
+
+if(timeLeft <= 0){
+
+clearInterval(timerInterval);
+
+finishQuiz();
+
+}
+
+},1000);
+
+}
+
+/* RENDER QUESTION */
+
+function renderQuestion(){
+
+let q =
+quiz.questions[current];
 
 document.getElementById("progress").innerText =
 
-"Question " +
-
-(current + 1) +
-
-" of " +
-
+"Question "
++
+(current + 1)
++
+" of "
++
 quiz.questions.length;
 
 document.getElementById("question").innerText =
@@ -567,13 +638,13 @@ optionsHTML;
 
 }
 
-/* SELECT */
+/* SELECT OPTION */
 
 function selectOption(index){
 
 answers[current] = index;
 
-loadQuestion();
+renderQuestion();
 
 }
 
@@ -585,7 +656,7 @@ if(current < quiz.questions.length - 1){
 
 current++;
 
-loadQuestion();
+renderQuestion();
 
 }
 
@@ -599,39 +670,9 @@ if(current > 0){
 
 current--;
 
-loadQuestion();
+renderQuestion();
 
 }
-
-}
-
-/* TIMER */
-
-function startTimer(){
-
-timerInterval = setInterval(()=>{
-
-timeLeft--;
-
-let mins = Math.floor(timeLeft / 60);
-
-let secs = timeLeft % 60;
-
-document.getElementById("timer").innerText =
-
-String(mins).padStart(2,'0') +
-
-":" +
-
-String(secs).padStart(2,'0');
-
-if(timeLeft <= 0){
-
-finishQuiz();
-
-}
-
-},1000);
 
 }
 
@@ -663,7 +704,7 @@ headers:{
 
 body:JSON.stringify({
 
-code:quiz.quiz_code,
+code:code,
 
 name:sessionStorage.getItem("name"),
 
@@ -694,14 +735,15 @@ document.body.innerHTML = `
 </h1>
 
 <h2>
-Exam Completed
+Exam Finished
 </h2>
 
-<p style="margin-top:15px;">
+<p>
+Your exam submitted successfully
+</p>
 
-You scored ${marks} /
-${quiz.questions.length}
-
+<p>
+Marks: ${marks}/${quiz.questions.length}
 </p>
 
 <button class="home-btn"
@@ -730,4 +772,4 @@ console.log(err);
 </script>
 
 </body>
-</html>
+</html>********
