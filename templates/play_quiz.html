@@ -46,7 +46,6 @@ border-bottom:1px solid rgba(255,255,255,0.08);
 font-size:30px;
 font-weight:700;
 color:#a855f7;
-letter-spacing:1px;
 }
 
 /* CONTAINER */
@@ -57,7 +56,7 @@ margin:25px auto;
 padding:15px;
 }
 
-/* JOIN POPUP */
+/* POPUP */
 
 .popup{
 position:fixed;
@@ -117,11 +116,6 @@ color:white;
 font-size:16px;
 font-weight:600;
 cursor:pointer;
-transition:0.3s;
-}
-
-.popup-box button:hover{
-transform:scale(1.02);
 }
 
 /* WAITING */
@@ -135,21 +129,6 @@ align-items:center;
 flex-direction:column;
 text-align:center;
 padding:40px 20px;
-animation:fadeIn 0.5s ease;
-}
-
-@keyframes fadeIn{
-
-from{
-opacity:0;
-transform:translateY(20px);
-}
-
-to{
-opacity:1;
-transform:translateY(0);
-}
-
 }
 
 .waiting-title{
@@ -165,7 +144,7 @@ line-height:1.9;
 margin-bottom:25px;
 }
 
-/* INSTRUCTION BOX */
+/* INSTRUCTION */
 
 .instruction-box{
 width:100%;
@@ -200,12 +179,6 @@ border-radius:18px;
 font-size:13px;
 line-height:1.8;
 border-left:4px solid #a855f7;
-transition:0.3s;
-}
-
-.instruction:hover{
-transform:translateY(-2px);
-background:rgba(255,255,255,0.08);
 }
 
 .good{
@@ -258,7 +231,6 @@ padding:12px 20px;
 border-radius:14px;
 font-size:20px;
 font-weight:bold;
-box-shadow:0 0 20px rgba(239,68,68,0.4);
 }
 
 .progress{
@@ -286,7 +258,6 @@ font-size:16px;
 
 .option:hover{
 background:#7c3aed;
-transform:translateX(3px);
 }
 
 .selected{
@@ -309,11 +280,6 @@ cursor:pointer;
 font-size:15px;
 font-weight:600;
 color:white;
-transition:0.3s;
-}
-
-.btn:hover{
-transform:scale(1.03);
 }
 
 .prev{
@@ -354,7 +320,6 @@ border-radius:35px;
 text-align:center;
 backdrop-filter:blur(18px);
 box-shadow:0 0 40px rgba(168,85,247,0.6);
-border:1px solid rgba(255,255,255,0.08);
 }
 
 .complete-card h1{
@@ -384,11 +349,6 @@ color:white;
 font-size:18px;
 font-weight:600;
 cursor:pointer;
-transition:0.3s;
-}
-
-.home-btn:hover{
-transform:scale(1.04);
 }
 
 /* MOBILE */
@@ -414,14 +374,6 @@ padding:15px;
 
 .timer{
 font-size:16px;
-}
-
-.complete-card h1{
-font-size:48px;
-}
-
-.complete-card h2{
-font-size:30px;
 }
 
 }
@@ -530,7 +482,7 @@ Start Exam
 </div>
 
 <div class="instruction warn">
-⚠ You cannot attend this exam twice.
+⚠ Same Roll Number cannot attend exam twice.
 </div>
 
 </div>
@@ -627,7 +579,7 @@ let pollingInterval = null;
 
 let lastWarningTime = 0;
 
-/* ALERT SOUND */
+/* SOUND */
 
 const audioContext =
 new (window.AudioContext || window.webkitAudioContext)();
@@ -662,7 +614,7 @@ oscillator.stop(audioContext.currentTime + 0.4);
 
 }
 
-/* JOIN */
+/* JOIN QUIZ */
 
 function joinQuiz(){
 
@@ -670,7 +622,7 @@ let name =
 document.getElementById("name").value.trim();
 
 let roll =
-document.getElementById("roll").value.trim();
+document.getElementById("roll").value.trim().toUpperCase();
 
 let dept =
 document.getElementById("dept").value.trim();
@@ -686,9 +638,21 @@ return;
 
 }
 
+roll = roll.replace(/\s/g,'');
+
 /* CHECK DUPLICATE */
 
-fetch("/check-result?code=" + code + "&roll=" + roll)
+fetch(
+
+"/check-result?code="
+
++ code +
+
+"&roll=" +
+
+roll
+
+)
 
 .then(res=>res.json())
 
@@ -697,7 +661,21 @@ fetch("/check-result?code=" + code + "&roll=" + roll)
 if(result.exists){
 
 alert(
-"❌ You already attended this exam.\n\nYou cannot attend again."
+
+"❌ THIS ROLL NUMBER ALREADY ATTENDED EXAM\n\n"
+
++
+
+"ROLL NO: "
+
++
+
+roll
+
++
+
+"\n\nYou cannot attend exam again."
+
 );
 
 return;
@@ -717,6 +695,14 @@ document.getElementById("waitingBox").style.display =
 "flex";
 
 loadQuiz();
+
+})
+
+.catch(err=>{
+
+console.log(err);
+
+alert("Server Error");
 
 });
 
@@ -767,14 +753,6 @@ pollingInterval = setInterval(()=>{
 checkQuizStatus();
 
 },1000);
-
-})
-
-.catch(err=>{
-
-console.log(err);
-
-alert("Server Error");
 
 });
 
@@ -913,8 +891,6 @@ optionsHtml;
 
 }
 
-/* SELECT */
-
 function selectOption(index){
 
 answers[current] = index;
@@ -922,8 +898,6 @@ answers[current] = index;
 showQuestion();
 
 }
-
-/* NEXT */
 
 function nextQuestion(){
 
@@ -936,8 +910,6 @@ showQuestion();
 }
 
 }
-
-/* PREVIOUS */
 
 function previousQuestion(){
 
@@ -971,9 +943,13 @@ playAlertSound();
 
 alert(
 
-"⚠ WARNING " +
+"⚠ WARNING "
 
-warningCount +
++
+
+warningCount
+
++
 
 "/3\n\nDo not switch tabs or minimize screen."
 
@@ -984,7 +960,7 @@ if(warningCount >= 3){
 playAlertSound();
 
 alert(
-"❌ Exam Auto Submitted Due To Violations"
+"❌ Exam Auto Submitted"
 );
 
 finishQuiz();
@@ -992,8 +968,6 @@ finishQuiz();
 }
 
 }
-
-/* TAB CHANGE */
 
 document.addEventListener("visibilitychange",()=>{
 
@@ -1009,53 +983,11 @@ showWarning();
 
 });
 
-/* MOBILE APP SWITCH */
-
 window.addEventListener("blur",()=>{
 
 if(started && !examEnded){
 
 showWarning();
-
-}
-
-});
-
-/* BLOCK RIGHT CLICK */
-
-document.addEventListener("contextmenu",(e)=>{
-
-e.preventDefault();
-
-});
-
-/* BLOCK COPY */
-
-document.addEventListener("copy",(e)=>{
-
-e.preventDefault();
-
-});
-
-/* BLOCK KEYS */
-
-document.addEventListener("keydown",(e)=>{
-
-if(e.key === "F12"){
-
-e.preventDefault();
-
-}
-
-if(e.ctrlKey && e.key.toLowerCase() === "u"){
-
-e.preventDefault();
-
-}
-
-if(e.ctrlKey && e.key.toLowerCase() === "c"){
-
-e.preventDefault();
 
 }
 
@@ -1085,8 +1017,6 @@ score++;
 
 });
 
-/* SAVE RESULT */
-
 fetch("/save-result",{
 
 method:"POST",
@@ -1113,8 +1043,6 @@ total:quiz.questions.length
 
 });
 
-/* COMPLETE PAGE */
-
 document.body.innerHTML = `
 
 <div class="complete-page">
@@ -1135,10 +1063,6 @@ Your exam has been submitted successfully.
 
 <p>
 You cannot attend this exam again.
-</p>
-
-<p>
-Thank you for attending the exam.
 </p>
 
 <button class="home-btn"
