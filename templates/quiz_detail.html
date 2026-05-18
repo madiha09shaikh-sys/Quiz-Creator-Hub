@@ -29,8 +29,6 @@ min-height:100vh;
 overflow-x:hidden;
 }
 
-/* NAVBAR */
-
 nav{
 padding:15px 25px;
 display:flex;
@@ -38,9 +36,8 @@ justify-content:space-between;
 align-items:center;
 background:rgba(255,255,255,0.05);
 backdrop-filter:blur(10px);
-position:sticky;
-top:0;
-z-index:1000;
+gap:10px;
+flex-wrap:wrap;
 }
 
 .logo{
@@ -58,14 +55,7 @@ border-radius:10px;
 cursor:pointer;
 font-size:14px;
 font-weight:600;
-transition:0.3s;
 }
-
-.home-btn:hover{
-transform:scale(1.05);
-}
-
-/* MAIN CONTAINER */
 
 .container{
 width:92%;
@@ -75,17 +65,14 @@ grid-template-columns:2fr 1fr;
 gap:16px;
 }
 
-/* CARDS */
-
 .left,
 .right{
 background:rgba(255,255,255,0.06);
 padding:20px;
 border-radius:20px;
 backdrop-filter:blur(12px);
+overflow:hidden;
 }
-
-/* TITLE */
 
 .quiz-title{
 font-size:32px;
@@ -100,8 +87,6 @@ font-size:14px;
 line-height:1.7;
 word-break:break-word;
 }
-
-/* STATS */
 
 .stats{
 display:grid;
@@ -126,9 +111,8 @@ margin-top:8px;
 font-size:24px;
 color:#a855f7;
 font-weight:600;
+word-break:break-word;
 }
-
-/* BUTTONS */
 
 .action-buttons{
 display:flex;
@@ -146,11 +130,10 @@ color:white;
 font-size:14px;
 font-weight:600;
 transition:0.3s;
-flex:1 1 180px;
 }
 
 .btn:hover{
-transform:translateY(-2px);
+transform:scale(1.03);
 }
 
 .start-btn{
@@ -180,15 +163,8 @@ margin-top:10px;
 width:100%;
 }
 
-/* LINK BOX */
-
 .link-box{
 margin-top:25px;
-}
-
-.link-box h3{
-font-size:18px;
-margin-bottom:10px;
 }
 
 .link-input{
@@ -200,9 +176,8 @@ border-radius:12px;
 background:#111827;
 color:white;
 font-size:13px;
+margin-top:10px;
 }
-
-/* QUESTIONS */
 
 .questions-section{
 margin-top:28px;
@@ -217,9 +192,8 @@ overflow:hidden;
 }
 
 .question-box h4{
-line-height:1.8;
+line-height:1.6;
 word-break:break-word;
-font-size:16px;
 }
 
 .option{
@@ -229,14 +203,11 @@ border-radius:10px;
 margin-top:7px;
 font-size:14px;
 word-break:break-word;
-overflow-wrap:break-word;
 }
 
 .correct{
 background:#16a34a;
 }
-
-/* ANALYTICS */
 
 .analytics-box{
 background:rgba(255,255,255,0.05);
@@ -244,16 +215,6 @@ padding:18px;
 border-radius:15px;
 margin-bottom:14px;
 text-align:center;
-}
-
-.analytics-box h3{
-font-size:17px;
-}
-
-.analytics-box p{
-margin-top:8px;
-font-size:20px;
-word-break:break-word;
 }
 
 .live{
@@ -274,14 +235,7 @@ color:white;
 font-size:15px;
 cursor:pointer;
 font-weight:600;
-transition:0.3s;
 }
-
-.result-btn:hover{
-transform:translateY(-2px);
-}
-
-/* INPUT */
 
 .edit-input{
 width:100%;
@@ -297,7 +251,7 @@ font-size:14px;
 
 /* MOBILE RESPONSIVE */
 
-@media(max-width:1000px){
+@media(max-width:900px){
 
 .container{
 grid-template-columns:1fr;
@@ -313,32 +267,32 @@ order:-1;
 
 nav{
 padding:14px;
-flex-direction:column;
-gap:12px;
 }
 
 .logo{
-font-size:22px;
+font-size:20px;
 }
 
 .home-btn{
-width:100%;
+padding:8px 14px;
+font-size:12px;
 }
 
 .container{
 width:95%;
-margin-top:15px;
+margin:14px auto;
+gap:14px;
 }
 
 .left,
 .right{
 padding:15px;
-border-radius:18px;
+border-radius:16px;
 }
 
 .quiz-title{
-font-size:24px;
-line-height:1.5;
+font-size:22px;
+line-height:1.4;
 }
 
 .quiz-desc{
@@ -347,28 +301,40 @@ font-size:13px;
 
 .stats{
 grid-template-columns:1fr;
+gap:10px;
+}
+
+.stat-box{
+padding:12px;
+}
+
+.stat-box h3{
+font-size:13px;
 }
 
 .stat-box p{
-font-size:22px;
+font-size:18px;
 }
 
 .action-buttons{
-flex-direction:column;
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:8px;
 }
 
 .btn{
-width:100%;
-font-size:14px;
+padding:10px 8px;
+font-size:12px;
+border-radius:10px;
 }
 
-.link-input{
-font-size:12px;
-padding:11px;
+.result-btn{
+font-size:13px;
+padding:12px;
 }
 
 .question-box{
-padding:13px;
+padding:12px;
 }
 
 .question-box h4{
@@ -380,17 +346,52 @@ font-size:13px;
 padding:9px;
 }
 
+.link-input{
+font-size:12px;
+padding:10px;
+}
+
+.copy-btn{
+font-size:12px;
+padding:10px;
+}
+
+.analytics-box{
+padding:14px;
+}
+
 .analytics-box h3{
-font-size:15px;
+font-size:14px;
 }
 
 .analytics-box p{
-font-size:18px;
+font-size:15px;
 }
 
-.result-btn{
-font-size:14px;
-padding:13px;
+.edit-input{
+font-size:13px;
+padding:10px;
+}
+
+}
+
+@media(max-width:420px){
+
+.action-buttons{
+grid-template-columns:1fr 1fr;
+}
+
+.btn{
+font-size:11px;
+padding:9px 5px;
+}
+
+.quiz-title{
+font-size:20px;
+}
+
+.logo{
+font-size:18px;
 }
 
 }
@@ -473,21 +474,21 @@ NOT STARTED
 <button class="btn start-btn"
 onclick="startQuiz()">
 
-▶ Start Exam
+▶ Start
 
 </button>
 
 <button class="btn stop-btn"
 onclick="stopQuiz()">
 
-⏹ Stop Exam
+⏹ Stop
 
 </button>
 
 <button class="btn edit-btn"
 onclick="editQuiz()">
 
-✏ Edit Quiz
+✏ Edit
 
 </button>
 
@@ -502,7 +503,7 @@ onclick="saveQuiz()">
 <button class="btn delete-btn"
 onclick="deleteQuiz()">
 
-🗑 Delete Quiz
+🗑 Delete
 
 </button>
 
@@ -564,7 +565,7 @@ Loading...
 
 <div class="right">
 
-<h2 style="margin-bottom:18px;">
+<h2>
 📊 Analytics
 </h2>
 
@@ -1039,5 +1040,4 @@ window.location.href =
 </script>
 
 </body>
-
 </html>
