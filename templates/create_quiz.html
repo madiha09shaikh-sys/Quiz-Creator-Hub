@@ -633,7 +633,10 @@ fetch("/save-quiz",{
         negative:negativeEnabled,
 
         negativeMarks:
-        negativeMarks || 0
+        negativeMarks || 0,
+
+        /* IMPORTANT FIX */
+        is_started:false
 
     })
 
@@ -648,7 +651,7 @@ fetch("/save-quiz",{
     if(data.success){
 
         alert(
-        "✅ Quiz Saved"
+        "✅ Quiz Saved Successfully"
         );
 
         window.location.href =
