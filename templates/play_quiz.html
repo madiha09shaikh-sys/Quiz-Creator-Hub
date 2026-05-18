@@ -1,6 +1,6 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
@@ -29,9 +29,15 @@ min-height:100vh;
 overflow-x:hidden;
 }
 
+/* NAV */
+
 nav{
 padding:15px 25px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 background:rgba(255,255,255,0.05);
+backdrop-filter:blur(10px);
 }
 
 .logo{
@@ -40,11 +46,15 @@ font-weight:600;
 color:#a855f7;
 }
 
+/* CONTAINER */
+
 .container{
 max-width:950px;
 margin:25px auto;
 padding:15px;
 }
+
+/* JOIN */
 
 .popup{
 position:fixed;
@@ -65,12 +75,13 @@ background:rgba(255,255,255,0.08);
 padding:35px;
 border-radius:25px;
 backdrop-filter:blur(15px);
+box-shadow:0 0 35px rgba(168,85,247,0.5);
 }
 
 .popup-box h2{
 text-align:center;
+font-size:32px;
 margin-bottom:20px;
-font-size:30px;
 }
 
 .popup-box input{
@@ -82,28 +93,55 @@ outline:none;
 border-radius:14px;
 background:rgba(255,255,255,0.08);
 color:white;
+font-size:15px;
+}
+
+.popup-box input::placeholder{
+color:#ccc;
 }
 
 .popup-box button{
 width:100%;
 padding:15px;
-margin-top:20px;
+margin-top:22px;
 border:none;
 border-radius:14px;
-background:#9333ea;
+background:linear-gradient(135deg,#a855f7,#6d28d9);
 color:white;
 font-size:16px;
+font-weight:600;
 cursor:pointer;
 }
+
+/* WAITING */
 
 .waiting{
 display:none;
 min-height:80vh;
+width:100%;
 justify-content:center;
 align-items:center;
 flex-direction:column;
 text-align:center;
+padding:40px 20px;
+animation:fadeIn 0.5s ease;
 }
+
+@keyframes fadeIn{
+
+from{
+opacity:0;
+transform:translateY(20px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+/* QUIZ */
 
 .quiz-box{
 display:none;
@@ -116,6 +154,8 @@ border-radius:25px;
 display:flex;
 justify-content:space-between;
 align-items:center;
+flex-wrap:wrap;
+gap:15px;
 margin-bottom:25px;
 }
 
@@ -132,10 +172,16 @@ font-size:20px;
 font-weight:bold;
 }
 
+.progress{
+margin-bottom:20px;
+color:#ccc;
+font-size:16px;
+}
+
 .question{
 font-size:25px;
-margin-bottom:20px;
 line-height:1.6;
+margin-bottom:20px;
 }
 
 .option{
@@ -144,8 +190,9 @@ padding:18px;
 border-radius:15px;
 margin-top:14px;
 cursor:pointer;
-border:2px solid transparent;
 transition:0.3s;
+border:2px solid transparent;
+font-size:16px;
 }
 
 .option:hover{
@@ -169,6 +216,7 @@ padding:14px 24px;
 border:none;
 border-radius:14px;
 cursor:pointer;
+font-size:15px;
 font-weight:600;
 color:white;
 }
@@ -185,6 +233,8 @@ background:#22c55e;
 background:#ef4444;
 }
 
+/* COMPLETE PAGE */
+
 .complete-page{
 position:fixed;
 top:0;
@@ -199,35 +249,37 @@ z-index:99999;
 }
 
 .complete-card{
-width:500px;
+width:520px;
+background:rgba(255,255,255,0.08);
 padding:45px;
 border-radius:30px;
-background:rgba(255,255,255,0.08);
 text-align:center;
+backdrop-filter:blur(15px);
+box-shadow:0 0 35px rgba(168,85,247,0.6);
 }
 
 .complete-card h1{
-font-size:50px;
+font-size:52px;
 color:#22c55e;
+margin-bottom:15px;
+}
+
+.complete-card p{
+font-size:18px;
+color:#ddd;
+margin-top:12px;
 }
 
 .home-btn{
-margin-top:30px;
+margin-top:35px;
 padding:15px 30px;
 border:none;
-border-radius:15px;
-background:#9333ea;
+border-radius:16px;
+background:linear-gradient(135deg,#a855f7,#6d28d9);
 color:white;
-font-size:17px;
+font-size:18px;
+font-weight:600;
 cursor:pointer;
-}
-
-.warning-box{
-margin-top:15px;
-background:#ef4444;
-padding:10px;
-border-radius:10px;
-font-weight:bold;
 }
 
 </style>
@@ -243,6 +295,8 @@ font-weight:bold;
 </div>
 
 </nav>
+
+<!-- JOIN -->
 
 <div class="popup"
 id="popup">
@@ -281,18 +335,129 @@ Enter Exam
 
 <div class="container">
 
+<!-- WAITING -->
+
 <div class="waiting"
 id="waitingBox">
 
-<h1>
+<h1 style="
+font-size:20px;
+font-weight:700;
+margin-bottom:12px;
+">
 ⏳ Waiting For Teacher
 </h1>
 
-<p style="margin-top:15px;">
-Exam will start when teacher clicks Start Exam
+<p style="
+font-size:14px;
+color:#d1d5db;
+line-height:1.8;
+margin-bottom:40px;
+">
+Exam will start when teacher clicks
+<b style="color:#a855f7;">
+Start Exam
+</b>
+</p>
+
+<!-- INSTRUCTIONS BOX -->
+
+<div style="
+width:100%;
+max-width:760px;
+background:rgba(255,255,255,0.08);
+padding:40px;
+border-radius:28px;
+text-align:left;
+backdrop-filter:blur(15px);
+box-shadow:0 0 35px rgba(168,85,247,0.35);
+border:1px solid rgba(255,255,255,0.08);
+">
+
+<h2 style="
+text-align:center;
+font-size:16px;
+margin-bottom:28px;
+color:#a855f7;
+font-weight:700;
+">
+📌 Exam Instructions
+</h2>
+
+<div style="
+display:flex;
+flex-direction:column;
+gap:18px;
+">
+
+<p style="
+font-size:12px;
+line-height:1.9;
+color:#f3f4f6;
+">
+✅ Do not switch tabs during exam
+</p>
+
+<p style="
+font-size:12px;
+line-height:1.9;
+color:#f3f4f6;
+">
+✅ Do not minimize browser window
+</p>
+
+<p style="
+font-size:12px;
+line-height:1.9;
+color:#f3f4f6;
+">
+✅ Right click & copy are blocked
+</p>
+
+<p style="
+font-size:12px;
+line-height:1.9;
+color:#ff4d4d;
+font-weight:700;
+">
+⚠ If you go outside the exam screen 3 times,
+your exam will automatically end
+</p>
+
+<p style="
+font-size:12px;
+line-height:1.9;
+color:#f3f4f6;
+">
+⚠ After exam ends, answers cannot be changed
 </p>
 
 </div>
+
+<div style="
+margin-top:30px;
+padding:18px;
+border-radius:18px;
+background:rgba(34,197,94,0.12);
+text-align:center;
+">
+
+<p style="
+font-size:20px;
+font-weight:700;
+color:#22c55e;
+letter-spacing:1px;
+">
+🚀 Best Of Luck For Your Exam
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- QUIZ -->
 
 <div class="quiz-box"
 id="quizBox">
@@ -307,7 +472,7 @@ Quiz
 </div>
 
 <div id="studentInfo"
-style="margin-top:8px;color:#ccc;">
+style="margin-top:8px;font-size:14px;color:#ccc;">
 </div>
 
 </div>
@@ -319,16 +484,8 @@ id="timer">
 
 </div>
 
-<div class="warning-box"
-id="warningText">
-
-Warnings :
-0 / 3
-
-</div>
-
-<div id="progress"
-style="margin-bottom:20px;color:#ccc;margin-top:20px;">
+<div class="progress"
+id="progress">
 </div>
 
 <div class="question"
@@ -379,15 +536,21 @@ let timeLeft = 0;
 let started = false;
 let examEnded = false;
 
-let timerInterval = null;
-
 let warningCount = 0;
 
-let examStartedByTeacher = false;
+let timerInterval = null;
+
+/* SOUND */
+
+const warningSound = new Audio(
+"https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"
+);
+
+warningSound.volume = 1;
 
 /* JOIN */
 
-async function joinQuiz(){
+function joinQuiz(){
 
 let name =
 document.getElementById("name").value.trim();
@@ -409,29 +572,6 @@ return;
 
 }
 
-try{
-
-let checkResponse =
-await fetch("/check-result?code=" + code + "&roll=" + roll);
-
-let checkData =
-await checkResponse.json();
-
-if(checkData.exists){
-
-alert("❌ You already attended this exam");
-
-return;
-
-}
-
-}
-catch(err){
-
-console.log(err);
-
-}
-
 sessionStorage.setItem("name",name);
 sessionStorage.setItem("roll",roll);
 sessionStorage.setItem("dept",dept);
@@ -448,15 +588,13 @@ loadQuiz();
 
 /* LOAD QUIZ */
 
-async function loadQuiz(){
+function loadQuiz(){
 
-try{
+fetch("/get-quiz?code=" + code)
 
-let response =
-await fetch("/get-quiz?code=" + code);
+.then(res=>res.json())
 
-let data =
-await response.json();
+.then(data=>{
 
 if(!data.success){
 
@@ -472,483 +610,15 @@ quiz = data.quiz;
 
 timeLeft = quiz.duration * 60;
 
-}
-catch(err){
+})
+
+.catch(err=>{
 
 console.log(err);
 
 alert("Server Error");
 
-}
-
-}
-
-/* CHECK START */
-
-async function checkQuizStart(){
-
-if(!quiz || started || examEnded) return;
-
-try{
-
-let response =
-await fetch("/get-quiz?code=" + code);
-
-let data =
-await response.json();
-
-if(data.success){
-
-if(data.quiz.is_started === true){
-
-examStartedByTeacher = true;
-
-startQuiz();
-
-}
-
-}
-
-}
-catch(err){
-
-console.log(err);
-
-}
-
-}
-
-setInterval(checkQuizStart,2000);
-
-/* START QUIZ */
-
-function startQuiz(){
-
-if(!examStartedByTeacher){
-return;
-}
-
-started = true;
-
-document.getElementById("waitingBox").style.display =
-"none";
-
-document.getElementById("quizBox").style.display =
-"block";
-
-document.getElementById("title").innerText =
-quiz.title;
-
-document.getElementById("studentInfo").innerHTML =
-
-`
-👤 ${sessionStorage.getItem("name")}
-|
-🎓 ${sessionStorage.getItem("roll")}
-|
-🏢 ${sessionStorage.getItem("dept")}
-`;
-
-showQuestion();
-
-startTimer();
-
-startFullscreen();
-
-}
-
-/* FULLSCREEN */
-
-function startFullscreen(){
-
-let el = document.documentElement;
-
-if(el.requestFullscreen){
-
-el.requestFullscreen();
-
-}
-
-}
-
-/* TIMER */
-
-function startTimer(){
-
-timerInterval =
-setInterval(()=>{
-
-let min =
-Math.floor(timeLeft / 60);
-
-let sec =
-timeLeft % 60;
-
-document.getElementById("timer").innerText =
-
-`${min}:${sec < 10 ? "0"+sec : sec}`;
-
-timeLeft--;
-
-if(timeLeft < 0){
-
-endExam("⏰ EXAM COMPLETED");
-
-}
-
-},1000);
-
-}
-
-/* SHOW QUESTION */
-
-function showQuestion(){
-
-let q =
-quiz.questions[current];
-
-document.getElementById("progress").innerText =
-
-`Question ${current+1}
-of
-${quiz.questions.length}`;
-
-document.getElementById("question").innerText =
-q.q;
-
-let box =
-document.getElementById("options");
-
-box.innerHTML = "";
-
-q.options.forEach((opt,index)=>{
-
-let active =
-
-answers[current] == index
-
-?
-
-"selected"
-
-:
-
-"";
-
-box.innerHTML += `
-
-<div class="
-option ${active}
-"
-onclick="
-selectOption(${index})
-">
-
-${opt}
-
-</div>
-
-`;
-
 });
-
-}
-
-/* SELECT */
-
-function selectOption(index){
-
-answers[current] = index;
-
-showQuestion();
-
-}
-
-/* NEXT */
-
-function nextQuestion(){
-
-if(current < quiz.questions.length - 1){
-
-current++;
-
-showQuestion();
-
-}
-
-}
-
-/* PREVIOUS */
-
-function previousQuestion(){
-
-if(current > 0){
-
-current--;
-
-showQuestion();
-
-}
-
-}
-
-/* FINISH */
-
-function finishQuiz(){
-
-let ok =
-confirm(
-"Are you sure you want to finish exam?"
-);
-
-if(ok){
-
-endExam("✅ EXAM COMPLETED");
-
-}
-
-}
-
-/* PLAY ALARM */
-
-function playAlarm(){
-
-let alarm =
-new Audio(
-"https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"
-);
-
-alarm.play();
-
-}
-
-/* WARNINGS */
-
-function addWarning(message){
-
-if(examEnded) return;
-
-warningCount++;
-
-document.getElementById("warningText").innerText =
-
-`Warnings : ${warningCount} / 3`;
-
-playAlarm();
-
-alert(message);
-
-if(warningCount >= 3){
-
-endExam("❌ EXAM TERMINATED");
-
-}
-
-}
-
-/* TAB SWITCH */
-
-document.addEventListener("visibilitychange",()=>{
-
-if(document.hidden && started){
-
-addWarning(
-"⚠ Tab changing detected!"
-);
-
-}
-
-});
-
-/* APP SWITCH */
-
-window.addEventListener("blur",()=>{
-
-if(started){
-
-addWarning(
-"⚠ App switching detected!"
-);
-
-}
-
-});
-
-/* FULLSCREEN EXIT */
-
-document.addEventListener("fullscreenchange",()=>{
-
-if(!document.fullscreenElement && started){
-
-addWarning(
-"⚠ Fullscreen exited!"
-);
-
-}
-
-});
-
-/* COPY BLOCK */
-
-document.addEventListener("copy",(e)=>{
-
-e.preventDefault();
-
-addWarning(
-"⚠ Copying not allowed!"
-);
-
-});
-
-/* RIGHT CLICK BLOCK */
-
-document.addEventListener("contextmenu",(e)=>{
-
-e.preventDefault();
-
-});
-
-/* KEY BLOCK */
-
-document.addEventListener("keydown",(e)=>{
-
-if(
-e.key === "F12" ||
-(e.ctrlKey && e.key === "u") ||
-(e.ctrlKey && e.key === "c") ||
-(e.ctrlKey && e.key === "v") ||
-(e.ctrlKey && e.key === "x")
-){
-
-e.preventDefault();
-
-addWarning(
-"⚠ Restricted key detected!"
-);
-
-}
-
-});
-
-/* END EXAM */
-
-async function endExam(message){
-
-if(examEnded) return;
-
-examEnded = true;
-
-clearInterval(timerInterval);
-
-let finalScore = 0;
-
-quiz.questions.forEach((q,index)=>{
-
-if(answers[index] == q.correct){
-
-finalScore++;
-
-}
-
-});
-
-try{
-
-let response = await fetch("/save-result",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-code: code,
-
-name:
-sessionStorage.getItem("name"),
-
-roll:
-sessionStorage.getItem("roll"),
-
-department:
-sessionStorage.getItem("dept"),
-
-marks: finalScore,
-
-total:
-quiz.questions.length
-
-})
-
-});
-
-let result =
-await response.json();
-
-console.log(result);
-
-}
-catch(err){
-
-console.log("SAVE ERROR:",err);
-
-}
-
-document.body.innerHTML = `
-
-<div class="complete-page">
-
-<div class="complete-card">
-
-<h1>
-${message}
-</h1>
-
-<p style="
-margin-top:20px;
-font-size:22px;
-">
-
-Your Exam Submitted Successfully
-
-</p>
-
-<h2 style="
-margin-top:30px;
-color:#a855f7;
-font-size:40px;
-">
-
-Score :
-${finalScore}
-/
-${quiz.questions.length}
-
-</h2>
-
-<button class="home-btn"
-onclick="goResultPage()">
-
-📈 VIEW RESULT
-
-</button>
-
-</div>
-
-</div>
-
-`;
-
-}
-
-/* RESULT PAGE */
-
-function goResultPage(){
-
-window.location.href =
-"/result?code=" + code;
 
 }
 
@@ -956,3 +626,4 @@ window.location.href =
 
 </body>
 </html>
+
