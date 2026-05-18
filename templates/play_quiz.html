@@ -23,7 +23,8 @@ box-sizing:border-box;
 
 body{
 font-family:'Poppins',sans-serif;
-background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+background:
+linear-gradient(135deg,#0f0c29,#302b63,#24243e);
 color:white;
 min-height:100vh;
 overflow-x:hidden;
@@ -37,13 +38,15 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 background:rgba(255,255,255,0.05);
-backdrop-filter:blur(10px);
+backdrop-filter:blur(12px);
+border-bottom:1px solid rgba(255,255,255,0.08);
 }
 
 .logo{
-font-size:28px;
+font-size:30px;
 font-weight:700;
 color:#a855f7;
+letter-spacing:1px;
 }
 
 /* CONTAINER */
@@ -54,7 +57,7 @@ margin:25px auto;
 padding:15px;
 }
 
-/* JOIN */
+/* JOIN POPUP */
 
 .popup{
 position:fixed;
@@ -62,7 +65,7 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.92);
+background:rgba(0,0,0,0.93);
 display:flex;
 justify-content:center;
 align-items:center;
@@ -74,44 +77,51 @@ padding:20px;
 width:430px;
 background:rgba(255,255,255,0.08);
 padding:35px;
-border-radius:25px;
-backdrop-filter:blur(15px);
-box-shadow:0 0 35px rgba(168,85,247,0.5);
+border-radius:28px;
+backdrop-filter:blur(16px);
+box-shadow:0 0 40px rgba(168,85,247,0.5);
+border:1px solid rgba(255,255,255,0.08);
 }
 
 .popup-box h2{
 text-align:center;
-font-size:32px;
-margin-bottom:20px;
+font-size:34px;
+margin-bottom:25px;
+font-weight:700;
 }
 
 .popup-box input{
 width:100%;
 padding:15px;
-margin-top:14px;
+margin-top:15px;
 border:none;
 outline:none;
-border-radius:14px;
+border-radius:15px;
 background:rgba(255,255,255,0.08);
 color:white;
 font-size:15px;
 }
 
 .popup-box input::placeholder{
-color:#ccc;
+color:#d1d5db;
 }
 
 .popup-box button{
 width:100%;
 padding:15px;
-margin-top:22px;
+margin-top:24px;
 border:none;
-border-radius:14px;
+border-radius:16px;
 background:linear-gradient(135deg,#a855f7,#6d28d9);
 color:white;
 font-size:16px;
 font-weight:600;
 cursor:pointer;
+transition:0.3s;
+}
+
+.popup-box button:hover{
+transform:scale(1.02);
 }
 
 /* WAITING */
@@ -142,31 +152,79 @@ transform:translateY(0);
 
 }
 
-.instruction-box{
-width:100%;
-max-width:800px;
-background:rgba(255,255,255,0.08);
-padding:35px;
-border-radius:25px;
-backdrop-filter:blur(15px);
-margin-top:25px;
-text-align:left;
-box-shadow:0 0 30px rgba(168,85,247,0.3);
+.waiting-title{
+font-size:20px;
+font-weight:700;
+margin-bottom:15px;
 }
 
-.instruction-box h2{
-text-align:center;
+.waiting-text{
+font-size:13px;
+color:#d1d5db;
+line-height:1.9;
 margin-bottom:25px;
-font-size:28px;
-color:#a855f7;
+}
+
+/* INSTRUCTION BOX */
+
+.instruction-box{
+width:100%;
+max-width:850px;
+padding:35px;
+border-radius:30px;
+background:rgba(255,255,255,0.08);
+backdrop-filter:blur(18px);
+border:1px solid rgba(255,255,255,0.08);
+box-shadow:0 0 40px rgba(168,85,247,0.25);
+text-align:left;
+}
+
+.instruction-heading{
+text-align:center;
+font-size:26px;
+font-weight:700;
+margin-bottom:30px;
+color:#c084fc;
+}
+
+.instruction-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:18px;
 }
 
 .instruction{
 background:rgba(255,255,255,0.05);
-padding:16px;
-border-radius:15px;
-margin-top:14px;
+padding:18px;
+border-radius:18px;
 font-size:13px;
+line-height:1.8;
+border-left:4px solid #a855f7;
+transition:0.3s;
+}
+
+.instruction:hover{
+transform:translateY(-2px);
+background:rgba(255,255,255,0.08);
+}
+
+.good{
+border-left:4px solid #22c55e;
+}
+
+.warn{
+border-left:4px solid #ef4444;
+}
+
+.final-note{
+margin-top:28px;
+padding:22px;
+border-radius:22px;
+background:rgba(34,197,94,0.12);
+text-align:center;
+font-size:15px;
+font-weight:600;
+color:#4ade80;
 line-height:1.8;
 }
 
@@ -176,7 +234,8 @@ line-height:1.8;
 display:none;
 background:rgba(255,255,255,0.06);
 padding:28px;
-border-radius:25px;
+border-radius:28px;
+backdrop-filter:blur(14px);
 }
 
 .top{
@@ -196,9 +255,10 @@ font-weight:600;
 .timer{
 background:#ef4444;
 padding:12px 20px;
-border-radius:12px;
+border-radius:14px;
 font-size:20px;
 font-weight:bold;
+box-shadow:0 0 20px rgba(239,68,68,0.4);
 }
 
 .progress{
@@ -209,14 +269,14 @@ font-size:16px;
 
 .question{
 font-size:25px;
-line-height:1.6;
+line-height:1.7;
 margin-bottom:20px;
 }
 
 .option{
 background:rgba(255,255,255,0.07);
 padding:18px;
-border-radius:15px;
+border-radius:18px;
 margin-top:14px;
 cursor:pointer;
 transition:0.3s;
@@ -226,6 +286,7 @@ font-size:16px;
 
 .option:hover{
 background:#7c3aed;
+transform:translateX(3px);
 }
 
 .selected{
@@ -243,11 +304,16 @@ flex-wrap:wrap;
 .btn{
 padding:14px 24px;
 border:none;
-border-radius:14px;
+border-radius:15px;
 cursor:pointer;
 font-size:15px;
 font-weight:600;
 color:white;
+transition:0.3s;
+}
+
+.btn:hover{
+transform:scale(1.03);
 }
 
 .prev{
@@ -273,48 +339,65 @@ height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
-background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+background:
+linear-gradient(135deg,#0f0c29,#302b63,#24243e);
 z-index:999999;
 padding:20px;
 }
 
 .complete-card{
-width:520px;
+width:550px;
 max-width:100%;
 background:rgba(255,255,255,0.08);
 padding:45px;
-border-radius:30px;
+border-radius:35px;
 text-align:center;
-backdrop-filter:blur(15px);
-box-shadow:0 0 35px rgba(168,85,247,0.6);
+backdrop-filter:blur(18px);
+box-shadow:0 0 40px rgba(168,85,247,0.6);
+border:1px solid rgba(255,255,255,0.08);
 }
 
 .complete-card h1{
-font-size:60px;
-color:#22c55e;
+font-size:65px;
 margin-bottom:15px;
 }
 
+.complete-card h2{
+font-size:38px;
+margin-top:10px;
+}
+
 .complete-card p{
-font-size:18px;
+font-size:17px;
 color:#ddd;
-margin-top:12px;
-line-height:1.8;
+margin-top:14px;
+line-height:1.9;
 }
 
 .home-btn{
 margin-top:35px;
-padding:15px 30px;
+padding:16px 34px;
 border:none;
-border-radius:16px;
+border-radius:18px;
 background:linear-gradient(135deg,#a855f7,#6d28d9);
 color:white;
 font-size:18px;
 font-weight:600;
 cursor:pointer;
+transition:0.3s;
 }
 
+.home-btn:hover{
+transform:scale(1.04);
+}
+
+/* MOBILE */
+
 @media(max-width:700px){
+
+.instruction-grid{
+grid-template-columns:1fr;
+}
 
 .quiz-title{
 font-size:22px;
@@ -334,7 +417,11 @@ font-size:16px;
 }
 
 .complete-card h1{
-font-size:42px;
+font-size:48px;
+}
+
+.complete-card h2{
+font-size:30px;
 }
 
 }
@@ -395,57 +482,62 @@ Enter Exam
 <div class="waiting"
 id="waitingBox">
 
-<h1 style="
-font-size:18px;
-font-weight:700;
-margin-bottom:15px;
-">
+<div class="waiting-title">
 ⏳ Waiting For Teacher
-</h1>
+</div>
 
-<p style="
-font-size:12px;
-color:#d1d5db;
-line-height:1.8;
-margin-bottom:10px;
-">
-Exam will start when teacher clicks
-<b style="color:#a855f7;">
+<div class="waiting-text">
+Exam will start after teacher clicks
+<b style="color:#c084fc;">
 Start Exam
 </b>
-</p>
+</div>
 
 <div class="instruction-box">
 
-<h5>
+<div class="instruction-heading">
 📋 Exam Instructions
-</h5>
-
-<div class="instruction">
-✅ Do not switch tabs during exam
 </div>
 
-<div class="instruction">
-✅ Do not minimize browser window
+<div class="instruction-grid">
+
+<div class="instruction good">
+✅ Stay on exam screen during entire exam.
 </div>
 
-<div class="instruction">
-✅ Mobile users should stay on exam screen
+<div class="instruction good">
+✅ Mobile users should not switch apps.
 </div>
 
-<div class="instruction">
-⚠ If you switch app/tab 3 times your exam will auto submit
+<div class="instruction good">
+✅ Internet connection should remain stable.
 </div>
 
-<div class="instruction">
-⚠ Right click, copy & inspect are blocked
+<div class="instruction good">
+✅ Click Finish Exam after completing paper.
 </div>
 
-<div class="instruction">
-⚠ After submitting exam you cannot re-enter again
+<div class="instruction warn">
+⚠ Tab switching is strictly prohibited.
 </div>
 
+<div class="instruction warn">
+⚠ Minimize or app switching gives warning.
+</div>
 
+<div class="instruction warn">
+⚠ After 3 warnings exam auto submits.
+</div>
+
+<div class="instruction warn">
+⚠ You cannot attend this exam twice.
+</div>
+
+</div>
+
+<div class="final-note">
+🚀 Best Of Luck For Your Exam
+</div>
 
 </div>
 
@@ -535,13 +627,40 @@ let pollingInterval = null;
 
 let lastWarningTime = 0;
 
-/* SOUND */
+/* ALERT SOUND */
 
-const warningSound = new Audio(
-"https://www.soundjay.com/buttons/beep-01a.mp3"
+const audioContext =
+new (window.AudioContext || window.webkitAudioContext)();
+
+function playAlertSound(){
+
+const oscillator =
+audioContext.createOscillator();
+
+const gainNode =
+audioContext.createGain();
+
+oscillator.type = "sine";
+
+oscillator.frequency.setValueAtTime(
+900,
+audioContext.currentTime
 );
 
-warningSound.volume = 1;
+gainNode.gain.setValueAtTime(
+0.5,
+audioContext.currentTime
+);
+
+oscillator.connect(gainNode);
+
+gainNode.connect(audioContext.destination);
+
+oscillator.start();
+
+oscillator.stop(audioContext.currentTime + 0.4);
+
+}
 
 /* JOIN */
 
@@ -567,7 +686,7 @@ return;
 
 }
 
-/* CHECK IF ALREADY GIVEN EXAM */
+/* CHECK DUPLICATE */
 
 fetch("/check-result?code=" + code + "&roll=" + roll)
 
@@ -577,7 +696,9 @@ fetch("/check-result?code=" + code + "&roll=" + roll)
 
 if(result.exists){
 
-alert("❌ You already attended this exam");
+alert(
+"❌ You already attended this exam.\n\nYou cannot attend again."
+);
 
 return;
 
@@ -628,15 +749,18 @@ quiz.title;
 
 document.getElementById("studentInfo").innerHTML =
 
-"👤 " + sessionStorage.getItem("name") +
+"👤 " +
+sessionStorage.getItem("name")
 
-" | 🎓 " + sessionStorage.getItem("roll");
++
+
+" | 🎓 " +
+
+sessionStorage.getItem("roll");
 
 answers = new Array(
 quiz.questions.length
 ).fill(null);
-
-/* CHECK STATUS EVERY SECOND */
 
 pollingInterval = setInterval(()=>{
 
@@ -670,8 +794,6 @@ if(!data.success) return;
 
 quiz = data.quiz;
 
-/* START ONLY AFTER TEACHER START */
-
 if(quiz.is_started && !started){
 
 started = true;
@@ -689,8 +811,6 @@ startTimer();
 showQuestion();
 
 }
-
-/* STOP */
 
 if(!quiz.is_started && started && !examEnded){
 
@@ -752,7 +872,9 @@ let q = quiz.questions[current];
 
 document.getElementById("progress").innerText =
 
-"Question " +
+"Question "
+
++
 
 (current + 1)
 
@@ -835,9 +957,7 @@ function showWarning(){
 
 let now = Date.now();
 
-/* PREVENT DOUBLE WARNING */
-
-if(now - lastWarningTime < 2000){
+if(now - lastWarningTime < 2500){
 
 return;
 
@@ -847,7 +967,7 @@ lastWarningTime = now;
 
 warningCount++;
 
-warningSound.play();
+playAlertSound();
 
 alert(
 
@@ -855,13 +975,17 @@ alert(
 
 warningCount +
 
-"/3\n\nDo not switch tab or minimize screen."
+"/3\n\nDo not switch tabs or minimize screen."
 
 );
 
 if(warningCount >= 3){
 
-alert("❌ Exam Auto Submitted");
+playAlertSound();
+
+alert(
+"❌ Exam Auto Submitted Due To Violations"
+);
 
 finishQuiz();
 
@@ -1001,10 +1125,7 @@ document.body.innerHTML = `
 🎉
 </h1>
 
-<h2 style="
-font-size:38px;
-margin-top:10px;
-">
+<h2>
 Exam Submitted
 </h2>
 
@@ -1021,9 +1142,9 @@ Thank you for attending the exam.
 </p>
 
 <button class="home-btn"
-onclick="window.location.href='/'">
+onclick="window.location.href='/home'">
 
-🏠 Go Home
+🏠 Go To Home
 
 </button>
 
