@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 app.secret_key = "secret123"
 
-# ================= SESSION LOGIN =================
+# ================= SESSION =================
 
 app.permanent_session_lifetime = timedelta(days=30)
 
@@ -41,7 +41,7 @@ def create_tables():
 
     cursor = conn.cursor()
 
-    # USERS TABLE
+    # USERS
 
     cursor.execute("""
 
@@ -59,7 +59,7 @@ def create_tables():
 
     """)
 
-    # QUIZZES TABLE
+    # QUIZZES
 
     cursor.execute("""
 
@@ -91,7 +91,7 @@ def create_tables():
 
     """)
 
-    # RESULTS TABLE
+    # RESULTS
 
     cursor.execute("""
 
@@ -125,7 +125,7 @@ def create_tables():
 
 create_tables()
 
-# ================= INDEX PAGE =================
+# ================= INDEX =================
 
 @app.route("/")
 def index():
@@ -304,7 +304,7 @@ def home():
 
     )
 
-# ================= CREATE PAGE =================
+# ================= CREATE =================
 
 @app.route("/create")
 def create():
@@ -315,14 +315,10 @@ def create():
 
     return render_template("create_quiz.html")
 
-# ================= JOIN PAGE =================
+# ================= JOIN =================
 
 @app.route("/join")
 def join():
-
-    if "user" not in session:
-
-        return redirect("/auth")
 
     return render_template("join_quiz.html")
 
@@ -462,10 +458,6 @@ def get_quiz():
                 quiz["questions"]
             )
 
-        if quiz["questions"] is None:
-
-            quiz["questions"] = []
-
     except Exception as e:
 
         print(e)
@@ -500,18 +492,200 @@ def get_quiz():
 
     })
 
+# ================= START QUIZ =================
+
+@app.route("/start-quiz/<code>")
+def start_quiz(code):
+
+    conn = get_db()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    UPDATE quizzes
+
+    SET is_started=TRUE
+
+    WHERE quiz_code=%s
+
+    """, (code,))
+
+    conn.commit()
+
+    cursor.close()
+
+    conn.close()
+
+    return jsonify({
+        "success": True
+    })
+
+# ================= STOP QUIZ =================
+
+@app.route("/stop-quiz/<code>")
+def stop_quiz(code):
+
+    conn = get_db()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    UPDATE quizzes
+
+    SET is_started=FALSE
+
+    WHERE quiz_code=%s
+
+    """, (code,))
+
+    conn.commit()
+
+    cursor.close()
+
+    conn.close()
+
+    return jsonify({
+        "success": True
+    })
+
 # ================= UPDATE QUIZ =================
 
 @app.route("/update-quiz", methods=["POST"])
 def update_quiz():
 
+    data = request.get_json()
+
+    code = data.get("code")
+
+    quiz = data.get("quiz")
+
+    questions = json.dumps(
+        quiz["questions"]
+    )
+
+    conn = get_db()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    UPDATE quizzes
+
+    SET
+
+    title=%s,
+    description=%s,
+    questions=%s,
+    duration=%s,
+    negative=%s,
+    negativeMarks=%s
+
+    WHERE quiz_code=%s
+
+    """, (
+
+        quiz["title"],
+        quiz["description"],
+        questions,
+        quiz["duration"],
+        quiz["negative"],
+        quiz["negativeMarks"],
+        code
+
+    ))
+
+    conn.commit()
+
+    cursor.close()
+
+    conn.close()
+
+    return jsonify({
+        "success": True
+    })
+
+# ================= DELETE QUIZ =================
+
+@app.route("/delete-quiz", methods=["POST"])
+def delete_quiz():
+
+    data = request.get_json()
+
+    code = data.get("code")
+
+    conn = get_db()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    DELETE FROM quizzes
+
+    WHERE quiz_code=%s
+
+    """, (code,))
+
+    conn.commit()
+
+    cursor.close()
+
+    conn.close()
+
+    return jsonify({
+        "success": True
+    })
+
+# ================= CHECK RESULT =================
+
+@app.route("/check-result")
+def check_result():
+
+    code = request.args.get("code")
+
+    roll = request.args.get("roll")
+
+    conn = get_db()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+
+    SELECT *
+
+    FROM results
+
+    WHERE quiz_code=%s
+
+    AND roll_no=%s
+
+    """, (
+
+        code,
+
+        roll
+
+    ))
+
+    result = cursor.fetchone()
+
+    cursor.close()
+
+    conn.close()
+
+    return jsonify({
+        "exists": True if result else False
+    })
+
+# ================= SAVE RESULT =================
+
+@app.route("/save-result", methods=["POST"])
+def save_result():
+
     try:
 
         data = request.get_json()
-
-        code = data.get("code")
-
-        quiz = data.get("quiz")
 
         conn = get_db()
 
@@ -519,39 +693,37 @@ def update_quiz():
 
         cursor.execute("""
 
-        UPDATE quizzes
+        INSERT INTO results (
 
-        SET
+            quiz_code,
 
-            title=%s,
+            student_name,
 
-            description=%s,
+            roll_no,
 
-            questions=%s,
+            department,
 
-            duration=%s,
+            marks,
 
-            negative=%s,
+            total_marks
 
-            negativeMarks=%s
+        )
 
-        WHERE quiz_code=%s
+        VALUES (%s,%s,%s,%s,%s,%s)
 
         """, (
 
-            quiz["title"],
+            data["code"],
 
-            quiz["description"],
+            data["name"],
 
-            json.dumps(quiz["questions"]),
+            data["roll"],
 
-            quiz["duration"],
+            data["department"],
 
-            quiz["negative"],
+            data["marks"],
 
-            quiz["negativeMarks"],
-
-            code
+            data["total"]
 
         ))
 
@@ -567,138 +739,54 @@ def update_quiz():
 
     except Exception as e:
 
-        print("UPDATE ERROR:", e)
+        print(e)
 
         return jsonify({
             "success": False
         })
 
-# ================= START QUIZ =================
+# ================= RESULT PAGE =================
 
-@app.route("/start-quiz", methods=["POST"])
-def start_quiz():
+@app.route("/result")
+def result_page():
 
-    try:
+    if "user" not in session:
 
-        data = request.get_json()
+        return redirect("/auth")
 
-        code = data.get("code")
+    code = request.args.get("code")
 
-        conn = get_db()
+    conn = get_db()
 
-        cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
-        cursor.execute("""
+    cursor.execute("""
 
-        UPDATE quizzes
+    SELECT *
 
-        SET is_started=TRUE
+    FROM results
 
-        WHERE quiz_code=%s
+    WHERE quiz_code=%s
 
-        """, (code,))
+    ORDER BY marks DESC
 
-        conn.commit()
+    """, (code,))
 
-        cursor.close()
+    students = cursor.fetchall()
 
-        conn.close()
+    cursor.close()
 
-        return jsonify({
-            "success": True
-        })
+    conn.close()
 
-    except Exception as e:
+    return render_template(
 
-        print("START ERROR:", e)
+        "result.html",
 
-        return jsonify({
-            "success": False
-        })
+        students=students,
 
-# ================= STOP QUIZ =================
+        code=code
 
-@app.route("/stop-quiz", methods=["POST"])
-def stop_quiz():
-
-    try:
-
-        data = request.get_json()
-
-        code = data.get("code")
-
-        conn = get_db()
-
-        cursor = conn.cursor()
-
-        cursor.execute("""
-
-        UPDATE quizzes
-
-        SET is_started=FALSE
-
-        WHERE quiz_code=%s
-
-        """, (code,))
-
-        conn.commit()
-
-        cursor.close()
-
-        conn.close()
-
-        return jsonify({
-            "success": True
-        })
-
-    except Exception as e:
-
-        print("STOP ERROR:", e)
-
-        return jsonify({
-            "success": False
-        })
-
-# ================= DELETE QUIZ =================
-
-@app.route("/delete-quiz", methods=["POST"])
-def delete_quiz():
-
-    try:
-
-        data = request.get_json()
-
-        code = data.get("code")
-
-        conn = get_db()
-
-        cursor = conn.cursor()
-
-        cursor.execute("""
-
-        DELETE FROM quizzes
-
-        WHERE quiz_code=%s
-
-        """, (code,))
-
-        conn.commit()
-
-        cursor.close()
-
-        conn.close()
-
-        return jsonify({
-            "success": True
-        })
-
-    except Exception as e:
-
-        print("DELETE ERROR:", e)
-
-        return jsonify({
-            "success": False
-        })
+    )
 
 # ================= PLAY QUIZ =================
 
@@ -712,6 +800,109 @@ def play_quiz():
         "play_quiz.html",
 
         code=code
+
+    )
+
+# ================= QUIZ DETAIL =================
+
+@app.route("/quiz_detail")
+def quiz_detail():
+
+    if "user" not in session:
+
+        return redirect("/auth")
+
+    code = request.args.get("code")
+
+    conn = get_db()
+
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+
+    SELECT *
+
+    FROM quizzes
+
+    WHERE quiz_code=%s
+
+    """, (code,))
+
+    quiz = cursor.fetchone()
+
+    cursor.close()
+
+    conn.close()
+
+    if not quiz:
+
+        return "Quiz Not Found"
+
+    try:
+
+        if isinstance(quiz["questions"], str):
+
+            quiz["questions"] = json.loads(
+                quiz["questions"]
+            )
+
+    except Exception as e:
+
+        print(e)
+
+        quiz["questions"] = []
+
+    return render_template(
+
+        "quiz_detail.html",
+
+        quiz=quiz
+
+    )
+
+# ================= PROFILE =================
+
+@app.route("/profile")
+def profile():
+
+    if "user" not in session:
+
+        return redirect("/auth")
+
+    email = session["email"]
+
+    conn = get_db()
+
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT * FROM users
+        WHERE email=%s
+    """, (email,))
+
+    user = cursor.fetchone()
+
+    cursor.execute("""
+        SELECT COUNT(*) as total
+        FROM quizzes
+        WHERE user_email=%s
+    """, (email,))
+
+    quiz_count = cursor.fetchone()["total"]
+
+    cursor.close()
+
+    conn.close()
+
+    return render_template(
+
+        "profile.html",
+
+        name=user["name"],
+
+        email=user["email"],
+
+        quiz_count=quiz_count
 
     )
 
