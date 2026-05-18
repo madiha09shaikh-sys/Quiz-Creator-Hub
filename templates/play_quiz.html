@@ -1,6 +1,7 @@
-```html
+................................
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -29,8 +30,6 @@ min-height:100vh;
 overflow-x:hidden;
 }
 
-/* NAV */
-
 nav{
 padding:15px 25px;
 display:flex;
@@ -46,15 +45,11 @@ font-weight:600;
 color:#a855f7;
 }
 
-/* CONTAINER */
-
 .container{
 max-width:950px;
 margin:25px auto;
 padding:15px;
 }
-
-/* JOIN */
 
 .popup{
 position:fixed;
@@ -96,10 +91,6 @@ color:white;
 font-size:15px;
 }
 
-.popup-box input::placeholder{
-color:#ccc;
-}
-
 .popup-box button{
 width:100%;
 padding:15px;
@@ -113,8 +104,6 @@ font-weight:600;
 cursor:pointer;
 }
 
-/* WAITING */
-
 .waiting{
 display:none;
 min-height:80vh;
@@ -124,24 +113,7 @@ align-items:center;
 flex-direction:column;
 text-align:center;
 padding:40px 20px;
-animation:fadeIn 0.5s ease;
 }
-
-@keyframes fadeIn{
-
-from{
-opacity:0;
-transform:translateY(20px);
-}
-
-to{
-opacity:1;
-transform:translateY(0);
-}
-
-}
-
-/* QUIZ */
 
 .quiz-box{
 display:none;
@@ -233,8 +205,6 @@ background:#22c55e;
 background:#ef4444;
 }
 
-/* COMPLETE PAGE */
-
 .complete-page{
 position:fixed;
 top:0;
@@ -255,19 +225,12 @@ padding:45px;
 border-radius:30px;
 text-align:center;
 backdrop-filter:blur(15px);
-box-shadow:0 0 35px rgba(168,85,247,0.6);
 }
 
 .complete-card h1{
 font-size:52px;
 color:#22c55e;
 margin-bottom:15px;
-}
-
-.complete-card p{
-font-size:18px;
-color:#ddd;
-margin-top:12px;
 }
 
 .home-btn{
@@ -324,9 +287,7 @@ id="quizCodeInput"
 placeholder="Enter Quiz Code">
 
 <button onclick="joinQuiz()">
-
 Enter Exam
-
 </button>
 
 </div>
@@ -340,120 +301,13 @@ Enter Exam
 <div class="waiting"
 id="waitingBox">
 
-<h1 style="
-font-size:20px;
-font-weight:700;
-margin-bottom:12px;
-">
-⏳ Waiting For Teacher
+<h1 style="font-size:20px;margin-bottom:15px;">
+⏳ Waiting For Teacher To Start Exam
 </h1>
 
-<p style="
-font-size:14px;
-color:#d1d5db;
-line-height:1.8;
-margin-bottom:40px;
-">
-Exam will start when teacher clicks
-<b style="color:#a855f7;">
-Start Exam
-</b>
+<p style="color:#ccc;">
+Exam will automatically start for all students
 </p>
-
-<!-- INSTRUCTIONS BOX -->
-
-<div style="
-width:100%;
-max-width:760px;
-background:rgba(255,255,255,0.08);
-padding:40px;
-border-radius:28px;
-text-align:left;
-backdrop-filter:blur(15px);
-box-shadow:0 0 35px rgba(168,85,247,0.35);
-border:1px solid rgba(255,255,255,0.08);
-">
-
-<h2 style="
-text-align:center;
-font-size:16px;
-margin-bottom:28px;
-color:#a855f7;
-font-weight:700;
-">
-📌 Exam Instructions
-</h2>
-
-<div style="
-display:flex;
-flex-direction:column;
-gap:18px;
-">
-
-<p style="
-font-size:12px;
-line-height:1.9;
-color:#f3f4f6;
-">
-✅ Do not switch tabs during exam
-</p>
-
-<p style="
-font-size:12px;
-line-height:1.9;
-color:#f3f4f6;
-">
-✅ Do not minimize browser window
-</p>
-
-<p style="
-font-size:12px;
-line-height:1.9;
-color:#f3f4f6;
-">
-✅ Right click & copy are blocked
-</p>
-
-<p style="
-font-size:12px;
-line-height:1.9;
-color:#ff4d4d;
-font-weight:700;
-">
-⚠ If you go outside the exam screen 3 times,
-your exam will automatically end
-</p>
-
-<p style="
-font-size:12px;
-line-height:1.9;
-color:#f3f4f6;
-">
-⚠ After exam ends, answers cannot be changed
-</p>
-
-</div>
-
-<div style="
-margin-top:30px;
-padding:18px;
-border-radius:18px;
-background:rgba(34,197,94,0.12);
-text-align:center;
-">
-
-<p style="
-font-size:20px;
-font-weight:700;
-color:#22c55e;
-letter-spacing:1px;
-">
-🚀 Best Of Luck For Your Exam
-</p>
-
-</div>
-
-</div>
 
 </div>
 
@@ -526,27 +380,18 @@ Finish Exam
 <script>
 
 let code = "";
+
 let quiz = null;
 
 let current = 0;
+
 let answers = [];
 
 let timeLeft = 0;
 
 let started = false;
-let examEnded = false;
-
-let warningCount = 0;
 
 let timerInterval = null;
-
-/* SOUND */
-
-const warningSound = new Audio(
-"https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3"
-);
-
-warningSound.volume = 1;
 
 /* JOIN */
 
@@ -584,6 +429,8 @@ document.getElementById("waitingBox").style.display =
 
 loadQuiz();
 
+setInterval(checkQuizStarted,2000);
+
 }
 
 /* LOAD QUIZ */
@@ -616,7 +463,265 @@ timeLeft = quiz.duration * 60;
 
 console.log(err);
 
-alert("Server Error");
+});
+
+}
+
+/* CHECK START */
+
+function checkQuizStarted(){
+
+fetch("/get-quiz?code=" + code)
+
+.then(res=>res.json())
+
+.then(data=>{
+
+if(data.success){
+
+quiz = data.quiz;
+
+if(quiz.is_started && !started){
+
+started = true;
+
+document.getElementById("waitingBox").style.display =
+"none";
+
+document.getElementById("quizBox").style.display =
+"block";
+
+document.getElementById("title").innerText =
+quiz.title;
+
+document.getElementById("studentInfo").innerHTML =
+
+sessionStorage.getItem("name") +
+
+" | " +
+
+sessionStorage.getItem("roll") +
+
+" | " +
+
+sessionStorage.getItem("dept");
+
+loadQuestion();
+
+startTimer();
+
+}
+
+}
+
+})
+
+.catch(err=>{
+
+console.log(err);
+
+});
+
+}
+
+/* LOAD QUESTION */
+
+function loadQuestion(){
+
+let q = quiz.questions[current];
+
+document.getElementById("progress").innerText =
+
+"Question " +
+
+(current + 1) +
+
+" of " +
+
+quiz.questions.length;
+
+document.getElementById("question").innerText =
+q.q;
+
+let optionsHTML = "";
+
+q.options.forEach((opt,index)=>{
+
+optionsHTML += `
+
+<div class="option
+${answers[current] == index ? 'selected' : ''}"
+
+onclick="selectOption(${index})">
+
+${opt}
+
+</div>
+
+`;
+
+});
+
+document.getElementById("options").innerHTML =
+optionsHTML;
+
+}
+
+/* SELECT */
+
+function selectOption(index){
+
+answers[current] = index;
+
+loadQuestion();
+
+}
+
+/* NEXT */
+
+function nextQuestion(){
+
+if(current < quiz.questions.length - 1){
+
+current++;
+
+loadQuestion();
+
+}
+
+}
+
+/* PREVIOUS */
+
+function previousQuestion(){
+
+if(current > 0){
+
+current--;
+
+loadQuestion();
+
+}
+
+}
+
+/* TIMER */
+
+function startTimer(){
+
+timerInterval = setInterval(()=>{
+
+timeLeft--;
+
+let mins = Math.floor(timeLeft / 60);
+
+let secs = timeLeft % 60;
+
+document.getElementById("timer").innerText =
+
+String(mins).padStart(2,'0') +
+
+":" +
+
+String(secs).padStart(2,'0');
+
+if(timeLeft <= 0){
+
+finishQuiz();
+
+}
+
+},1000);
+
+}
+
+/* FINISH */
+
+function finishQuiz(){
+
+clearInterval(timerInterval);
+
+let marks = 0;
+
+quiz.questions.forEach((q,index)=>{
+
+if(answers[index] == q.correct){
+
+marks++;
+
+}
+
+});
+
+fetch("/save-result",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+code:quiz.quiz_code,
+
+name:sessionStorage.getItem("name"),
+
+roll:sessionStorage.getItem("roll"),
+
+department:sessionStorage.getItem("dept"),
+
+marks:marks,
+
+total:quiz.questions.length
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+document.body.innerHTML = `
+
+<div class="complete-page">
+
+<div class="complete-card">
+
+<h1>
+✅
+</h1>
+
+<h2>
+Exam Completed
+</h2>
+
+<p style="margin-top:15px;">
+
+You scored ${marks} /
+${quiz.questions.length}
+
+</p>
+
+<button class="home-btn"
+onclick="location.reload()">
+
+Done
+
+</button>
+
+</div>
+
+</div>
+
+`;
+
+})
+
+.catch(err=>{
+
+console.log(err);
 
 });
 
@@ -626,4 +731,3 @@ alert("Server Error");
 
 </body>
 </html>
-
