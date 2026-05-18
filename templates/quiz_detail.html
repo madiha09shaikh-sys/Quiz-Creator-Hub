@@ -50,12 +50,14 @@ color:#a855f7;
 border:none;
 background:#a855f7;
 color:white;
-padding:10px 18px;
+padding:9px 15px;
 border-radius:10px;
 cursor:pointer;
-font-size:14px;
+font-size:13px;
 font-weight:600;
 }
+
+/* MAIN */
 
 .container{
 width:92%;
@@ -74,6 +76,8 @@ backdrop-filter:blur(12px);
 overflow:hidden;
 }
 
+/* TITLE */
+
 .quiz-title{
 font-size:32px;
 font-weight:600;
@@ -87,6 +91,8 @@ font-size:14px;
 line-height:1.7;
 word-break:break-word;
 }
+
+/* STATS */
 
 .stats{
 display:grid;
@@ -108,32 +114,35 @@ font-size:15px;
 
 .stat-box p{
 margin-top:8px;
-font-size:24px;
+font-size:22px;
 color:#a855f7;
 font-weight:600;
 word-break:break-word;
 }
 
+/* BUTTONS */
+
 .action-buttons{
-display:flex;
+display:grid;
+grid-template-columns:repeat(2,1fr);
 gap:10px;
-flex-wrap:wrap;
 margin-top:22px;
 }
 
 .btn{
 border:none;
-padding:12px 18px;
-border-radius:12px;
+padding:10px 12px;
+border-radius:10px;
 cursor:pointer;
 color:white;
-font-size:14px;
+font-size:13px;
 font-weight:600;
 transition:0.3s;
+width:100%;
 }
 
 .btn:hover{
-transform:scale(1.03);
+transform:scale(1.02);
 }
 
 .start-btn{
@@ -160,8 +169,21 @@ background:#ef4444;
 .copy-btn{
 background:#8b5cf6;
 margin-top:10px;
-width:100%;
 }
+
+.result-btn{
+width:100%;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#f59e0b;
+color:white;
+font-size:14px;
+cursor:pointer;
+font-weight:600;
+}
+
+/* LINKS */
 
 .link-box{
 margin-top:25px;
@@ -179,6 +201,8 @@ font-size:13px;
 margin-top:10px;
 }
 
+/* QUESTIONS */
+
 .questions-section{
 margin-top:28px;
 }
@@ -194,6 +218,7 @@ overflow:hidden;
 .question-box h4{
 line-height:1.6;
 word-break:break-word;
+font-size:15px;
 }
 
 .option{
@@ -208,6 +233,8 @@ word-break:break-word;
 .correct{
 background:#16a34a;
 }
+
+/* ANALYTICS */
 
 .analytics-box{
 background:rgba(255,255,255,0.05);
@@ -225,17 +252,7 @@ color:#22c55e !important;
 color:#ef4444 !important;
 }
 
-.result-btn{
-width:100%;
-padding:14px;
-border:none;
-border-radius:12px;
-background:#f59e0b;
-color:white;
-font-size:15px;
-cursor:pointer;
-font-weight:600;
-}
+/* EDIT */
 
 .edit-input{
 width:100%;
@@ -249,7 +266,7 @@ color:white;
 font-size:14px;
 }
 
-/* MOBILE RESPONSIVE */
+/* TABLET */
 
 @media(max-width:900px){
 
@@ -263,19 +280,21 @@ order:-1;
 
 }
 
+/* MOBILE */
+
 @media(max-width:700px){
 
 nav{
-padding:14px;
+padding:12px 14px;
 }
 
 .logo{
-font-size:20px;
+font-size:19px;
 }
 
 .home-btn{
-padding:8px 14px;
-font-size:12px;
+padding:8px 12px;
+font-size:11px;
 }
 
 .container{
@@ -286,7 +305,7 @@ gap:14px;
 
 .left,
 .right{
-padding:15px;
+padding:14px;
 border-radius:16px;
 }
 
@@ -317,20 +336,24 @@ font-size:18px;
 }
 
 .action-buttons{
-display:grid;
 grid-template-columns:repeat(2,1fr);
 gap:8px;
 }
 
 .btn{
-padding:10px 8px;
-font-size:12px;
-border-radius:10px;
+padding:8px 6px;
+font-size:11px;
+border-radius:8px;
+}
+
+.copy-btn{
+font-size:11px;
+padding:9px;
 }
 
 .result-btn{
-font-size:13px;
-padding:12px;
+font-size:12px;
+padding:10px;
 }
 
 .question-box{
@@ -347,11 +370,6 @@ padding:9px;
 }
 
 .link-input{
-font-size:12px;
-padding:10px;
-}
-
-.copy-btn{
 font-size:12px;
 padding:10px;
 }
@@ -375,15 +393,18 @@ padding:10px;
 
 }
 
+/* EXTRA SMALL */
+
 @media(max-width:420px){
 
 .action-buttons{
 grid-template-columns:1fr 1fr;
+gap:6px;
 }
 
 .btn{
-font-size:11px;
-padding:9px 5px;
+padding:7px 4px;
+font-size:10px;
 }
 
 .quiz-title{
@@ -391,7 +412,7 @@ font-size:20px;
 }
 
 .logo{
-font-size:18px;
+font-size:17px;
 }
 
 }
@@ -718,7 +739,7 @@ alert("Error loading quiz");
 
 }
 
-/* RENDER QUESTIONS */
+/* QUESTIONS */
 
 function renderQuestions(){
 
@@ -776,7 +797,7 @@ function editQuiz(){
 
 document.getElementById(
 "saveBtn"
-).style.display = "inline-block";
+).style.display = "block";
 
 quizData.questions.forEach((q,index)=>{
 
@@ -915,7 +936,7 @@ alert("Quiz Code Copied");
 
 }
 
-/* START EXAM */
+/* START */
 
 function startQuiz(){
 
@@ -934,27 +955,15 @@ document.getElementById("statusText").classList.remove("stopped");
 
 document.getElementById("statusText").classList.add("live");
 
-alert("✅ Exam Started For All Students");
-
-}else{
-
-alert("Failed");
+alert("✅ Exam Started");
 
 }
-
-})
-
-.catch(err=>{
-
-console.log(err);
-
-alert("Server Error");
 
 });
 
 }
 
-/* STOP EXAM */
+/* STOP */
 
 function stopQuiz(){
 
@@ -972,12 +981,6 @@ document.getElementById("statusText").classList.remove("live");
 document.getElementById("statusText").classList.add("stopped");
 
 alert("⏹ Exam Stopped");
-
-})
-
-.catch(err=>{
-
-console.log(err);
 
 });
 
@@ -1017,12 +1020,6 @@ window.location.href =
 "/home";
 
 }
-
-})
-
-.catch(err=>{
-
-console.log(err);
 
 });
 
