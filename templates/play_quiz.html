@@ -10,7 +10,7 @@ content="width=device-width, initial-scale=1.0">
 
 <title>Play Quiz</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
 rel="stylesheet">
 
 <style>
@@ -40,7 +40,7 @@ backdrop-filter:blur(10px);
 
 .logo{
 font-size:28px;
-font-weight:600;
+font-weight:700;
 color:#a855f7;
 }
 
@@ -49,6 +49,8 @@ max-width:950px;
 margin:25px auto;
 padding:15px;
 }
+
+/* POPUP */
 
 .popup{
 position:fixed;
@@ -107,6 +109,8 @@ font-weight:600;
 cursor:pointer;
 }
 
+/* WAITING */
+
 .waiting{
 display:none;
 min-height:80vh;
@@ -117,6 +121,8 @@ flex-direction:column;
 text-align:center;
 padding:40px 20px;
 }
+
+/* QUIZ */
 
 .quiz-box{
 display:none;
@@ -136,7 +142,7 @@ margin-bottom:25px;
 
 .quiz-title{
 font-size:30px;
-font-weight:600;
+font-weight:700;
 }
 
 .timer{
@@ -157,6 +163,7 @@ font-size:16px;
 font-size:25px;
 line-height:1.6;
 margin-bottom:20px;
+font-weight:600;
 }
 
 .option{
@@ -208,6 +215,34 @@ background:#22c55e;
 background:#ef4444;
 }
 
+/* WARNING */
+
+.warning-box{
+position:fixed;
+top:20px;
+right:20px;
+background:#ef4444;
+padding:18px 22px;
+border-radius:16px;
+font-size:15px;
+font-weight:600;
+z-index:999999;
+box-shadow:0 0 25px rgba(239,68,68,0.6);
+animation:shake 0.4s;
+}
+
+@keyframes shake{
+
+0%{transform:translateX(0);}
+25%{transform:translateX(-6px);}
+50%{transform:translateX(6px);}
+75%{transform:translateX(-6px);}
+100%{transform:translateX(0);}
+
+}
+
+/* COMPLETE */
+
 .complete-page{
 position:fixed;
 top:0;
@@ -219,40 +254,52 @@ justify-content:center;
 align-items:center;
 background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
 z-index:99999;
+padding:20px;
 }
 
 .complete-card{
 width:520px;
 background:rgba(255,255,255,0.08);
 padding:45px;
-border-radius:30px;
+border-radius:35px;
 text-align:center;
-backdrop-filter:blur(15px);
+backdrop-filter:blur(18px);
 box-shadow:0 0 35px rgba(168,85,247,0.6);
+border:1px solid rgba(255,255,255,0.1);
 }
 
-.complete-card h1{
-font-size:52px;
-color:#22c55e;
+.complete-icon{
+font-size:90px;
 margin-bottom:15px;
 }
 
-.complete-card p{
-font-size:18px;
-color:#ddd;
-margin-top:12px;
+.complete-card h1{
+font-size:38px;
+margin-bottom:10px;
 }
 
-.home-btn{
+.complete-card p{
+font-size:16px;
+color:#ddd;
+line-height:1.8;
+margin-top:10px;
+}
+
+.finish-btn{
 margin-top:35px;
-padding:15px 30px;
+padding:16px 30px;
 border:none;
 border-radius:16px;
 background:linear-gradient(135deg,#a855f7,#6d28d9);
 color:white;
-font-size:18px;
-font-weight:600;
+font-size:17px;
+font-weight:700;
 cursor:pointer;
+width:100%;
+}
+
+.finish-btn:hover{
+opacity:0.9;
 }
 
 </style>
@@ -268,6 +315,8 @@ cursor:pointer;
 </div>
 
 </nav>
+
+<!-- JOIN -->
 
 <div class="popup"
 id="popup">
@@ -304,22 +353,22 @@ Enter Exam
 
 <div class="container">
 
+<!-- WAITING -->
+
 <div class="waiting"
 id="waitingBox">
 
 <h1 style="
-font-size:20px;
-font-weight:700;
-margin-bottom:12px;
+font-size:28px;
+margin-bottom:15px;
 ">
-⏳ Waiting For Teacher To Start Exam
+⏳ Waiting For Teacher
 </h1>
 
 <p style="
-font-size:14px;
-color:#d1d5db;
+font-size:16px;
+color:#ddd;
 line-height:1.8;
-margin-bottom:40px;
 ">
 Exam will start automatically when teacher clicks
 <b style="color:#a855f7;">
@@ -328,6 +377,8 @@ Start Exam
 </p>
 
 </div>
+
+<!-- QUIZ -->
 
 <div class="quiz-box"
 id="quizBox">
@@ -368,23 +419,17 @@ id="question">
 
 <button class="btn prev"
 onclick="previousQuestion()">
-
 ⬅ Previous
-
 </button>
 
 <button class="btn next"
 onclick="nextQuestion()">
-
 Next ➡
-
 </button>
 
 <button class="btn finish"
 onclick="finishQuiz()">
-
 Finish Exam
-
 </button>
 
 </div>
@@ -407,7 +452,17 @@ let examStarted = false;
 let timerInterval = null;
 let checkInterval = null;
 
-/* JOIN QUIZ */
+let warningCount = 0;
+
+/* WARNING SOUND */
+
+const warningSound = new Audio(
+"https://www.soundjay.com/buttons/sounds/beep-07.mp3"
+);
+
+warningSound.volume = 1;
+
+/* JOIN */
 
 function joinQuiz(){
 
@@ -481,8 +536,6 @@ answers = new Array(
 quiz.questions.length
 ).fill(null);
 
-/* IMPORTANT FIX */
-
 if(quiz.is_started){
 
 startExam();
@@ -498,13 +551,12 @@ waitForStart();
 .catch(err=>{
 
 console.log(err);
-alert("Server Error");
 
 });
 
 }
 
-/* WAIT FOR TEACHER */
+/* WAIT */
 
 function waitForStart(){
 
@@ -527,12 +579,6 @@ startExam();
 }
 
 }
-
-})
-
-.catch(err=>{
-
-console.log(err);
 
 });
 
@@ -557,6 +603,8 @@ document.getElementById("quizBox").style.display =
 renderQuestion();
 
 startTimer();
+
+enableWarnings();
 
 }
 
@@ -594,7 +642,7 @@ finishQuiz();
 
 }
 
-/* RENDER QUESTION */
+/* RENDER */
 
 function renderQuestion(){
 
@@ -638,7 +686,7 @@ optionsHTML;
 
 }
 
-/* SELECT OPTION */
+/* SELECT */
 
 function selectOption(index){
 
@@ -671,6 +719,82 @@ if(current > 0){
 current--;
 
 renderQuestion();
+
+}
+
+}
+
+/* WARNINGS */
+
+function enableWarnings(){
+
+document.addEventListener("visibilitychange",()=>{
+
+if(document.hidden){
+
+showWarning();
+
+}
+
+});
+
+window.addEventListener("blur",()=>{
+
+showWarning();
+
+});
+
+document.addEventListener("contextmenu",(e)=>{
+
+e.preventDefault();
+
+showWarning();
+
+});
+
+document.addEventListener("copy",(e)=>{
+
+e.preventDefault();
+
+showWarning();
+
+});
+
+}
+
+/* SHOW WARNING */
+
+function showWarning(){
+
+warningCount++;
+
+warningSound.play();
+
+let div =
+document.createElement("div");
+
+div.className = "warning-box";
+
+div.innerHTML =
+
+"⚠ WARNING "
++
+warningCount +
+"/3 <br><br> Do not leave exam screen";
+
+document.body.appendChild(div);
+
+setTimeout(()=>{
+
+div.remove();
+
+},3000);
+
+if(warningCount >= 3){
+
+alert("Exam Auto Submitted");
+
+finishQuiz();
 
 }
 
@@ -730,26 +854,30 @@ document.body.innerHTML = `
 
 <div class="complete-card">
 
+<div class="complete-icon">
+🎉
+</div>
+
 <h1>
-✅
+Exam Completed
 </h1>
 
-<h2>
-Exam Finished
-</h2>
-
 <p>
-Your exam submitted successfully
+Your exam has been submitted successfully.
 </p>
 
 <p>
-Marks: ${marks}/${quiz.questions.length}
+Thank you for participating in the test.
 </p>
 
-<button class="home-btn"
-onclick="location.reload()">
+<p>
+You can now safely close this page.
+</p>
 
-Done
+<button class="finish-btn"
+onclick="window.location.href='/'">
+
+🏠 Go To Home
 
 </button>
 
@@ -759,12 +887,6 @@ Done
 
 `;
 
-})
-
-.catch(err=>{
-
-console.log(err);
-
 });
 
 }
@@ -772,4 +894,4 @@ console.log(err);
 </script>
 
 </body>
-</html>********
+</html>
