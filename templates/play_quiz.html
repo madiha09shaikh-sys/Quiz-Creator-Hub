@@ -1,4 +1,3 @@
->>>>>>>>>>>>>>>>>>>>>>>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -30,6 +29,8 @@ min-height:100vh;
 overflow-x:hidden;
 }
 
+/* NAV */
+
 nav{
 padding:15px 25px;
 display:flex;
@@ -45,13 +46,15 @@ font-weight:700;
 color:#a855f7;
 }
 
+/* CONTAINER */
+
 .container{
 max-width:950px;
 margin:25px auto;
 padding:15px;
 }
 
-/* POPUP */
+/* JOIN */
 
 .popup{
 position:fixed;
@@ -64,6 +67,7 @@ display:flex;
 justify-content:center;
 align-items:center;
 z-index:9999;
+padding:20px;
 }
 
 .popup-box{
@@ -121,6 +125,21 @@ align-items:center;
 flex-direction:column;
 text-align:center;
 padding:40px 20px;
+animation:fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn{
+
+from{
+opacity:0;
+transform:translateY(20px);
+}
+
+to{
+opacity:1;
+transform:translateY(0);
+}
+
 }
 
 /* QUIZ */
@@ -143,7 +162,7 @@ margin-bottom:25px;
 
 .quiz-title{
 font-size:30px;
-font-weight:700;
+font-weight:600;
 }
 
 .timer{
@@ -164,7 +183,6 @@ font-size:16px;
 font-size:25px;
 line-height:1.6;
 margin-bottom:20px;
-font-weight:600;
 }
 
 .option{
@@ -216,32 +234,6 @@ background:#22c55e;
 background:#ef4444;
 }
 
-/* WARNING */
-
-.warning-box{
-position:fixed;
-top:20px;
-right:20px;
-background:#ef4444;
-padding:18px 22px;
-border-radius:16px;
-font-size:15px;
-font-weight:600;
-z-index:999999;
-box-shadow:0 0 25px rgba(239,68,68,0.6);
-animation:shake 0.4s;
-}
-
-@keyframes shake{
-
-0%{transform:translateX(0);}
-25%{transform:translateX(-6px);}
-50%{transform:translateX(6px);}
-75%{transform:translateX(-6px);}
-100%{transform:translateX(0);}
-
-}
-
 /* COMPLETE */
 
 .complete-page{
@@ -254,53 +246,71 @@ display:flex;
 justify-content:center;
 align-items:center;
 background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-z-index:99999;
+z-index:999999;
 padding:20px;
 }
 
 .complete-card{
 width:520px;
+max-width:100%;
 background:rgba(255,255,255,0.08);
 padding:45px;
-border-radius:35px;
+border-radius:30px;
 text-align:center;
-backdrop-filter:blur(18px);
+backdrop-filter:blur(15px);
 box-shadow:0 0 35px rgba(168,85,247,0.6);
-border:1px solid rgba(255,255,255,0.1);
-}
-
-.complete-icon{
-font-size:90px;
-margin-bottom:15px;
 }
 
 .complete-card h1{
-font-size:38px;
-margin-bottom:10px;
+font-size:52px;
+color:#22c55e;
+margin-bottom:15px;
 }
 
 .complete-card p{
-font-size:16px;
+font-size:18px;
 color:#ddd;
+margin-top:12px;
 line-height:1.8;
-margin-top:10px;
 }
 
-.finish-btn{
+.home-btn{
 margin-top:35px;
-padding:16px 30px;
+padding:15px 30px;
 border:none;
 border-radius:16px;
 background:linear-gradient(135deg,#a855f7,#6d28d9);
 color:white;
-font-size:17px;
-font-weight:700;
+font-size:18px;
+font-weight:600;
 cursor:pointer;
-width:100%;
 }
 
-.finish-btn:hover{
-opacity:0.9;
+/* MOBILE */
+
+@media(max-width:700px){
+
+.quiz-title{
+font-size:22px;
+}
+
+.question{
+font-size:20px;
+}
+
+.option{
+font-size:14px;
+padding:15px;
+}
+
+.timer{
+font-size:16px;
+}
+
+.complete-card h1{
+font-size:38px;
+}
+
 }
 
 </style>
@@ -360,7 +370,8 @@ Enter Exam
 id="waitingBox">
 
 <h1 style="
-font-size:28px;
+font-size:26px;
+font-weight:700;
 margin-bottom:15px;
 ">
 ⏳ Waiting For Teacher
@@ -368,10 +379,11 @@ margin-bottom:15px;
 
 <p style="
 font-size:16px;
-color:#ddd;
+color:#d1d5db;
 line-height:1.8;
+margin-bottom:40px;
 ">
-Exam will start automatically when teacher clicks
+Exam will start when teacher clicks
 <b style="color:#a855f7;">
 Start Exam
 </b>
@@ -442,20 +454,26 @@ Finish Exam
 <script>
 
 let code = "";
+
 let quiz = null;
 
 let current = 0;
+
 let answers = [];
 
 let timeLeft = 0;
 
-let examStarted = false;
-let timerInterval = null;
-let checkInterval = null;
+let started = false;
+
+let examEnded = false;
 
 let warningCount = 0;
 
-/* WARNING SOUND */
+let timerInterval = null;
+
+let pollingInterval = null;
+
+/* SOUND */
 
 const warningSound = new Audio(
 "https://www.soundjay.com/buttons/sounds/beep-07.mp3"
@@ -482,12 +500,15 @@ document.getElementById("quizCodeInput").value.trim();
 if(!name || !roll || !dept || !code){
 
 alert("Fill all fields");
+
 return;
 
 }
 
 sessionStorage.setItem("name",name);
+
 sessionStorage.setItem("roll",roll);
+
 sessionStorage.setItem("dept",dept);
 
 document.getElementById("popup").style.display =
@@ -513,7 +534,9 @@ fetch("/get-quiz?code=" + code)
 if(!data.success){
 
 alert("Quiz Not Found");
+
 location.reload();
+
 return;
 
 }
@@ -525,27 +548,21 @@ quiz.title;
 
 document.getElementById("studentInfo").innerHTML =
 
-sessionStorage.getItem("name") +
-" | " +
-sessionStorage.getItem("roll") +
-" | " +
-sessionStorage.getItem("dept");
+"👤 " + sessionStorage.getItem("name") +
 
-timeLeft = quiz.duration * 60;
+" | 🎓 " + sessionStorage.getItem("roll");
 
 answers = new Array(
 quiz.questions.length
 ).fill(null);
 
-if(quiz.is_started){
+/* CHECK EVERY SECOND */
 
-startExam();
+pollingInterval = setInterval(()=>{
 
-}else{
+checkQuizStatus();
 
-waitForStart();
-
-}
+},1000);
 
 })
 
@@ -553,15 +570,15 @@ waitForStart();
 
 console.log(err);
 
+alert("Server Error");
+
 });
 
 }
 
-/* WAIT */
+/* CHECK STATUS */
 
-function waitForStart(){
-
-checkInterval = setInterval(()=>{
+function checkQuizStatus(){
 
 fetch("/get-quiz?code=" + code)
 
@@ -569,31 +586,15 @@ fetch("/get-quiz?code=" + code)
 
 .then(data=>{
 
-if(data.success){
+if(!data.success) return;
 
-if(data.quiz.is_started){
+quiz = data.quiz;
 
-clearInterval(checkInterval);
+/* START ONLY WHEN TEACHER STARTS */
 
-startExam();
+if(quiz.is_started && !started){
 
-}
-
-}
-
-});
-
-},2000);
-
-}
-
-/* START EXAM */
-
-function startExam(){
-
-if(examStarted) return;
-
-examStarted = true;
+started = true;
 
 document.getElementById("waitingBox").style.display =
 "none";
@@ -601,11 +602,25 @@ document.getElementById("waitingBox").style.display =
 document.getElementById("quizBox").style.display =
 "block";
 
-renderQuestion();
+/* SAME TIMER FOR EVERY STUDENT */
+
+timeLeft = quiz.duration * 60;
 
 startTimer();
 
-enableWarnings();
+showQuestion();
+
+}
+
+/* STOP EXAM */
+
+if(!quiz.is_started && started && !examEnded){
+
+finishQuiz();
+
+}
+
+});
 
 }
 
@@ -613,9 +628,27 @@ enableWarnings();
 
 function startTimer(){
 
+clearInterval(timerInterval);
+
+updateTimer();
+
 timerInterval = setInterval(()=>{
 
 timeLeft--;
+
+updateTimer();
+
+if(timeLeft <= 0){
+
+finishQuiz();
+
+}
+
+},1000);
+
+}
+
+function updateTimer(){
 
 let min =
 Math.floor(timeLeft / 60);
@@ -626,48 +659,41 @@ timeLeft % 60;
 document.getElementById("timer").innerText =
 
 String(min).padStart(2,"0")
-+
-":"
-+
-String(sec).padStart(2,"0");
 
-if(timeLeft <= 0){
++ ":"
 
-clearInterval(timerInterval);
-
-finishQuiz();
++ String(sec).padStart(2,"0");
 
 }
 
-},1000);
+/* SHOW QUESTION */
 
-}
+function showQuestion(){
 
-/* RENDER */
-
-function renderQuestion(){
-
-let q =
-quiz.questions[current];
+let q = quiz.questions[current];
 
 document.getElementById("progress").innerText =
 
-"Question "
-+
+"Question " +
+
 (current + 1)
+
 +
+
 " of "
+
 +
+
 quiz.questions.length;
 
 document.getElementById("question").innerText =
 q.q;
 
-let optionsHTML = "";
+let optionsHtml = "";
 
 q.options.forEach((opt,index)=>{
 
-optionsHTML += `
+optionsHtml += `
 
 <div class="option
 ${answers[current] == index ? 'selected' : ''}"
@@ -683,7 +709,7 @@ ${opt}
 });
 
 document.getElementById("options").innerHTML =
-optionsHTML;
+optionsHtml;
 
 }
 
@@ -693,7 +719,7 @@ function selectOption(index){
 
 answers[current] = index;
 
-renderQuestion();
+showQuestion();
 
 }
 
@@ -705,7 +731,7 @@ if(current < quiz.questions.length - 1){
 
 current++;
 
-renderQuestion();
+showQuestion();
 
 }
 
@@ -719,51 +745,13 @@ if(current > 0){
 
 current--;
 
-renderQuestion();
+showQuestion();
 
 }
 
 }
 
-/* WARNINGS */
-
-function enableWarnings(){
-
-document.addEventListener("visibilitychange",()=>{
-
-if(document.hidden){
-
-showWarning();
-
-}
-
-});
-
-window.addEventListener("blur",()=>{
-
-showWarning();
-
-});
-
-document.addEventListener("contextmenu",(e)=>{
-
-e.preventDefault();
-
-showWarning();
-
-});
-
-document.addEventListener("copy",(e)=>{
-
-e.preventDefault();
-
-showWarning();
-
-});
-
-}
-
-/* SHOW WARNING */
+/* WARNING SYSTEM */
 
 function showWarning(){
 
@@ -771,29 +759,19 @@ warningCount++;
 
 warningSound.play();
 
-let div =
-document.createElement("div");
+alert(
 
-div.className = "warning-box";
+"⚠ WARNING " +
 
-div.innerHTML =
-
-"⚠ WARNING "
-+
 warningCount +
-"/3 <br><br> Do not leave exam screen";
 
-document.body.appendChild(div);
+"/3\n\nDo not switch tab or minimize screen."
 
-setTimeout(()=>{
-
-div.remove();
-
-},3000);
+);
 
 if(warningCount >= 3){
 
-alert("Exam Auto Submitted");
+alert("❌ Exam Ended Due To Violations");
 
 finishQuiz();
 
@@ -801,23 +779,77 @@ finishQuiz();
 
 }
 
+/* TAB CHANGE */
+
+document.addEventListener("visibilitychange",()=>{
+
+if(started && !examEnded){
+
+if(document.hidden){
+
+showWarning();
+
+}
+
+}
+
+});
+
+/* MOBILE APP SWITCH */
+
+window.addEventListener("blur",()=>{
+
+if(started && !examEnded){
+
+showWarning();
+
+}
+
+});
+
+/* BLOCK RIGHT CLICK */
+
+document.addEventListener("contextmenu",(e)=>{
+
+e.preventDefault();
+
+});
+
+/* BLOCK COPY */
+
+document.addEventListener("copy",(e)=>{
+
+e.preventDefault();
+
+});
+
 /* FINISH */
 
 function finishQuiz(){
 
+if(examEnded) return;
+
+examEnded = true;
+
 clearInterval(timerInterval);
 
-let marks = 0;
+clearInterval(pollingInterval);
+
+/* CALCULATE */
+
+let score = 0;
 
 quiz.questions.forEach((q,index)=>{
 
 if(answers[index] == q.correct){
 
-marks++;
+score++;
 
 }
 
 });
+
+/* SAVE RESULT */
 
 fetch("/save-result",{
 
@@ -837,17 +869,15 @@ roll:sessionStorage.getItem("roll"),
 
 department:sessionStorage.getItem("dept"),
 
-marks:marks,
+marks:score,
 
 total:quiz.questions.length
 
 })
 
-})
+});
 
-.then(res=>res.json())
-
-.then(data=>{
+/* COMPLETE PAGE */
 
 document.body.innerHTML = `
 
@@ -855,30 +885,29 @@ document.body.innerHTML = `
 
 <div class="complete-card">
 
-<div class="complete-icon">
-🎉
-</div>
-
 <h1>
-Exam Completed
+🎉
 </h1>
+
+<h2 style="
+font-size:35px;
+margin-top:10px;
+">
+Exam Completed
+</h2>
 
 <p>
 Your exam has been submitted successfully.
 </p>
 
 <p>
-Thank you for participating in the test.
+Thank you for attending the exam.
 </p>
 
-<p>
-You can now safely close this page.
-</p>
-
-<button class="finish-btn"
+<button class="home-btn"
 onclick="window.location.href='/'">
 
-🏠 Go To Home
+🏠 Go Home
 
 </button>
 
@@ -888,11 +917,10 @@ onclick="window.location.href='/'">
 
 `;
 
-});
-
 }
 
 </script>
 
 </body>
+
 </html>
