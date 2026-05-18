@@ -286,10 +286,10 @@ Please wait...
 
 <div class="stat-box">
 
-<h3>Negative</h3>
+<h3>Status</h3>
 
 <p id="negative">
-No
+NOT STARTED
 </p>
 
 </div>
@@ -411,11 +411,11 @@ Quiz Code
 <div class="analytics-box">
 
 <h3>
-Status
+Exam Status
 </h3>
 
 <p id="statusText"
-class="live">
+class="stopped">
 
 NOT STARTED
 
@@ -495,9 +495,6 @@ quizData.questions.length;
 document.getElementById("duration").innerText =
 quizData.duration + "m";
 
-document.getElementById("negative").innerText =
-quizData.negative ? "Yes" : "No";
-
 document.getElementById("codeText").innerText =
 quizData.quiz_code;
 
@@ -524,6 +521,7 @@ document.getElementById("statusText").innerText =
 "LIVE";
 
 document.getElementById("statusText").classList.remove("stopped");
+
 document.getElementById("statusText").classList.add("live");
 
 }else{
@@ -540,6 +538,7 @@ renderQuestions();
 .catch(err=>{
 
 console.log(err);
+
 alert("Error loading quiz");
 
 });
@@ -636,17 +635,6 @@ value="${opt}">
 
 });
 
-setTimeout(()=>{
-
-let firstInput =
-document.getElementById("question_0");
-
-if(firstInput){
-firstInput.focus();
-}
-
-},200);
-
 }
 
 /* SAVE */
@@ -682,14 +670,6 @@ document.getElementById(
 
 });
 
-localStorage.setItem(
-
-code,
-
-JSON.stringify(quizData)
-
-);
-
 fetch("/update-quiz",{
 
 method:"POST",
@@ -712,15 +692,7 @@ quiz:quizData
 
 .then(data=>{
 
-console.log(data);
-
-})
-
-.catch(err=>{
-
-console.log(err);
-
-});
+alert("✅ Quiz Saved");
 
 renderQuestions();
 
@@ -728,11 +700,19 @@ document.getElementById(
 "saveBtn"
 ).style.display = "none";
 
-alert("✅ Quiz Saved");
+})
+
+.catch(err=>{
+
+console.log(err);
+
+alert("Error");
+
+});
 
 }
 
-/* COPY LINK */
+/* COPY */
 
 function copyLink(){
 
@@ -748,8 +728,6 @@ alert("Quiz Link Copied");
 
 }
 
-/* COPY CODE */
-
 function copyCode(){
 
 navigator.clipboard.writeText(
@@ -764,7 +742,7 @@ alert("Quiz Code Copied");
 
 }
 
-/* START */
+/* START EXAM */
 
 function startQuiz(){
 
@@ -780,13 +758,14 @@ document.getElementById("statusText").innerText =
 "LIVE";
 
 document.getElementById("statusText").classList.remove("stopped");
+
 document.getElementById("statusText").classList.add("live");
 
-alert("✅ Exam Started");
+alert("✅ Exam Started For All Students");
 
 }else{
 
-alert("Failed to start");
+alert("Failed");
 
 }
 
@@ -795,13 +774,14 @@ alert("Failed to start");
 .catch(err=>{
 
 console.log(err);
+
 alert("Server Error");
 
 });
 
 }
 
-/* STOP */
+/* STOP EXAM */
 
 function stopQuiz(){
 
@@ -815,6 +795,7 @@ document.getElementById("statusText").innerText =
 "STOPPED";
 
 document.getElementById("statusText").classList.remove("live");
+
 document.getElementById("statusText").classList.add("stopped");
 
 alert("⏹ Exam Stopped");
@@ -862,10 +843,6 @@ if(data.success){
 window.location.href =
 "/home";
 
-}else{
-
-alert("Delete Failed");
-
 }
 
 })
@@ -878,7 +855,7 @@ console.log(err);
 
 }
 
-/* RESULT */
+/* RESULTS */
 
 function openResults(){
 
