@@ -328,10 +328,32 @@ def join():
 
 # ================= SAVE QUIZ =================
 
-# ================= START QUIZ =================
+@app.route("/save-quiz", methods=["POST"])
+def save_quiz():
 
-@app.route("/start-quiz/<code>")
-def start_quiz(code):
+    if "email" not in session:
+
+        return jsonify({
+            "success": False
+        })
+
+    data = request.get_json()
+
+    code = data.get("code")
+
+    title = data.get("title")
+
+    description = data.get("description")
+
+    questions = json.dumps(
+        data.get("questions")
+    )
+
+    duration = data.get("duration")
+
+    negative = data.get("negative")
+
+    negativeMarks = data.get("negativeMarks")
 
     conn = get_db()
 
@@ -339,23 +361,51 @@ def start_quiz(code):
 
     cursor.execute("""
 
-    UPDATE quizzes
+    INSERT INTO quizzes (
 
-    SET is_started=TRUE
+        user_email,
 
-    WHERE quiz_code=%s
+        quiz_code,
 
-    """, (code,))
+        title,
 
-    conn.commit()
+        description,
 
-    cursor.close()
+        questions,
 
-    conn.close()
+        duration,
 
-    return jsonify({
-        "success": True
-    })
+        negative,
+
+        negativeMarks,
+
+        is_started
+
+    )
+
+    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+
+    """, (
+
+        session["email"],
+
+        code,
+
+        title,
+
+        description,
+
+        questions,
+
+        duration,
+
+        negative,
+
+        negativeMarks,
+
+        False
+
+    ))
 
     conn.commit()
 
@@ -452,12 +502,8 @@ def get_quiz():
 
 # ================= START QUIZ =================
 
-@app.route("/start-quiz", methods=["POST"])
-def start_quiz():
-
-    data = request.get_json()
-
-    code = data.get("code")
+@app.route("/start-quiz/<code>")
+def start_quiz(code):
 
     conn = get_db()
 
@@ -699,6 +745,7 @@ def logout():
     session.clear()
 
     return redirect("/auth")
+
 # ================= QUIZ DETAIL =================
 
 @app.route("/quiz_detail")
@@ -730,13 +777,9 @@ def quiz_detail():
 
     conn.close()
 
-    # QUIZ NOT FOUND
-
     if not quiz:
 
         return "Quiz Not Found"
-
-    # QUESTIONS JSON FIX
 
     try:
 
@@ -759,6 +802,7 @@ def quiz_detail():
         quiz=quiz
 
     )
+
 # ================= PROFILE =================
 
 @app.route("/profile")
@@ -770,32 +814,32 @@ def profile():
     email = session["email"]
 
     conn = get_db()
+
     cursor = conn.cursor(dictionary=True)
 
-    # USER INFO
     cursor.execute("""
         SELECT * FROM users
         WHERE email=%s
     """, (email,))
+
     user = cursor.fetchone()
 
-    # QUIZ COUNT
     cursor.execute("""
         SELECT COUNT(*) as total
         FROM quizzes
         WHERE user_email=%s
     """, (email,))
+
     quiz_count = cursor.fetchone()["total"]
 
-    # RESULT COUNT (attempts)
     cursor.execute("""
         SELECT COUNT(*) as total
         FROM results
         WHERE student_name=%s
     """, (session["user"],))
+
     attempt_count = cursor.fetchone()["total"]
 
-    # CORRECT/MARKS (basic accuracy logic)
     cursor.execute("""
         SELECT SUM(marks) as total_marks,
                SUM(total_marks) as full_marks
@@ -806,23 +850,36 @@ def profile():
     score = cursor.fetchone()
 
     accuracy = 0
+
     if score["full_marks"]:
-        accuracy = round((score["total_marks"] / score["full_marks"]) * 100, 2)
+
+        accuracy = round(
+            (score["total_marks"] / score["full_marks"]) * 100,
+            2
+        )
 
     cursor.close()
+
     conn.close()
 
     return render_template(
+
         "profile.html",
+
         name=user["name"],
+
         email=user["email"],
+
         quiz_count=quiz_count,
+
         attempt_count=attempt_count,
+
         accuracy=accuracy
+
     )
+
 # ================= RUN =================
 
 if __name__ == "__main__":
 
     app.run(debug=True)
-
