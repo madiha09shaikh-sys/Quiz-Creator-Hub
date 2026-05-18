@@ -1,4 +1,6 @@
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -440,8 +442,6 @@ onclick="openResults()">
 
 </button>
 
-
-
 </div>
 
 </div>
@@ -473,6 +473,13 @@ fetch("/get-quiz?code=" + code)
 .then(res=>res.json())
 
 .then(response=>{
+
+if(!response.success){
+
+alert("Quiz not found");
+return;
+
+}
 
 quizData = response.quiz;
 
@@ -511,7 +518,29 @@ link;
 document.getElementById("quizCode").value =
 quizData.quiz_code;
 
+if(quizData.is_started){
+
+document.getElementById("statusText").innerText =
+"LIVE";
+
+document.getElementById("statusText").classList.remove("stopped");
+document.getElementById("statusText").classList.add("live");
+
+}else{
+
+document.getElementById("statusText").innerText =
+"NOT STARTED";
+
+}
+
 renderQuestions();
+
+})
+
+.catch(err=>{
+
+console.log(err);
+alert("Error loading quiz");
 
 });
 
@@ -607,13 +636,14 @@ value="${opt}">
 
 });
 
-/* AUTO FOCUS */
-
 setTimeout(()=>{
 
-document.getElementById(
-"question_0"
-).focus();
+let firstInput =
+document.getElementById("question_0");
+
+if(firstInput){
+firstInput.focus();
+}
 
 },200);
 
@@ -652,8 +682,6 @@ document.getElementById(
 
 });
 
-/* SAVE LOCAL */
-
 localStorage.setItem(
 
 code,
@@ -661,8 +689,6 @@ code,
 JSON.stringify(quizData)
 
 );
-
-/* OPTIONAL SERVER SAVE */
 
 fetch("/update-quiz",{
 
@@ -682,9 +708,19 @@ quiz:quizData
 
 })
 
-.catch(()=>{});
+.then(res=>res.json())
 
-/* RELOAD */
+.then(data=>{
+
+console.log(data);
+
+})
+
+.catch(err=>{
+
+console.log(err);
+
+});
 
 renderQuestions();
 
@@ -732,19 +768,7 @@ alert("Quiz Code Copied");
 
 function startQuiz(){
 
-fetch("/start-quiz",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-code:code
-})
-
-})
+fetch("/start-quiz/" + code)
 
 .then(res=>res.json())
 
@@ -752,9 +776,26 @@ code:code
 
 if(data.success){
 
+document.getElementById("statusText").innerText =
+"LIVE";
+
+document.getElementById("statusText").classList.remove("stopped");
+document.getElementById("statusText").classList.add("live");
+
 alert("✅ Exam Started");
 
+}else{
+
+alert("Failed to start");
+
 }
+
+})
+
+.catch(err=>{
+
+console.log(err);
+alert("Server Error");
 
 });
 
@@ -764,17 +805,25 @@ alert("✅ Exam Started");
 
 function stopQuiz(){
 
-fetch("/stop-quiz",{
+fetch("/stop-quiz/" + code)
 
-method:"POST",
+.then(res=>res.json())
 
-headers:{
-"Content-Type":"application/json"
-},
+.then(data=>{
 
-body:JSON.stringify({
-code:code
+document.getElementById("statusText").innerText =
+"STOPPED";
+
+document.getElementById("statusText").classList.remove("live");
+document.getElementById("statusText").classList.add("stopped");
+
+alert("⏹ Exam Stopped");
+
 })
+
+.catch(err=>{
+
+console.log(err);
 
 });
 
@@ -783,6 +832,12 @@ code:code
 /* DELETE */
 
 function deleteQuiz(){
+
+let ok = confirm(
+"Delete this quiz?"
+);
+
+if(!ok) return;
 
 fetch("/delete-quiz",{
 
@@ -807,7 +862,17 @@ if(data.success){
 window.location.href =
 "/home";
 
+}else{
+
+alert("Delete Failed");
+
 }
+
+})
+
+.catch(err=>{
+
+console.log(err);
 
 });
 
@@ -823,18 +888,6 @@ window.location.href =
 }
 
 </script>
-<script>
 
-/* VIEW RESULTS */
-
-function openResults(){
-
-window.location.href =
-"/result?code=" + code;
-
-}
-
-</script>
 </body>
-</html>
-```
+</html>............................................................................................................................................
