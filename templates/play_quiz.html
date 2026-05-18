@@ -46,8 +46,6 @@ margin:25px auto;
 padding:15px;
 }
 
-/* JOIN */
-
 .popup{
 position:fixed;
 top:0;
@@ -163,6 +161,7 @@ border:2px solid #c084fc;
 display:flex;
 gap:12px;
 margin-top:30px;
+flex-wrap:wrap;
 }
 
 .btn{
@@ -223,6 +222,14 @@ font-size:17px;
 cursor:pointer;
 }
 
+.warning-box{
+margin-top:15px;
+background:#ef4444;
+padding:10px;
+border-radius:10px;
+font-weight:bold;
+}
+
 </style>
 
 </head>
@@ -236,8 +243,6 @@ cursor:pointer;
 </div>
 
 </nav>
-
-<!-- JOIN -->
 
 <div class="popup"
 id="popup">
@@ -314,8 +319,16 @@ id="timer">
 
 </div>
 
+<div class="warning-box"
+id="warningText">
+
+Warnings :
+0 / 3
+
+</div>
+
 <div id="progress"
-style="margin-bottom:20px;color:#ccc;">
+style="margin-bottom:20px;color:#ccc;margin-top:20px;">
 </div>
 
 <div class="question"
@@ -368,6 +381,10 @@ let examEnded = false;
 
 let timerInterval = null;
 
+let warningCount = 0;
+
+let examStartedByTeacher = false;
+
 /* JOIN */
 
 async function joinQuiz(){
@@ -391,8 +408,6 @@ alert("Fill all fields");
 return;
 
 }
-
-/* CHECK STUDENT ALREADY GAVE EXAM */
 
 try{
 
@@ -482,9 +497,15 @@ await fetch("/get-quiz?code=" + code);
 let data =
 await response.json();
 
-if(data.success && data.quiz.is_started){
+if(data.success){
+
+if(data.quiz.is_started === true){
+
+examStartedByTeacher = true;
 
 startQuiz();
+
+}
 
 }
 
@@ -502,6 +523,10 @@ setInterval(checkQuizStart,2000);
 /* START QUIZ */
 
 function startQuiz(){
+
+if(!examStartedByTeacher){
+return;
+}
 
 started = true;
 
@@ -527,6 +552,22 @@ document.getElementById("studentInfo").innerHTML =
 showQuestion();
 
 startTimer();
+
+startFullscreen();
+
+}
+
+/* FULLSCREEN */
+
+function startFullscreen(){
+
+let el = document.documentElement;
+
+if(el.requestFullscreen){
+
+el.requestFullscreen();
+
+}
 
 }
 
@@ -668,6 +709,127 @@ endExam("✅ EXAM COMPLETED");
 
 }
 
+/* PLAY ALARM */
+
+function playAlarm(){
+
+let alarm =
+new Audio(
+"https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg"
+);
+
+alarm.play();
+
+}
+
+/* WARNINGS */
+
+function addWarning(message){
+
+if(examEnded) return;
+
+warningCount++;
+
+document.getElementById("warningText").innerText =
+
+`Warnings : ${warningCount} / 3`;
+
+playAlarm();
+
+alert(message);
+
+if(warningCount >= 3){
+
+endExam("❌ EXAM TERMINATED");
+
+}
+
+}
+
+/* TAB SWITCH */
+
+document.addEventListener("visibilitychange",()=>{
+
+if(document.hidden && started){
+
+addWarning(
+"⚠ Tab changing detected!"
+);
+
+}
+
+});
+
+/* APP SWITCH */
+
+window.addEventListener("blur",()=>{
+
+if(started){
+
+addWarning(
+"⚠ App switching detected!"
+);
+
+}
+
+});
+
+/* FULLSCREEN EXIT */
+
+document.addEventListener("fullscreenchange",()=>{
+
+if(!document.fullscreenElement && started){
+
+addWarning(
+"⚠ Fullscreen exited!"
+);
+
+}
+
+});
+
+/* COPY BLOCK */
+
+document.addEventListener("copy",(e)=>{
+
+e.preventDefault();
+
+addWarning(
+"⚠ Copying not allowed!"
+);
+
+});
+
+/* RIGHT CLICK BLOCK */
+
+document.addEventListener("contextmenu",(e)=>{
+
+e.preventDefault();
+
+});
+
+/* KEY BLOCK */
+
+document.addEventListener("keydown",(e)=>{
+
+if(
+e.key === "F12" ||
+(e.ctrlKey && e.key === "u") ||
+(e.ctrlKey && e.key === "c") ||
+(e.ctrlKey && e.key === "v") ||
+(e.ctrlKey && e.key === "x")
+){
+
+e.preventDefault();
+
+addWarning(
+"⚠ Restricted key detected!"
+);
+
+}
+
+});
+
 /* END EXAM */
 
 async function endExam(message){
@@ -677,8 +839,6 @@ if(examEnded) return;
 examEnded = true;
 
 clearInterval(timerInterval);
-
-/* SCORE */
 
 let finalScore = 0;
 
@@ -691,8 +851,6 @@ finalScore++;
 }
 
 });
-
-/* SAVE RESULT */
 
 try{
 
@@ -737,8 +895,6 @@ catch(err){
 console.log("SAVE ERROR:",err);
 
 }
-
-/* COMPLETE SCREEN */
 
 document.body.innerHTML = `
 
