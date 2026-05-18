@@ -652,13 +652,15 @@ def check_result():
 
     cursor.execute("""
 
-    SELECT *
+    SELECT id
 
     FROM results
 
     WHERE quiz_code=%s
 
     AND roll_no=%s
+
+    LIMIT 1
 
     """, (
 
@@ -687,9 +689,51 @@ def save_result():
 
         data = request.get_json()
 
+        code = data["code"]
+
+        roll = data["roll"]
+
         conn = get_db()
 
         cursor = conn.cursor()
+
+        # PREVENT SAME STUDENT AGAIN
+
+        cursor.execute("""
+
+        SELECT id
+
+        FROM results
+
+        WHERE quiz_code=%s
+
+        AND roll_no=%s
+
+        LIMIT 1
+
+        """, (
+
+            code,
+
+            roll
+
+        ))
+
+        already = cursor.fetchone()
+
+        if already:
+
+            cursor.close()
+
+            conn.close()
+
+            return jsonify({
+
+                "success": False,
+
+                "message": "Already Attempted"
+
+            })
 
         cursor.execute("""
 
@@ -713,11 +757,11 @@ def save_result():
 
         """, (
 
-            data["code"],
+            code,
 
             data["name"],
 
-            data["roll"],
+            roll,
 
             data["department"],
 
