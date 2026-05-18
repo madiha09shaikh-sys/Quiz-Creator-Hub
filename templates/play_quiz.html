@@ -142,6 +142,34 @@ transform:translateY(0);
 
 }
 
+.instruction-box{
+width:100%;
+max-width:800px;
+background:rgba(255,255,255,0.08);
+padding:35px;
+border-radius:25px;
+backdrop-filter:blur(15px);
+margin-top:30px;
+text-align:left;
+box-shadow:0 0 30px rgba(168,85,247,0.3);
+}
+
+.instruction-box h2{
+text-align:center;
+margin-bottom:25px;
+font-size:28px;
+color:#a855f7;
+}
+
+.instruction{
+background:rgba(255,255,255,0.05);
+padding:16px;
+border-radius:15px;
+margin-top:14px;
+font-size:15px;
+line-height:1.8;
+}
+
 /* QUIZ */
 
 .quiz-box{
@@ -262,7 +290,7 @@ box-shadow:0 0 35px rgba(168,85,247,0.6);
 }
 
 .complete-card h1{
-font-size:52px;
+font-size:60px;
 color:#22c55e;
 margin-bottom:15px;
 }
@@ -286,8 +314,6 @@ font-weight:600;
 cursor:pointer;
 }
 
-/* MOBILE */
-
 @media(max-width:700px){
 
 .quiz-title{
@@ -308,7 +334,7 @@ font-size:16px;
 }
 
 .complete-card h1{
-font-size:38px;
+font-size:42px;
 }
 
 }
@@ -366,16 +392,13 @@ Enter Exam
 
 <!-- WAITING -->
 
-<!-- WAITING -->
-
 <div class="waiting"
 id="waitingBox">
 
 <h1 style="
-font-size:30px;
+font-size:28px;
 font-weight:700;
-margin-bottom:18px;
-text-align:center;
+margin-bottom:15px;
 ">
 ⏳ Waiting For Teacher
 </h1>
@@ -384,9 +407,7 @@ text-align:center;
 font-size:17px;
 color:#d1d5db;
 line-height:1.8;
-margin-bottom:35px;
-text-align:center;
-max-width:700px;
+margin-bottom:10px;
 ">
 Exam will start when teacher clicks
 <b style="color:#a855f7;">
@@ -394,119 +415,38 @@ Start Exam
 </b>
 </p>
 
-<!-- INSTRUCTION BOX -->
+<div class="instruction-box">
 
-<div style="
-width:100%;
-max-width:780px;
-background:rgba(255,255,255,0.08);
-padding:35px;
-border-radius:28px;
-backdrop-filter:blur(18px);
-box-shadow:0 0 35px rgba(168,85,247,0.35);
-border:1px solid rgba(255,255,255,0.08);
-text-align:left;
-">
-
-<h2 style="
-font-size:28px;
-margin-bottom:25px;
-text-align:center;
-color:#a855f7;
-font-weight:700;
-">
-📌 Exam Instructions
+<h2>
+📋 Exam Instructions
 </h2>
 
-<div style="
-display:flex;
-flex-direction:column;
-gap:18px;
-">
-
-<div style="
-background:rgba(255,255,255,0.05);
-padding:16px;
-border-radius:16px;
-font-size:15px;
-line-height:1.8;
-">
+<div class="instruction">
 ✅ Do not switch tabs during exam
 </div>
 
-<div style="
-background:rgba(255,255,255,0.05);
-padding:16px;
-border-radius:16px;
-font-size:15px;
-line-height:1.8;
-">
+<div class="instruction">
 ✅ Do not minimize browser window
 </div>
 
-<div style="
-background:rgba(255,255,255,0.05);
-padding:16px;
-border-radius:16px;
-font-size:15px;
-line-height:1.8;
-">
-✅ Right click & copy are blocked
+<div class="instruction">
+✅ Mobile users should stay on exam screen
 </div>
 
-<div style="
-background:rgba(239,68,68,0.15);
-padding:16px;
-border-radius:16px;
-font-size:15px;
-line-height:1.8;
-font-weight:600;
-color:#ff6b6b;
-">
-⚠ If you leave the exam screen 3 times,
-your exam will automatically end
+<div class="instruction">
+⚠ If you switch app/tab 3 times your exam will auto submit
 </div>
 
-<div style="
-background:rgba(255,255,255,0.05);
-padding:16px;
-border-radius:16px;
-font-size:15px;
-line-height:1.8;
-">
-⚠ Mobile users should not switch apps
-during exam
+<div class="instruction">
+⚠ Right click, copy & inspect are blocked
 </div>
 
-<div style="
-background:rgba(255,255,255,0.05);
-padding:16px;
-border-radius:16px;
-font-size:15px;
-line-height:1.8;
-">
-⚠ Internet disconnection may affect exam
+<div class="instruction">
+⚠ After submitting exam you cannot re-enter again
 </div>
 
-</div>
-
-<div style="
-margin-top:30px;
-padding:22px;
-border-radius:20px;
-background:rgba(34,197,94,0.12);
-text-align:center;
-">
-
-<p style="
-font-size:24px;
-font-weight:700;
-color:#22c55e;
-letter-spacing:1px;
-">
-🚀 Best Of Luck For Your Exam
-</p>
-
+<div class="instruction">
+🚀 All students will get same timer after teacher starts exam
 </div>
 
 </div>
@@ -595,10 +535,12 @@ let timerInterval = null;
 
 let pollingInterval = null;
 
+let lastWarningTime = 0;
+
 /* SOUND */
 
 const warningSound = new Audio(
-"https://www.soundjay.com/buttons/sounds/beep-07.mp3"
+"https://www.soundjay.com/buttons/beep-01a.mp3"
 );
 
 warningSound.volume = 1;
@@ -627,6 +569,22 @@ return;
 
 }
 
+/* CHECK IF ALREADY GIVEN EXAM */
+
+fetch("/check-result?code=" + code + "&roll=" + roll)
+
+.then(res=>res.json())
+
+.then(result=>{
+
+if(result.exists){
+
+alert("❌ You already attended this exam");
+
+return;
+
+}
+
 sessionStorage.setItem("name",name);
 
 sessionStorage.setItem("roll",roll);
@@ -640,6 +598,8 @@ document.getElementById("waitingBox").style.display =
 "flex";
 
 loadQuiz();
+
+});
 
 }
 
@@ -678,7 +638,7 @@ answers = new Array(
 quiz.questions.length
 ).fill(null);
 
-/* CHECK EVERY SECOND */
+/* CHECK STATUS EVERY SECOND */
 
 pollingInterval = setInterval(()=>{
 
@@ -712,7 +672,7 @@ if(!data.success) return;
 
 quiz = data.quiz;
 
-/* START ONLY WHEN TEACHER STARTS */
+/* START ONLY AFTER TEACHER START */
 
 if(quiz.is_started && !started){
 
@@ -724,8 +684,6 @@ document.getElementById("waitingBox").style.display =
 document.getElementById("quizBox").style.display =
 "block";
 
-/* SAME TIMER FOR EVERY STUDENT */
-
 timeLeft = quiz.duration * 60;
 
 startTimer();
@@ -734,7 +692,7 @@ showQuestion();
 
 }
 
-/* STOP EXAM */
+/* STOP */
 
 if(!quiz.is_started && started && !examEnded){
 
@@ -873,9 +831,21 @@ showQuestion();
 
 }
 
-/* WARNING SYSTEM */
+/* WARNING */
 
 function showWarning(){
+
+let now = Date.now();
+
+/* PREVENT DOUBLE WARNING */
+
+if(now - lastWarningTime < 2000){
+
+return;
+
+}
+
+lastWarningTime = now;
 
 warningCount++;
 
@@ -893,7 +863,7 @@ warningCount +
 
 if(warningCount >= 3){
 
-alert("❌ Exam Ended Due To Violations");
+alert("❌ Exam Auto Submitted");
 
 finishQuiz();
 
@@ -945,6 +915,30 @@ e.preventDefault();
 
 });
 
+/* BLOCK KEYS */
+
+document.addEventListener("keydown",(e)=>{
+
+if(e.key === "F12"){
+
+e.preventDefault();
+
+}
+
+if(e.ctrlKey && e.key.toLowerCase() === "u"){
+
+e.preventDefault();
+
+}
+
+if(e.ctrlKey && e.key.toLowerCase() === "c"){
+
+e.preventDefault();
+
+}
+
+});
+
 /* FINISH */
 
 function finishQuiz(){
@@ -956,8 +950,6 @@ examEnded = true;
 clearInterval(timerInterval);
 
 clearInterval(pollingInterval);
-
-/* CALCULATE */
 
 let score = 0;
 
@@ -1012,14 +1004,18 @@ document.body.innerHTML = `
 </h1>
 
 <h2 style="
-font-size:35px;
+font-size:38px;
 margin-top:10px;
 ">
-Exam Completed
+Exam Submitted
 </h2>
 
 <p>
 Your exam has been submitted successfully.
+</p>
+
+<p>
+You cannot attend this exam again.
 </p>
 
 <p>
