@@ -9,7 +9,7 @@ content="width=device-width, initial-scale=1.0">
 
 <title>Create Quiz</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
 rel="stylesheet">
 
 <style>
@@ -27,40 +27,42 @@ body{
     min-height:100vh;
 }
 
-/* NAV */
+/* NAVBAR */
 
 nav{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:20px;
+    padding:18px 20px;
     flex-wrap:wrap;
-    gap:10px;
+    gap:12px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(10px);
 }
 
 .logo{
     color:#a855f7;
     font-size:24px;
-    font-weight:600;
+    font-weight:700;
 }
 
-nav button{
+.home-btn{
     border:none;
     background:#a855f7;
     color:white;
-    padding:10px 18px;
+    padding:10px 16px;
     border-radius:10px;
     cursor:pointer;
     font-weight:600;
     font-size:14px;
 }
 
-/* CONTAINER */
+/* MAIN */
 
 .container{
+    width:95%;
     max-width:760px;
     margin:20px auto;
-    padding:15px;
 }
 
 /* SECTION */
@@ -68,13 +70,13 @@ nav button{
 .section{
     background:rgba(255,255,255,0.06);
     padding:18px;
-    border-radius:16px;
+    border-radius:18px;
     margin-top:16px;
     backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.06);
 }
 
-/* MODE BUTTONS */
+/* MODE */
 
 .mode-buttons{
     display:flex;
@@ -83,14 +85,14 @@ nav button{
 
 .mode-buttons button{
     flex:1;
-    padding:12px;
     border:none;
+    padding:12px;
     border-radius:12px;
     background:rgba(255,255,255,0.08);
     color:white;
     cursor:pointer;
     font-weight:600;
-    transition:0.3s;
+    font-size:14px;
 }
 
 .active{
@@ -106,10 +108,10 @@ textarea{
     padding:13px;
     margin-top:12px;
     border:none;
+    outline:none;
     border-radius:12px;
     background:rgba(255,255,255,0.08);
     color:white;
-    outline:none;
     font-size:14px;
 }
 
@@ -140,34 +142,51 @@ select option{
 
 .btn{
     width:100%;
-    padding:13px;
     border:none;
+    padding:13px;
     border-radius:12px;
     background:linear-gradient(135deg,#a855f7,#6d28d9);
     color:white;
-    font-weight:600;
     cursor:pointer;
+    font-weight:600;
     margin-top:14px;
     font-size:15px;
     transition:0.3s;
 }
 
 .btn:hover{
-    transform:scale(1.02);
+    transform:scale(1.01);
 }
 
-/* QUESTION BOX */
+/* QUESTIONS */
 
 .question-box{
     background:rgba(255,255,255,0.07);
-    padding:15px;
+    padding:16px;
     border-radius:14px;
-    margin-top:12px;
+    margin-top:14px;
     line-height:1.8;
-    font-size:14px;
 }
 
-/* AI LOADING */
+.question-title{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:10px;
+}
+
+.answer{
+    color:#22c55e;
+    font-weight:600;
+}
+
+.option-item{
+    background:rgba(255,255,255,0.06);
+    padding:10px;
+    border-radius:10px;
+    margin-top:8px;
+}
+
+/* AI STATUS */
 
 .ai-loading{
     margin-top:15px;
@@ -188,10 +207,6 @@ select option{
         font-size:20px;
     }
 
-    .container{
-        padding:12px;
-    }
-
     .mode-buttons{
         flex-direction:column;
     }
@@ -199,6 +214,16 @@ select option{
     .option{
         flex-direction:column;
         align-items:flex-start;
+    }
+
+    .home-btn{
+        padding:8px 14px;
+        font-size:13px;
+    }
+
+    .btn{
+        font-size:14px;
+        padding:12px;
     }
 
 }
@@ -216,13 +241,16 @@ select option{
 🧠 Quiz Pro
 </div>
 
-<button onclick="window.location.href='/home'">
+<button class="home-btn"
+onclick="window.location.href='/home'">
+
 ⬅ Home
+
 </button>
 
 </nav>
 
-<!-- CONTAINER -->
+<!-- MAIN -->
 
 <div class="container">
 
@@ -321,7 +349,7 @@ class="section"
 style="display:none;">
 
 <input id="topic"
-placeholder="Enter Topic (Example: Python, Java, Math)">
+placeholder="Enter Any Topic (Example: Python Inheritance)">
 
 <input id="qcount"
 type="number"
@@ -441,20 +469,20 @@ let questions = [];
 
 function toggleNegative(){
 
-    let check =
-    document.getElementById(
-    "negativeCheck"
-    ).checked;
+let check =
+document.getElementById(
+"negativeCheck"
+).checked;
 
-    document.getElementById(
-    "negativeValue"
-    ).style.display =
+document.getElementById(
+"negativeValue"
+).style.display =
 
-    check
-    ?
-    "block"
-    :
-    "none";
+check
+?
+"block"
+:
+"none";
 
 }
 
@@ -462,45 +490,45 @@ function toggleNegative(){
 
 function showManual(){
 
-    document.getElementById(
-    "manual"
-    ).style.display = "block";
+document.getElementById(
+"manual"
+).style.display = "block";
 
-    document.getElementById(
-    "ai"
-    ).style.display = "none";
+document.getElementById(
+"ai"
+).style.display = "none";
 
-    manualBtn.classList.add(
-    "active"
-    );
+manualBtn.classList.add(
+"active"
+);
 
-    aiBtn.classList.remove(
-    "active"
-    );
+aiBtn.classList.remove(
+"active"
+);
 
 }
 
 function showAI(){
 
-    document.getElementById(
-    "manual"
-    ).style.display = "none";
+document.getElementById(
+"manual"
+).style.display = "none";
 
-    document.getElementById(
-    "ai"
-    ).style.display = "block";
+document.getElementById(
+"ai"
+).style.display = "block";
 
-    aiBtn.classList.add(
-    "active"
-    );
+aiBtn.classList.add(
+"active"
+);
 
-    manualBtn.classList.remove(
-    "active"
-    );
+manualBtn.classList.remove(
+"active"
+);
 
 }
 
-/* ADD MANUAL QUESTION */
+/* MANUAL QUESTION */
 
 function addQuestion(){
 
@@ -512,11 +540,8 @@ document.getElementById(
 let options = [
 
 opt1.value.trim(),
-
 opt2.value.trim(),
-
 opt3.value.trim(),
-
 opt4.value.trim()
 
 ];
@@ -554,13 +579,9 @@ renderQuestions();
 /* RESET */
 
 question.value = "";
-
 opt1.value = "";
-
 opt2.value = "";
-
 opt3.value = "";
-
 opt4.value = "";
 
 document.querySelectorAll(
@@ -569,7 +590,7 @@ document.querySelectorAll(
 
 }
 
-/* AI QUESTIONS */
+/* AI GENERATOR */
 
 function generateAI(){
 
@@ -603,48 +624,125 @@ document.getElementById(
 ).innerText =
 "🤖 AI Generating Questions...";
 
-/* CLEAR */
+/* CLEAR OLD */
 
 setTimeout(()=>{
 
 for(let i=1;i<=count;i++){
 
-let aiQuestions = [
+let q = "";
+let options = [];
+let correct = 0;
 
-`What is ${topic}?`,
-`Who invented ${topic}?`,
-`Why is ${topic} important?`,
-`Which language is used in ${topic}?`,
-`What are advantages of ${topic}?`,
-`What is the main concept of ${topic}?`,
-`Which company uses ${topic}?`,
-`What is the future of ${topic}?`
+/* PYTHON */
 
+if(topic.toLowerCase().includes("python")){
+
+q = `What is Python used for?`;
+
+options = [
+"Web Development",
+"AI & ML",
+"Automation",
+"All of these"
 ];
 
-let randomQuestion =
+correct = 3;
 
-aiQuestions[
-Math.floor(
-Math.random()*aiQuestions.length
-)
+}
+
+/* INHERITANCE */
+
+else if(topic.toLowerCase().includes("inheritance")){
+
+q = `What is inheritance in OOP?`;
+
+options = [
+"Copying file",
+"Taking properties from another class",
+"Deleting class",
+"Creating database"
 ];
+
+correct = 1;
+
+}
+
+/* HTML */
+
+else if(topic.toLowerCase().includes("html")){
+
+q = `Which tag is used to create link in HTML?`;
+
+options = [
+"<img>",
+"<a>",
+"<p>",
+"<table>"
+];
+
+correct = 1;
+
+}
+
+/* JAVA */
+
+else if(topic.toLowerCase().includes("java")){
+
+q = `Java is which type of language?`;
+
+options = [
+"Programming Language",
+"Database",
+"Operating System",
+"Browser"
+];
+
+correct = 0;
+
+}
+
+/* MATH */
+
+else if(topic.toLowerCase().includes("math")){
+
+q = `What is value of 5 + 5 ?`;
+
+options = [
+"8",
+"10",
+"12",
+"15"
+];
+
+correct = 1;
+
+}
+
+/* DEFAULT */
+
+else{
+
+q = `What is ${topic}?`;
+
+options = [
+`${topic} Concept`,
+`${topic} Programming`,
+`${topic} Technology`,
+`All of these`
+];
+
+correct = 3;
+
+}
 
 questions.push({
 
-q:randomQuestion,
+q:q,
 
-options:[
+options:options,
 
-`${topic} Option A`,
-`${topic} Option B`,
-`${topic} Option C`,
-`${topic} Option D`
-
-],
-
-correct:
-Math.floor(Math.random()*4)
+correct:correct
 
 });
 
@@ -678,21 +776,21 @@ box.innerHTML += `
 
 <div class="question-box">
 
-<b>
-Q${i+1}:
-</b>
+<div class="question-title">
 
-${q.q}
+Q${i+1}. ${q.q}
 
-<br><br>
+</div>
 
 ${q.options.map((o,index)=>`
 
-${index==q.correct?"✅":""}
+<div class="option-item">
+
+${index==q.correct ? "✅" : "⭕"}
 
 ${o}
 
-<br>
+</div>
 
 `).join("")}
 
