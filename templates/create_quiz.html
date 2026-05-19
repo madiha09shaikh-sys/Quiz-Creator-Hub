@@ -80,6 +80,12 @@ padding:12px;
 border-radius:12px;
 margin-top:10px;
 }
+
+.ai-loading{
+margin-top:10px;
+color:#c084fc;
+font-weight:600;
+}
 </style>
 </head>
 
@@ -103,6 +109,7 @@ margin-top:10px;
 
 <!-- MANUAL -->
 <div id="manual" class="section">
+
 <input id="question" placeholder="Enter Question">
 
 <div class="option"><input id="opt1" placeholder="Option 1"><input type="radio" name="correct" value="0"></div>
@@ -128,7 +135,7 @@ margin-top:10px;
 
 <button class="btn" onclick="generateAI()">🤖 Generate AI</button>
 
-<div id="aiLoading"></div>
+<div id="aiLoading" class="ai-loading"></div>
 </div>
 
 <!-- QUESTIONS -->
@@ -142,7 +149,7 @@ margin-top:10px;
 <script>
 
 let questions = [];
-let usedQuestions = new Set(); // ✅ FIX: no repeat
+let usedQuestions = new Set(); // ✅ no duplicate questions
 
 function showManual(){
 manual.style.display="block";
@@ -158,7 +165,7 @@ aiBtn.classList.add("active");
 manualBtn.classList.remove("active");
 }
 
-/* ADD MANUAL */
+/* MANUAL */
 function addQuestion(){
 
 let q = question.value.trim();
@@ -179,88 +186,88 @@ correct:parseInt(correct.value)
 render();
 }
 
-/* ✅ REAL AI FIX (NO REPEAT QUESTIONS) */
-function generateAI(){
+/* =========================
+🔥 REAL AI FIX (BACKEND CALL)
+========================= */
+
+async function generateAI(){
 
 let topic = document.getElementById("topic").value.trim();
 let count = parseInt(document.getElementById("qcount").value);
+let level = document.getElementById("level").value;
 
-if(!topic || !count){
-alert("Fill fields");
+if(!topic || !count || !level){
+alert("Fill all fields");
 return;
 }
 
-document.getElementById("aiLoading").innerText="Generating...";
+document.getElementById("aiLoading").innerText = "🤖 Generating AI Questions...";
 
-let pool = generatePool(topic); // all questions
+try{
 
-let available = pool.filter(q => !usedQuestions.has(q.q));
+let res = await fetch("/generate-ai-quiz",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+topic,
+count,
+level
+})
+});
 
-for(let i=0;i<count;i++){
+let data = await res.json();
 
-if(available.length === 0) break;
+if(data.success){
 
-let index = Math.floor(Math.random()*available.length);
-let selected = available.splice(index,1)[0];
-
-usedQuestions.add(selected.q);
-
-questions.push(selected);
+// 🔥 remove duplicates
+data.questions.forEach(q=>{
+if(!usedQuestions.has(q.q)){
+usedQuestions.add(q.q);
+questions.push(q);
 }
+});
 
 render();
-document.getElementById("aiLoading").innerText="Done ✅";
+
+document.getElementById("aiLoading").innerText =
+"✅ AI Questions Generated";
+
+}else{
+document.getElementById("aiLoading").innerText =
+"❌ AI Failed";
 }
 
-/* ✅ CLEAN QUESTION POOL */
-function generatePool(topic){
-
-topic = topic.toLowerCase();
-
-if(topic.includes("python")){
-return [
-{q:"What is Python?",options:["Snake","Language","Game","OS"],correct:1},
-{q:"Python creator?",options:["Guido","James","Elon","Bill"],correct:0},
-{q:"Python used for?",options:["AI","Web","Data","All"],correct:3}
-];
+}catch(err){
+console.log(err);
+document.getElementById("aiLoading").innerText =
+"❌ Server Error";
 }
-
-if(topic.includes("html")){
-return [
-{q:"HTML full form?",options:["Hyper Text Markup Language","Home Tool","None","Text"],correct:0},
-{q:"Tag for link?",options:["<a>","<p>","<img>","<div>"],correct:0}
-];
-}
-
-if(topic.includes("java")){
-return [
-{q:"Java is?",options:["Language","OS","Browser","DB"],correct:0},
-{q:"Java extension?",options:[".java",".py",".html",".js"],correct:0}
-];
-}
-
-return [
-{q:`What is ${topic}?`,options:["Concept","Tech","Subject","All"],correct:3},
-{q:`Why ${topic} important?`,options:["Study","Job","Skill","All"],correct:3}
-];
 
 }
 
 /* RENDER */
 function render(){
-let box=document.getElementById("questions");
-box.innerHTML="";
+
+let box = document.getElementById("questions");
+box.innerHTML = "";
 
 questions.forEach((q,i)=>{
+
 box.innerHTML += `
 <div class="question-box">
 <b>Q${i+1}:</b> ${q.q}<br><br>
+
 ${q.options.map((o,idx)=>`
 ${idx==q.correct?"✅":""} ${o}<br>
 `).join("")}
+
 </div>
 `;
+
 });
+
 }
 
 </script>
