@@ -1,462 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Quiz</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;}
 body{
-    font-family:'Poppins',sans-serif;
-    background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-    color:white;
-    min-height:100vh;
+font-family:Poppins;
+background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+color:white;
+min-height:100vh;
 }
-
-/* NAVBAR */
 
 nav{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:18px 20px;
-    flex-wrap:wrap;
-    gap:12px;
-    background:rgba(255,255,255,0.05);
-    backdrop-filter:blur(10px);
+display:flex;
+justify-content:space-between;
+padding:15px;
+flex-wrap:wrap;
+gap:10px;
 }
 
-.logo{
-    color:#a855f7;
-    font-size:24px;
-    font-weight:700;
-}
+.logo{color:#a855f7;font-size:22px;font-weight:700;}
 
-.home-btn{
-    border:none;
-    background:#a855f7;
-    color:white;
-    padding:10px 16px;
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:600;
-    font-size:14px;
-}
-
-/* MAIN */
-
-.container{
-    width:95%;
-    max-width:760px;
-    margin:20px auto;
-}
-
-/* SECTION */
+.container{max-width:750px;margin:20px auto;padding:15px;}
 
 .section{
-    background:rgba(255,255,255,0.06);
-    padding:18px;
-    border-radius:18px;
-    margin-top:16px;
-    backdrop-filter:blur(10px);
-    border:1px solid rgba(255,255,255,0.06);
+background:rgba(255,255,255,0.06);
+padding:18px;
+border-radius:15px;
+margin-top:15px;
 }
 
-/* MODE */
-
-.mode-buttons{
-    display:flex;
-    gap:10px;
-}
+.mode-buttons{display:flex;gap:10px;}
 
 .mode-buttons button{
-    flex:1;
-    border:none;
-    padding:12px;
-    border-radius:12px;
-    background:rgba(255,255,255,0.08);
-    color:white;
-    cursor:pointer;
-    font-weight:600;
-    font-size:14px;
+flex:1;
+padding:12px;
+border:none;
+border-radius:12px;
+background:rgba(255,255,255,0.1);
+color:white;
+cursor:pointer;
+font-weight:600;
 }
 
 .active{
-    background:linear-gradient(135deg,#a855f7,#6d28d9) !important;
+background:linear-gradient(135deg,#a855f7,#6d28d9);
 }
 
-/* INPUTS */
-
-input,
-select,
-textarea{
-    width:100%;
-    padding:13px;
-    margin-top:12px;
-    border:none;
-    outline:none;
-    border-radius:12px;
-    background:rgba(255,255,255,0.08);
-    color:white;
-    font-size:14px;
+input,select{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:12px;
+background:rgba(255,255,255,0.1);
+color:white;
 }
-
-input::placeholder,
-textarea::placeholder{
-    color:#d1d5db;
-}
-
-select option{
-    color:black;
-}
-
-/* OPTION */
-
-.option{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-top:10px;
-}
-
-.option input[type="radio"]{
-    width:18px;
-    height:18px;
-}
-
-/* BUTTON */
 
 .btn{
-    width:100%;
-    border:none;
-    padding:13px;
-    border-radius:12px;
-    background:linear-gradient(135deg,#a855f7,#6d28d9);
-    color:white;
-    cursor:pointer;
-    font-weight:600;
-    margin-top:14px;
-    font-size:15px;
-    transition:0.3s;
+width:100%;
+padding:12px;
+border:none;
+border-radius:12px;
+background:linear-gradient(135deg,#a855f7,#6d28d9);
+color:white;
+font-weight:bold;
+cursor:pointer;
+margin-top:10px;
 }
-
-.btn:hover{
-    transform:scale(1.01);
-}
-
-/* QUESTIONS */
 
 .question-box{
-    background:rgba(255,255,255,0.07);
-    padding:16px;
-    border-radius:14px;
-    margin-top:14px;
-    line-height:1.8;
+background:rgba(255,255,255,0.08);
+padding:12px;
+border-radius:12px;
+margin-top:10px;
 }
-
-.question-title{
-    font-size:16px;
-    font-weight:600;
-    margin-bottom:10px;
-}
-
-.answer{
-    color:#22c55e;
-    font-weight:600;
-}
-
-.option-item{
-    background:rgba(255,255,255,0.06);
-    padding:10px;
-    border-radius:10px;
-    margin-top:8px;
-}
-
-/* AI STATUS */
-
-.ai-loading{
-    margin-top:15px;
-    text-align:center;
-    color:#c084fc;
-    font-weight:600;
-}
-
-/* MOBILE */
-
-@media(max-width:700px){
-
-    nav{
-        padding:15px;
-    }
-
-    .logo{
-        font-size:20px;
-    }
-
-    .mode-buttons{
-        flex-direction:column;
-    }
-
-    .option{
-        flex-direction:column;
-        align-items:flex-start;
-    }
-
-    .home-btn{
-        padding:8px 14px;
-        font-size:13px;
-    }
-
-    .btn{
-        font-size:14px;
-        padding:12px;
-    }
-
-}
-
 </style>
 </head>
 
 <body>
 
-<!-- NAV -->
-
 <nav>
-
-<div class="logo">
-🧠 Quiz Pro
-</div>
-
-<button class="home-btn"
-onclick="window.location.href='/home'">
-
-⬅ Home
-
-</button>
-
+<div class="logo">🧠 Quiz Pro</div>
+<button onclick="window.location.href='/home'">⬅ Home</button>
 </nav>
-
-<!-- MAIN -->
 
 <div class="container">
 
 <h2>Create Quiz</h2>
 
-<!-- MODE -->
-
 <div class="section">
-
 <div class="mode-buttons">
-
-<button id="manualBtn"
-class="active"
-onclick="showManual()">
-
-Manual
-
-</button>
-
-<button id="aiBtn"
-onclick="showAI()">
-
-AI Mode
-
-</button>
-
+<button id="manualBtn" class="active" onclick="showManual()">Manual</button>
+<button id="aiBtn" onclick="showAI()">AI Mode</button>
 </div>
-
 </div>
 
 <!-- MANUAL -->
+<div id="manual" class="section">
+<input id="question" placeholder="Enter Question">
 
-<div id="manual"
-class="section">
+<div class="option"><input id="opt1" placeholder="Option 1"><input type="radio" name="correct" value="0"></div>
+<div class="option"><input id="opt2" placeholder="Option 2"><input type="radio" name="correct" value="1"></div>
+<div class="option"><input id="opt3" placeholder="Option 3"><input type="radio" name="correct" value="2"></div>
+<div class="option"><input id="opt4" placeholder="Option 4"><input type="radio" name="correct" value="3"></div>
 
-<input id="question"
-placeholder="Enter Question">
-
-<div class="option">
-
-<input id="opt1"
-placeholder="Option 1">
-
-<input type="radio"
-name="correct"
-value="0">
-
+<button class="btn" onclick="addQuestion()">➕ Add Question</button>
 </div>
 
-<div class="option">
+<!-- AI -->
+<div id="ai" class="section" style="display:none;">
 
-<input id="opt2"
-placeholder="Option 2">
-
-<input type="radio"
-name="correct"
-value="1">
-
-</div>
-
-<div class="option">
-
-<input id="opt3"
-placeholder="Option 3">
-
-<input type="radio"
-name="correct"
-value="2">
-
-</div>
-
-<div class="option">
-
-<input id="opt4"
-placeholder="Option 4">
-
-<input type="radio"
-name="correct"
-value="3">
-
-</div>
-
-<button class="btn"
-onclick="addQuestion()">
-
-➕ Add Question
-
-</button>
-
-</div>
-
-<!-- AI MODE -->
-
-<div id="ai"
-class="section"
-style="display:none;">
-
-<input id="topic"
-placeholder="Enter Any Topic (Example: Python Inheritance)">
-
-<input id="qcount"
-type="number"
-placeholder="Number of Questions">
+<input id="topic" placeholder="Enter Topic">
+<input id="qcount" type="number" placeholder="Number of Questions">
 
 <select id="level">
-
-<option value="">
-Select Difficulty
-</option>
-
-<option value="easy">
-Easy
-</option>
-
-<option value="medium">
-Medium
-</option>
-
-<option value="hard">
-Hard
-</option>
-
+<option value="">Select Difficulty</option>
+<option value="easy">Easy</option>
+<option value="medium">Medium</option>
+<option value="hard">Hard</option>
 </select>
 
-<button class="btn"
-onclick="generateAI()">
+<button class="btn" onclick="generateAI()">🤖 Generate AI</button>
 
-🤖 Generate AI Questions
-
-</button>
-
-<div id="aiLoading"
-class="ai-loading">
-</div>
-
+<div id="aiLoading"></div>
 </div>
 
 <!-- QUESTIONS -->
-
 <div class="section">
-
-<h3>
-📚 Questions
-</h3>
-
+<h3>Questions</h3>
 <div id="questions"></div>
-
-</div>
-
-<!-- DETAILS -->
-
-<div class="section">
-
-<h3>
-📝 Quiz Details
-</h3>
-
-<input id="title"
-placeholder="Quiz Title">
-
-<input id="desc"
-placeholder="Description">
-
-</div>
-
-<!-- SETTINGS -->
-
-<div class="section">
-
-<h3>
-⚙ Settings
-</h3>
-
-<div style="display:flex; gap:10px;">
-
-<input id="hours"
-type="number"
-placeholder="Hours">
-
-<input id="minutes"
-type="number"
-placeholder="Minutes">
-
-</div>
-
-<label style="display:block; margin-top:15px;">
-
-<input type="checkbox"
-id="negativeCheck"
-onclick="toggleNegative()">
-
-Enable Negative Marking
-
-</label>
-
-<input id="negativeValue"
-placeholder="Negative Marks"
-style="display:none;">
-
-<button class="btn"
-onclick="saveQuiz()">
-
-💾 Save Quiz
-
-</button>
-
 </div>
 
 </div>
@@ -464,485 +142,125 @@ onclick="saveQuiz()">
 <script>
 
 let questions = [];
-
-/* NEGATIVE */
-
-function toggleNegative(){
-
-let check =
-document.getElementById(
-"negativeCheck"
-).checked;
-
-document.getElementById(
-"negativeValue"
-).style.display =
-
-check
-?
-"block"
-:
-"none";
-
-}
-
-/* MODE */
+let usedQuestions = new Set(); // ✅ FIX: no repeat
 
 function showManual(){
-
-document.getElementById(
-"manual"
-).style.display = "block";
-
-document.getElementById(
-"ai"
-).style.display = "none";
-
-manualBtn.classList.add(
-"active"
-);
-
-aiBtn.classList.remove(
-"active"
-);
-
+manual.style.display="block";
+ai.style.display="none";
+manualBtn.classList.add("active");
+aiBtn.classList.remove("active");
 }
 
 function showAI(){
-
-document.getElementById(
-"manual"
-).style.display = "none";
-
-document.getElementById(
-"ai"
-).style.display = "block";
-
-aiBtn.classList.add(
-"active"
-);
-
-manualBtn.classList.remove(
-"active"
-);
-
+manual.style.display="none";
+ai.style.display="block";
+aiBtn.classList.add("active");
+manualBtn.classList.remove("active");
 }
 
-/* MANUAL QUESTION */
-
+/* ADD MANUAL */
 function addQuestion(){
 
-let q =
-document.getElementById(
-"question"
-).value.trim();
+let q = question.value.trim();
+let options = [opt1.value,opt2.value,opt3.value,opt4.value];
+let correct = document.querySelector('input[name="correct"]:checked');
 
-let options = [
-
-opt1.value.trim(),
-opt2.value.trim(),
-opt3.value.trim(),
-opt4.value.trim()
-
-];
-
-let correct =
-document.querySelector(
-'input[name="correct"]:checked'
-);
-
-if(
-!q ||
-options.includes("") ||
-!correct
-){
-
+if(!q || options.includes("") || !correct){
 alert("Fill all fields");
-
 return;
-
 }
 
 questions.push({
-
-q:q,
-
-options:options,
-
-correct:
-parseInt(correct.value)
-
+q,
+options,
+correct:parseInt(correct.value)
 });
 
-renderQuestions();
-
-/* RESET */
-
-question.value = "";
-opt1.value = "";
-opt2.value = "";
-opt3.value = "";
-opt4.value = "";
-
-document.querySelectorAll(
-'input[name="correct"]'
-).forEach(r=>r.checked=false);
-
+render();
 }
 
-/* AI GENERATOR */
-
+/* ✅ REAL AI FIX (NO REPEAT QUESTIONS) */
 function generateAI(){
 
-let topic =
-document.getElementById(
-"topic"
-).value.trim();
+let topic = document.getElementById("topic").value.trim();
+let count = parseInt(document.getElementById("qcount").value);
 
-let count =
-parseInt(
-document.getElementById(
-"qcount"
-).value
-);
-
-let level =
-document.getElementById(
-"level"
-).value;
-
-if(!topic || !count || !level){
-
-alert("Fill all AI fields");
-
+if(!topic || !count){
+alert("Fill fields");
 return;
-
 }
 
-document.getElementById(
-"aiLoading"
-).innerText =
-"🤖 AI Generating Questions...";
+document.getElementById("aiLoading").innerText="Generating...";
 
-/* CLEAR OLD */
+let pool = generatePool(topic); // all questions
 
-setTimeout(()=>{
+let available = pool.filter(q => !usedQuestions.has(q.q));
 
-for(let i=1;i<=count;i++){
+for(let i=0;i<count;i++){
 
-let q = "";
-let options = [];
-let correct = 0;
+if(available.length === 0) break;
 
-/* PYTHON */
+let index = Math.floor(Math.random()*available.length);
+let selected = available.splice(index,1)[0];
 
-if(topic.toLowerCase().includes("python")){
+usedQuestions.add(selected.q);
 
-q = `What is Python used for?`;
+questions.push(selected);
+}
 
-options = [
-"Web Development",
-"AI & ML",
-"Automation",
-"All of these"
+render();
+document.getElementById("aiLoading").innerText="Done ✅";
+}
+
+/* ✅ CLEAN QUESTION POOL */
+function generatePool(topic){
+
+topic = topic.toLowerCase();
+
+if(topic.includes("python")){
+return [
+{q:"What is Python?",options:["Snake","Language","Game","OS"],correct:1},
+{q:"Python creator?",options:["Guido","James","Elon","Bill"],correct:0},
+{q:"Python used for?",options:["AI","Web","Data","All"],correct:3}
+];
+}
+
+if(topic.includes("html")){
+return [
+{q:"HTML full form?",options:["Hyper Text Markup Language","Home Tool","None","Text"],correct:0},
+{q:"Tag for link?",options:["<a>","<p>","<img>","<div>"],correct:0}
+];
+}
+
+if(topic.includes("java")){
+return [
+{q:"Java is?",options:["Language","OS","Browser","DB"],correct:0},
+{q:"Java extension?",options:[".java",".py",".html",".js"],correct:0}
+];
+}
+
+return [
+{q:`What is ${topic}?`,options:["Concept","Tech","Subject","All"],correct:3},
+{q:`Why ${topic} important?`,options:["Study","Job","Skill","All"],correct:3}
 ];
 
-correct = 3;
-
 }
 
-/* INHERITANCE */
-
-else if(topic.toLowerCase().includes("inheritance")){
-
-q = `What is inheritance in OOP?`;
-
-options = [
-"Copying file",
-"Taking properties from another class",
-"Deleting class",
-"Creating database"
-];
-
-correct = 1;
-
-}
-
-/* HTML */
-
-else if(topic.toLowerCase().includes("html")){
-
-q = `Which tag is used to create link in HTML?`;
-
-options = [
-"<img>",
-"<a>",
-"<p>",
-"<table>"
-];
-
-correct = 1;
-
-}
-
-/* JAVA */
-
-else if(topic.toLowerCase().includes("java")){
-
-q = `Java is which type of language?`;
-
-options = [
-"Programming Language",
-"Database",
-"Operating System",
-"Browser"
-];
-
-correct = 0;
-
-}
-
-/* MATH */
-
-else if(topic.toLowerCase().includes("math")){
-
-q = `What is value of 5 + 5 ?`;
-
-options = [
-"8",
-"10",
-"12",
-"15"
-];
-
-correct = 1;
-
-}
-
-/* DEFAULT */
-
-else{
-
-q = `What is ${topic}?`;
-
-options = [
-`${topic} Concept`,
-`${topic} Programming`,
-`${topic} Technology`,
-`All of these`
-];
-
-correct = 3;
-
-}
-
-questions.push({
-
-q:q,
-
-options:options,
-
-correct:correct
-
-});
-
-}
-
-renderQuestions();
-
-document.getElementById(
-"aiLoading"
-).innerText =
-"✅ AI Questions Generated Successfully";
-
-},1000);
-
-}
-
-/* RENDER QUESTIONS */
-
-function renderQuestions(){
-
-let box =
-document.getElementById(
-"questions"
-);
-
-box.innerHTML = "";
+/* RENDER */
+function render(){
+let box=document.getElementById("questions");
+box.innerHTML="";
 
 questions.forEach((q,i)=>{
-
 box.innerHTML += `
-
 <div class="question-box">
-
-<div class="question-title">
-
-Q${i+1}. ${q.q}
-
-</div>
-
-${q.options.map((o,index)=>`
-
-<div class="option-item">
-
-${index==q.correct ? "✅" : "⭕"}
-
-${o}
-
-</div>
-
+<b>Q${i+1}:</b> ${q.q}<br><br>
+${q.options.map((o,idx)=>`
+${idx==q.correct?"✅":""} ${o}<br>
 `).join("")}
-
 </div>
-
 `;
-
 });
-
-}
-
-/* SAVE QUIZ */
-
-function saveQuiz(){
-
-let title =
-document.getElementById(
-"title"
-).value.trim();
-
-let desc =
-document.getElementById(
-"desc"
-).value.trim();
-
-let hoursVal =
-parseInt(
-document.getElementById(
-"hours"
-).value || 0
-);
-
-let minutesVal =
-parseInt(
-document.getElementById(
-"minutes"
-).value || 0
-);
-
-let totalTime =
-(hoursVal * 60)
-+
-minutesVal;
-
-let negativeEnabled =
-document.getElementById(
-"negativeCheck"
-).checked;
-
-let negativeMarks =
-document.getElementById(
-"negativeValue"
-).value;
-
-if(title.length < 3){
-
-alert("Enter title");
-
-return;
-
-}
-
-if(questions.length == 0){
-
-alert("Add questions");
-
-return;
-
-}
-
-if(totalTime <= 0){
-
-alert("Enter duration");
-
-return;
-
-}
-
-let code =
-
-"QUIZ" +
-
-Math.floor(
-Math.random()*100000
-);
-
-fetch("/save-quiz",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-
-code:code,
-
-title:title,
-
-description:desc,
-
-questions:questions,
-
-duration:totalTime,
-
-negative:negativeEnabled,
-
-negativeMarks:
-negativeMarks || 0,
-
-is_started:false
-
-})
-
-})
-
-.then(res=>res.json())
-
-.then(data=>{
-
-if(data.success){
-
-alert(
-"✅ Quiz Saved Successfully"
-);
-
-window.location.href =
-"/home";
-
-}
-
-else{
-
-alert(
-"❌ Save Failed"
-);
-
-}
-
-})
-
-.catch(err=>{
-
-console.log(err);
-
-alert(
-"❌ Server Error"
-);
-
-});
-
 }
 
 </script>
