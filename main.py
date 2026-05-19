@@ -946,7 +946,58 @@ def profile():
         quiz_count=quiz_count
 
     )
+# ================= UPDATE PROFILE =================
 
+@app.route("/update-profile", methods=["POST"])
+def update_profile():
+
+    if "email" not in session:
+        return jsonify({
+            "success": False
+        })
+
+    try:
+
+        data = request.get_json()
+
+        new_name = data.get("name")
+
+        conn = get_db()
+
+        cursor = conn.cursor()
+
+        cursor.execute("""
+
+        UPDATE users
+        SET name=%s
+        WHERE email=%s
+
+        """, (
+
+            new_name,
+            session["email"]
+
+        ))
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        # SESSION UPDATE
+        session["user"] = new_name
+
+        return jsonify({
+            "success": True
+        })
+
+    except Exception as e:
+
+        print(e)
+
+        return jsonify({
+            "success": False
+        })
 # ================= LOGOUT =================
 
 @app.route("/logout")
