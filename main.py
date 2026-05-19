@@ -321,79 +321,87 @@ def create():
     return render_template("create_quiz.html")
 
 # ================= AI GENERATE =================
-
 @app.route("/generate-ai-quiz", methods=["POST"])
 def generate_ai_quiz():
-
     try:
-
         data = request.get_json()
 
         topic = data.get("topic")
-        count = data.get("count")
+        count = int(data.get("count", 5))
         level = data.get("level")
 
         prompt = f"""
-Create {count} MCQ quiz questions about {topic}.
+You are an AI quiz generator.
+
+Generate {count} MCQ questions about {topic}.
 Difficulty: {level}
 
-Return ONLY valid JSON like this:
+STRICT RULES:
+- Output ONLY valid JSON array
+- No markdown
+- No explanation
+- Each question MUST have:
+  q (string)
+  options (array of 4 different answers)
+  correct (index 0-3)
 
+Example:
 [
   {{
-    "q":"Question",
-    "options":["A","B","C","D"],
-    "correct":0
+    "q": "What is Python?",
+    "options": ["A", "B", "C", "D"],
+    "correct": 0
   }}
 ]
 """
 
         response = requests.post(
-
             "https://api.openai.com/v1/chat/completions",
-
             headers={
                 "Authorization": f"Bearer {OPENAI_API_KEY}",
                 "Content-Type": "application/json"
             },
-
             json={
-
-                "model":"gpt-3.5-turbo",
-
-                "messages":[
-                    {
-                        "role":"user",
-                        "content":prompt
-                    }
+                "model": "gpt-3.5-turbo",
+                "messages": [
+                    {"role": "user", "content": prompt}
                 ],
-
-                "temperature":0.7
-
+                "temperature": 0.7
             }
-
         )
 
         result = response.json()
-
         text = result["choices"][0]["message"]["content"]
+
+        # ✅ CLEAN RESPONSE (VERY IMPORTANT)
+        text = text.strip()
+        text = text.replace("```json", "").replace("```", "")
 
         questions = json.loads(text)
 
+        # ✅ FINAL SAFETY CHECK (OPTIONS FIX)
+        fixed_questions = []
+
+        for q in questions:
+            if "q" in q and "options" in q and len(q["options"]) == 4:
+                fixed_questions.append({
+                    "q": q["q"],
+                    "options": q["options"][:4],
+                    "correct": int(q.get("correct", 0))
+                })
+
         return jsonify({
             "success": True,
-            "questions": questions
+            "questions": fixed_questions
         })
 
     except Exception as e:
-
-        print(e)
+        print("AI ERROR:", e)
 
         return jsonify({
             "success": False,
-            "message": str(e)
+            "message": "AI generation failed"
         })
-
 # ================= SAVE QUIZ =================
 
 @app.route("/save-quiz", methods=["POST"])
