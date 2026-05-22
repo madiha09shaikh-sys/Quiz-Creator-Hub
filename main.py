@@ -10,7 +10,7 @@ app.secret_key = "secret123"
 
 # ================= OPENAI API KEY =================
 
-OPENAI_API_KEY = "sk-proj-abcd123456789"
+OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"
 
 # ================= SESSION =================
 
@@ -322,8 +322,6 @@ def create():
 
 # ================= AI GENERATE =================
 
-# ================= AI GENERATE =================
-
 @app.route("/generate-ai-quiz", methods=["POST"])
 def generate_ai_quiz():
 
@@ -332,37 +330,19 @@ def generate_ai_quiz():
         data = request.get_json()
 
         topic = data.get("topic")
-        count = int(data.get("count", 5))
+        count = data.get("count")
         level = data.get("level")
 
         prompt = f"""
-Generate {count} UNIQUE MCQ questions about "{topic}".
-
+Create {count} MCQ quiz questions about {topic}.
 Difficulty: {level}
 
-RULES:
-1. Questions must be REAL and topic related
-2. Every question must be UNIQUE
-3. Each question must contain 4 DIFFERENT options
-4. Only one option should be correct
-5. Wrong answers should look realistic
-6. Do NOT repeat questions
-7. Do NOT repeat options
-8. Return ONLY JSON
-9. No markdown
-10. No explanation
-
-FORMAT:
+Return ONLY valid JSON like this:
 
 [
   {{
-    "q":"Question here",
-    "options":[
-      "Option 1",
-      "Option 2",
-      "Option 3",
-      "Option 4"
-    ],
+    "q":"Question",
+    "options":["A","B","C","D"],
     "correct":0
   }}
 ]
@@ -373,10 +353,8 @@ FORMAT:
             "https://api.openai.com/v1/chat/completions",
 
             headers={
-
                 "Authorization": f"Bearer {OPENAI_API_KEY}",
                 "Content-Type": "application/json"
-
             },
 
             json={
@@ -384,20 +362,13 @@ FORMAT:
                 "model":"gpt-3.5-turbo",
 
                 "messages":[
-
-                    {
-                        "role":"system",
-                        "content":"You are a professional AI quiz generator."
-                    },
-
                     {
                         "role":"user",
                         "content":prompt
                     }
-
                 ],
 
-                "temperature":0.9
+                "temperature":0.7
 
             }
 
@@ -405,101 +376,22 @@ FORMAT:
 
         result = response.json()
 
-        print(result)
-
-        # API ERROR
-
-        if "choices" not in result:
-
-            return jsonify({
-
-                "success": False,
-
-                "message": str(result)
-
-            })
-
         text = result["choices"][0]["message"]["content"]
-
-        # CLEAN RESPONSE
-
-        text = text.replace("```json", "")
-        text = text.replace("```", "")
-        text = text.strip()
 
         questions = json.loads(text)
 
-        final_questions = []
-
-        used_questions = set()
-
-        for q in questions:
-
-            if "q" not in q:
-                continue
-
-            if "options" not in q:
-                continue
-
-            if len(q["options"]) != 4:
-                continue
-
-            question_text = q["q"].strip().lower()
-
-            # REMOVE DUPLICATE QUESTIONS
-
-            if question_text in used_questions:
-                continue
-
-            used_questions.add(question_text)
-
-            # REMOVE DUPLICATE OPTIONS
-
-            unique_options = []
-
-            for op in q["options"]:
-
-                clean_op = str(op).strip()
-
-                if clean_op.lower() not in [x.lower() for x in unique_options]:
-                    unique_options.append(clean_op)
-
-            if len(unique_options) != 4:
-                continue
-
-            correct_index = int(q.get("correct", 0))
-
-            if correct_index < 0 or correct_index > 3:
-                correct_index = 0
-
-            final_questions.append({
-
-                "q": q["q"].strip(),
-
-                "options": unique_options,
-
-                "correct": correct_index
-
-            })
-
         return jsonify({
-
             "success": True,
-
-            "questions": final_questions
-
+            "questions": questions
         })
 
     except Exception as e:
 
-        print("AI ERROR:", e)
+        print(e)
 
         return jsonify({
-
             "success": False,
-
             "message": str(e)
-
         })
 
 # ================= SAVE QUIZ =================
@@ -795,4 +687,4 @@ def logout():
 
 if __name__ == "__main__":
 
-    app.run(debug=True)
+    app.run(debug=True)  jaha changes kar ne srif waha kar ke muje mera phele jaisa ta code pura ka pura waisa code send karo 
