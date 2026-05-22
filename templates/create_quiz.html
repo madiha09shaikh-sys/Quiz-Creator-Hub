@@ -8,7 +8,7 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>Create Quiz</title>
+<title>Create Quiz......</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
 rel="stylesheet">
@@ -168,6 +168,13 @@ line-height:1.8;
 font-size:14px;
 }
 
+.option-item{
+margin-top:8px;
+padding:10px;
+border-radius:10px;
+background:rgba(255,255,255,0.05);
+}
+
 /* AI LOADING */
 
 .ai-loading{
@@ -322,7 +329,7 @@ class="section"
 style="display:none;">
 
 <input id="topic"
-placeholder="Enter Topic (Python, Java, HTML, Science etc...)">
+placeholder="Enter Topic (Python, Java, Science, History etc...)">
 
 <input id="qcount"
 type="number"
@@ -351,7 +358,7 @@ Hard
 <button class="btn"
 onclick="generateAI()">
 
-🤖 Generate Real AI Questions
+🤖 Generate AI Questions
 
 </button>
 
@@ -436,11 +443,13 @@ onclick="saveQuiz()">
 
 <script>
 
+/* ================= DATA ================= */
+
 let questions = [];
 
 let usedQuestions = new Set();
 
-/* NEGATIVE */
+/* ================= NEGATIVE ================= */
 
 function toggleNegative(){
 
@@ -461,7 +470,7 @@ check
 
 }
 
-/* MODE */
+/* ================= MODE ================= */
 
 function showManual(){
 
@@ -503,7 +512,7 @@ manualBtn.classList.remove(
 
 }
 
-/* ADD MANUAL QUESTION */
+/* ================= MANUAL QUESTION ================= */
 
 function addQuestion(){
 
@@ -515,11 +524,8 @@ document.getElementById(
 let options = [
 
 opt1.value.trim(),
-
 opt2.value.trim(),
-
 opt3.value.trim(),
-
 opt4.value.trim()
 
 ];
@@ -536,7 +542,6 @@ options.includes("") ||
 ){
 
 alert("Fill all fields");
-
 return;
 
 }
@@ -544,11 +549,8 @@ return;
 questions.push({
 
 q:q,
-
 options:options,
-
-correct:
-parseInt(correct.value)
+correct:parseInt(correct.value)
 
 });
 
@@ -556,15 +558,11 @@ renderQuestions();
 
 /* RESET */
 
-question.value = "";
-
-opt1.value = "";
-
-opt2.value = "";
-
-opt3.value = "";
-
-opt4.value = "";
+question.value="";
+opt1.value="";
+opt2.value="";
+opt3.value="";
+opt4.value="";
 
 document.querySelectorAll(
 'input[name="correct"]'
@@ -596,7 +594,6 @@ document.getElementById(
 if(!topic || !count || !level){
 
 alert("Fill all AI fields");
-
 return;
 
 }
@@ -604,11 +601,11 @@ return;
 document.getElementById(
 "aiLoading"
 ).innerText =
-"🤖 AI Generating Smart Questions...";
+"🤖 Generating Smart AI Questions...";
 
 try{
 
-let res = await fetch(
+let response = await fetch(
 
 "/generate-ai-quiz",
 
@@ -623,9 +620,7 @@ headers:{
 body:JSON.stringify({
 
 topic:topic,
-
 count:count,
-
 level:level
 
 })
@@ -634,13 +629,17 @@ level:level
 
 );
 
-let data = await res.json();
+let data = await response.json();
+
+console.log(data);
 
 if(data.success){
 
 let added = 0;
 
 data.questions.forEach(q=>{
+
+/* duplicate skip */
 
 if(
 !usedQuestions.has(
@@ -652,14 +651,14 @@ usedQuestions.add(
 q.q.toLowerCase()
 );
 
-/* VALIDATE */
+/* option validation */
 
 if(
 q.options &&
 q.options.length === 4
 ){
 
-/* UNIQUE OPTIONS */
+/* remove duplicate options */
 
 let uniqueOptions =
 [...new Set(q.options)];
@@ -692,7 +691,7 @@ document.getElementById(
 "aiLoading"
 ).innerText =
 
-`✅ ${added} Smart Questions Generated`;
+`✅ ${added} AI Questions Generated`;
 
 }else{
 
@@ -701,6 +700,8 @@ document.getElementById(
 ).innerText =
 
 "❌ AI Failed";
+
+alert(data.message);
 
 }
 
@@ -718,7 +719,7 @@ document.getElementById(
 
 }
 
-/* RENDER QUESTIONS */
+/* ================= RENDER ================= */
 
 function renderQuestions(){
 
@@ -745,10 +746,8 @@ ${q.q}
 
 ${q.options.map((o,index)=>`
 
-<div style="
-margin-top:8px;
-padding:10px;
-border-radius:10px;
+<div class="option-item"
+style="
 background:
 ${index==q.correct
 ?
@@ -774,7 +773,7 @@ ${o}
 
 }
 
-/* SAVE QUIZ */
+/* ================= SAVE QUIZ ================= */
 
 function saveQuiz(){
 
@@ -820,7 +819,6 @@ document.getElementById(
 if(title.length < 3){
 
 alert("Enter title");
-
 return;
 
 }
@@ -828,7 +826,6 @@ return;
 if(questions.length == 0){
 
 alert("Add questions");
-
 return;
 
 }
@@ -836,7 +833,6 @@ return;
 if(totalTime <= 0){
 
 alert("Enter duration");
-
 return;
 
 }
@@ -893,9 +889,7 @@ alert(
 window.location.href =
 "/home";
 
-}
-
-else{
+}else{
 
 alert(
 "❌ Save Failed"
