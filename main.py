@@ -10,7 +10,7 @@ app.secret_key = "secret123"
 
 # ================= OPENAI API KEY =================
 
-OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"
+OPENAI_API_KEY = "sk-YOUR-REAL-OPENAI-KEY"
 
 # ================= SESSION =================
 
@@ -333,7 +333,6 @@ def generate_ai_quiz():
         count = int(data.get("count", 5))
         level = data.get("level")
 
-        # ✅ REAL AI PROMPT
         prompt = f"""
 You are a professional AI Quiz Generator.
 
@@ -369,8 +368,6 @@ JSON FORMAT:
     "correct":0
   }}
 ]
-
-correct = index of right answer
 """
 
         response = requests.post(
@@ -391,7 +388,7 @@ correct = index of right answer
                 "messages":[
                     {
                         "role":"system",
-                        "content":"You are an expert quiz generator AI."
+                        "content":"You are an expert AI quiz generator."
                     },
                     {
                         "role":"user",
@@ -399,7 +396,6 @@ correct = index of right answer
                     }
                 ],
 
-                # ✅ MORE CREATIVE QUESTIONS
                 "temperature":0.9
 
             }
@@ -408,33 +404,38 @@ correct = index of right answer
 
         result = response.json()
 
-        # ✅ API ERROR HANDLE
+        # ================= API ERROR =================
+
         if "choices" not in result:
 
             print(result)
 
             return jsonify({
+
                 "success": False,
+
                 "message": "OpenAI API Error"
+
             })
 
         text = result["choices"][0]["message"]["content"]
 
-        # ✅ CLEAN RESPONSE
+        # ================= CLEAN RESPONSE =================
+
         text = text.replace("```json", "")
         text = text.replace("```", "")
         text = text.strip()
 
         questions = json.loads(text)
 
-        # ✅ FINAL SAFETY CHECK
+        # ================= FINAL CLEAN =================
+
         final_questions = []
 
         used_questions = set()
 
         for q in questions:
 
-            # skip invalid
             if "q" not in q:
                 continue
 
@@ -444,31 +445,41 @@ correct = index of right answer
             if len(q["options"]) != 4:
                 continue
 
-            # ✅ remove duplicate question
-            if q["q"].lower() in used_questions:
+            # REMOVE DUPLICATE QUESTIONS
+
+            question_text = q["q"].strip().lower()
+
+            if question_text in used_questions:
                 continue
 
-            used_questions.add(q["q"].lower())
+            used_questions.add(question_text)
 
-            # ✅ unique options only
+            # REMOVE DUPLICATE OPTIONS
+
             unique_options = []
 
             for op in q["options"]:
 
-                if op not in unique_options:
-                    unique_options.append(op)
+                clean_op = str(op).strip()
 
-            # skip if duplicate options
+                if clean_op not in unique_options:
+                    unique_options.append(clean_op)
+
             if len(unique_options) != 4:
                 continue
 
+            correct_index = int(q.get("correct", 0))
+
+            if correct_index < 0 or correct_index > 3:
+                correct_index = 0
+
             final_questions.append({
 
-                "q": q["q"],
+                "q": q["q"].strip(),
 
                 "options": unique_options,
 
-                "correct": int(q.get("correct", 0))
+                "correct": correct_index
 
             })
 
@@ -491,6 +502,8 @@ correct = index of right answer
             "message": str(e)
 
         })
+
+# ================= SAVE QUIZ =================
 
 @app.route("/save-quiz", methods=["POST"])
 def save_quiz():
