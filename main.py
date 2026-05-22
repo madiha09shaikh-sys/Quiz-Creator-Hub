@@ -10,7 +10,7 @@ app.secret_key = "secret123"
 
 # ================= OPENAI API KEY =================
 
-OPENAI_API_KEY = "sk-proj-xxxxxxxx"
+OPENAI_API_KEY = "sk-proj-abcd123456789"
 
 # ================= SESSION =================
 
