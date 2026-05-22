@@ -687,4 +687,4 @@ def logout():
 
 if __name__ == "__main__":
 
-    app.run(debug=True)  jaha changes kar ne srif waha kar ke muje mera phele jaisa ta code pura ka pura waisa code send karo 
+    app.run(debug=True) 
