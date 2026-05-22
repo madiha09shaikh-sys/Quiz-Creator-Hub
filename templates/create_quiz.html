@@ -603,52 +603,33 @@ document.getElementById(
 ).innerText =
 "🤖 AI Generating Questions...";
 
-/* CLEAR */
+fetch("/generate-ai-quiz",{
 
-setTimeout(()=>{
+method:"POST",
 
-for(let i=1;i<=count;i++){
+headers:{
+"Content-Type":"application/json"
+},
 
-let aiQuestions = [
+body:JSON.stringify({
 
-`What is ${topic}?`,
-`Who invented ${topic}?`,
-`Why is ${topic} important?`,
-`Which language is used in ${topic}?`,
-`What are advantages of ${topic}?`,
-`What is the main concept of ${topic}?`,
-`Which company uses ${topic}?`,
-`What is the future of ${topic}?`
+topic:topic,
+count:count,
+level:level
 
-];
+})
 
-let randomQuestion =
+})
 
-aiQuestions[
-Math.floor(
-Math.random()*aiQuestions.length
-)
-];
+.then(res=>res.json())
 
-questions.push({
+.then(data=>{
 
-q:randomQuestion,
+if(data.success){
 
-options:[
-
-`${topic} Option A`,
-`${topic} Option B`,
-`${topic} Option C`,
-`${topic} Option D`
-
-],
-
-correct:
-Math.floor(Math.random()*4)
-
-});
-
-}
+questions = questions.concat(
+data.questions
+);
 
 renderQuestions();
 
@@ -657,7 +638,29 @@ document.getElementById(
 ).innerText =
 "✅ AI Questions Generated Successfully";
 
-},1000);
+}else{
+
+document.getElementById(
+"aiLoading"
+).innerText =
+"❌ AI Failed";
+
+console.log(data.message);
+
+}
+
+})
+
+.catch(err=>{
+
+console.log(err);
+
+document.getElementById(
+"aiLoading"
+).innerText =
+"❌ Server Error";
+
+});
 
 }
 
@@ -850,4 +853,4 @@ alert(
 </script>
 
 </body>
-</html>     is ko bhi updated kar ke bhejo phir
+</html>
