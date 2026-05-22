@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, jsonify
 import mysql.connector
 import json
 from datetime import timedelta
+import requests
 
 app = Flask(__name__)
 
@@ -262,7 +263,59 @@ def auth():
         msg=msg
 
     )
+# ================= AI GENERATE =================
 
+@app.route("/generate-ai-quiz", methods=["POST"])
+def generate_ai_quiz():
+
+    try:
+
+        data = request.get_json()
+
+        topic = data.get("topic")
+        count = int(data.get("count", 5))
+        level = data.get("level")
+
+        questions = []
+
+        for i in range(count):
+
+            questions.append({
+
+                "q": f"{topic} Question {i+1} ({level})",
+
+                "options":[
+
+                    f"{topic} Option A {i+1}",
+                    f"{topic} Option B {i+1}",
+                    f"{topic} Option C {i+1}",
+                    f"{topic} Option D {i+1}"
+
+                ],
+
+                "correct":0
+
+            })
+
+        return jsonify({
+
+            "success": True,
+
+            "questions": questions
+
+        })
+
+    except Exception as e:
+
+        print(e)
+
+        return jsonify({
+
+            "success": False,
+
+            "message": str(e)
+
+        })
 # ================= HOME =================
 
 @app.route("/home")
