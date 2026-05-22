@@ -321,88 +321,176 @@ def create():
     return render_template("create_quiz.html")
 
 # ================= AI GENERATE =================
+
 @app.route("/generate-ai-quiz", methods=["POST"])
 def generate_ai_quiz():
+
     try:
+
         data = request.get_json()
 
         topic = data.get("topic")
         count = int(data.get("count", 5))
         level = data.get("level")
 
+        # ✅ REAL AI PROMPT
         prompt = f"""
-You are an AI quiz generator.
+You are a professional AI Quiz Generator.
 
-Generate {count} MCQ questions about {topic}.
-Difficulty: {level}
+Generate {count} UNIQUE multiple choice questions about "{topic}".
 
-STRICT RULES:
-- Output ONLY valid JSON array
-- No markdown
-- No explanation
-- Each question MUST have:
-  q (string)
-  options (array of 4 different answers)
-  correct (index 0-3)
+Difficulty Level: {level}
 
-Example:
+IMPORTANT RULES:
+
+1. Every question MUST be unique.
+2. Questions MUST be related to the topic.
+3. Each question MUST have 4 DIFFERENT options.
+4. Only ONE option should be correct.
+5. Wrong options should look realistic.
+6. Do NOT repeat options.
+7. Do NOT repeat questions.
+8. Questions should feel like real exam/interview questions.
+9. Return ONLY valid JSON.
+10. No markdown.
+11. No explanation.
+
+JSON FORMAT:
+
 [
   {{
-    "q": "What is Python?",
-    "options": ["A", "B", "C", "D"],
-    "correct": 0
+    "q":"Question here",
+    "options":[
+      "Option 1",
+      "Option 2",
+      "Option 3",
+      "Option 4"
+    ],
+    "correct":0
   }}
 ]
+
+correct = index of right answer
 """
 
         response = requests.post(
+
             "https://api.openai.com/v1/chat/completions",
+
             headers={
+
                 "Authorization": f"Bearer {OPENAI_API_KEY}",
                 "Content-Type": "application/json"
+
             },
+
             json={
-                "model": "gpt-3.5-turbo",
-                "messages": [
-                    {"role": "user", "content": prompt}
+
+                "model":"gpt-3.5-turbo",
+
+                "messages":[
+                    {
+                        "role":"system",
+                        "content":"You are an expert quiz generator AI."
+                    },
+                    {
+                        "role":"user",
+                        "content":prompt
+                    }
                 ],
-                "temperature": 0.7
+
+                # ✅ MORE CREATIVE QUESTIONS
+                "temperature":0.9
+
             }
+
         )
 
         result = response.json()
+
+        # ✅ API ERROR HANDLE
+        if "choices" not in result:
+
+            print(result)
+
+            return jsonify({
+                "success": False,
+                "message": "OpenAI API Error"
+            })
+
         text = result["choices"][0]["message"]["content"]
 
-        # ✅ CLEAN RESPONSE (VERY IMPORTANT)
+        # ✅ CLEAN RESPONSE
+        text = text.replace("```json", "")
+        text = text.replace("```", "")
         text = text.strip()
-        text = text.replace("```json", "").replace("```", "")
 
         questions = json.loads(text)
 
-        # ✅ FINAL SAFETY CHECK (OPTIONS FIX)
-        fixed_questions = []
+        # ✅ FINAL SAFETY CHECK
+        final_questions = []
+
+        used_questions = set()
 
         for q in questions:
-            if "q" in q and "options" in q and len(q["options"]) == 4:
-                fixed_questions.append({
-                    "q": q["q"],
-                    "options": q["options"][:4],
-                    "correct": int(q.get("correct", 0))
-                })
+
+            # skip invalid
+            if "q" not in q:
+                continue
+
+            if "options" not in q:
+                continue
+
+            if len(q["options"]) != 4:
+                continue
+
+            # ✅ remove duplicate question
+            if q["q"].lower() in used_questions:
+                continue
+
+            used_questions.add(q["q"].lower())
+
+            # ✅ unique options only
+            unique_options = []
+
+            for op in q["options"]:
+
+                if op not in unique_options:
+                    unique_options.append(op)
+
+            # skip if duplicate options
+            if len(unique_options) != 4:
+                continue
+
+            final_questions.append({
+
+                "q": q["q"],
+
+                "options": unique_options,
+
+                "correct": int(q.get("correct", 0))
+
+            })
 
         return jsonify({
+
             "success": True,
-            "questions": fixed_questions
+
+            "questions": final_questions
+
         })
 
     except Exception as e:
+
         print("AI ERROR:", e)
 
         return jsonify({
+
             "success": False,
-            "message": "AI generation failed"
+
+            "message": str(e)
+
         })
-# ================= SAVE QUIZ =================
 
 @app.route("/save-quiz", methods=["POST"])
 def save_quiz():
