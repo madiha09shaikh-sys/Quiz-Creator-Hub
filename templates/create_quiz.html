@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
 <title>Create Quiz</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+rel="stylesheet">
 
 <style>
 
@@ -16,50 +22,60 @@ box-sizing:border-box;
 }
 
 body{
-font-family:Poppins,sans-serif;
+font-family:'Poppins',sans-serif;
 background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
 color:white;
 min-height:100vh;
 }
 
+/* NAV */
+
 nav{
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:15px;
+padding:20px;
 flex-wrap:wrap;
 gap:10px;
 }
 
 .logo{
 color:#a855f7;
-font-size:22px;
-font-weight:700;
-}
-
-nav button{
-padding:10px 16px;
-border:none;
-border-radius:10px;
-background:#a855f7;
-color:white;
-cursor:pointer;
+font-size:24px;
 font-weight:600;
 }
 
+nav button{
+border:none;
+background:#a855f7;
+color:white;
+padding:10px 18px;
+border-radius:10px;
+cursor:pointer;
+font-weight:600;
+font-size:14px;
+}
+
+/* CONTAINER */
+
 .container{
-max-width:800px;
+max-width:760px;
 margin:20px auto;
 padding:15px;
 }
+
+/* SECTION */
 
 .section{
 background:rgba(255,255,255,0.06);
 padding:18px;
 border-radius:16px;
-margin-top:15px;
+margin-top:16px;
 backdrop-filter:blur(10px);
+border:1px solid rgba(255,255,255,0.05);
 }
+
+/* MODE BUTTONS */
 
 .mode-buttons{
 display:flex;
@@ -71,37 +87,43 @@ flex:1;
 padding:12px;
 border:none;
 border-radius:12px;
-background:rgba(255,255,255,0.1);
+background:rgba(255,255,255,0.08);
 color:white;
 cursor:pointer;
 font-weight:600;
-font-size:15px;
+transition:0.3s;
 }
 
 .active{
-background:linear-gradient(135deg,#a855f7,#6d28d9);
+background:linear-gradient(135deg,#a855f7,#6d28d9) !important;
 }
+
+/* INPUTS */
 
 input,
-select{
+select,
+textarea{
 width:100%;
-padding:12px;
-margin-top:10px;
+padding:13px;
+margin-top:12px;
 border:none;
 border-radius:12px;
-background:rgba(255,255,255,0.1);
+background:rgba(255,255,255,0.08);
 color:white;
-font-size:15px;
 outline:none;
+font-size:14px;
 }
 
-input::placeholder{
-color:#ddd;
+input::placeholder,
+textarea::placeholder{
+color:#d1d5db;
 }
 
 select option{
 color:black;
 }
+
+/* OPTION */
 
 .option{
 display:flex;
@@ -111,9 +133,11 @@ margin-top:10px;
 }
 
 .option input[type="radio"]{
-width:20px;
-height:20px;
+width:18px;
+height:18px;
 }
+
+/* BUTTON */
 
 .btn{
 width:100%;
@@ -122,40 +146,60 @@ border:none;
 border-radius:12px;
 background:linear-gradient(135deg,#a855f7,#6d28d9);
 color:white;
-font-weight:700;
+font-weight:600;
 cursor:pointer;
-margin-top:12px;
+margin-top:14px;
 font-size:15px;
+transition:0.3s;
 }
 
+.btn:hover{
+transform:scale(1.02);
+}
+
+/* QUESTION BOX */
+
 .question-box{
-background:rgba(255,255,255,0.08);
+background:rgba(255,255,255,0.07);
 padding:15px;
 border-radius:14px;
 margin-top:12px;
 line-height:1.8;
+font-size:14px;
 }
 
-.correct{
-color:#22c55e;
-font-weight:bold;
-}
+/* AI LOADING */
 
 .ai-loading{
-margin-top:12px;
-font-weight:600;
+margin-top:15px;
+text-align:center;
 color:#c084fc;
+font-weight:600;
 }
+
+/* MOBILE */
 
 @media(max-width:700px){
 
-.option{
-flex-direction:column;
-align-items:flex-start;
+nav{
+padding:15px;
+}
+
+.logo{
+font-size:20px;
+}
+
+.container{
+padding:12px;
 }
 
 .mode-buttons{
 flex-direction:column;
+}
+
+.option{
+flex-direction:column;
+align-items:flex-start;
 }
 
 }
@@ -164,6 +208,8 @@ flex-direction:column;
 </head>
 
 <body>
+
+<!-- NAV -->
 
 <nav>
 
@@ -176,6 +222,8 @@ flex-direction:column;
 </button>
 
 </nav>
+
+<!-- CONTAINER -->
 
 <div class="container">
 
@@ -267,14 +315,14 @@ onclick="addQuestion()">
 
 </div>
 
-<!-- AI -->
+<!-- AI MODE -->
 
 <div id="ai"
 class="section"
 style="display:none;">
 
 <input id="topic"
-placeholder="Enter Topic Example: Python">
+placeholder="Enter Topic (Python, Java, HTML, Science etc...)">
 
 <input id="qcount"
 type="number"
@@ -303,7 +351,7 @@ Hard
 <button class="btn"
 onclick="generateAI()">
 
-🤖 Generate AI Questions
+🤖 Generate Real AI Questions
 
 </button>
 
@@ -325,46 +373,155 @@ class="ai-loading">
 
 </div>
 
+<!-- DETAILS -->
+
+<div class="section">
+
+<h3>
+📝 Quiz Details
+</h3>
+
+<input id="title"
+placeholder="Quiz Title">
+
+<input id="desc"
+placeholder="Description">
+
+</div>
+
+<!-- SETTINGS -->
+
+<div class="section">
+
+<h3>
+⚙ Settings
+</h3>
+
+<div style="display:flex; gap:10px;">
+
+<input id="hours"
+type="number"
+placeholder="Hours">
+
+<input id="minutes"
+type="number"
+placeholder="Minutes">
+
+</div>
+
+<label style="display:block; margin-top:15px;">
+
+<input type="checkbox"
+id="negativeCheck"
+onclick="toggleNegative()">
+
+Enable Negative Marking
+
+</label>
+
+<input id="negativeValue"
+placeholder="Negative Marks"
+style="display:none;">
+
+<button class="btn"
+onclick="saveQuiz()">
+
+💾 Save Quiz
+
+</button>
+
+</div>
+
 </div>
 
 <script>
 
 let questions = [];
+
 let usedQuestions = new Set();
+
+/* NEGATIVE */
+
+function toggleNegative(){
+
+let check =
+document.getElementById(
+"negativeCheck"
+).checked;
+
+document.getElementById(
+"negativeValue"
+).style.display =
+
+check
+?
+"block"
+:
+"none";
+
+}
 
 /* MODE */
 
 function showManual(){
 
-document.getElementById("manual").style.display = "block";
-document.getElementById("ai").style.display = "none";
+document.getElementById(
+"manual"
+).style.display = "block";
 
-manualBtn.classList.add("active");
-aiBtn.classList.remove("active");
+document.getElementById(
+"ai"
+).style.display = "none";
+
+manualBtn.classList.add(
+"active"
+);
+
+aiBtn.classList.remove(
+"active"
+);
 
 }
 
 function showAI(){
 
-document.getElementById("manual").style.display = "none";
-document.getElementById("ai").style.display = "block";
+document.getElementById(
+"manual"
+).style.display = "none";
 
-aiBtn.classList.add("active");
-manualBtn.classList.remove("active");
+document.getElementById(
+"ai"
+).style.display = "block";
+
+aiBtn.classList.add(
+"active"
+);
+
+manualBtn.classList.remove(
+"active"
+);
 
 }
 
-/* MANUAL */
+/* ADD MANUAL QUESTION */
 
 function addQuestion(){
 
-let q = question.value.trim();
+let q =
+document.getElementById(
+"question"
+).value.trim();
 
 let options = [
+
 opt1.value.trim(),
+
 opt2.value.trim(),
+
 opt3.value.trim(),
+
 opt4.value.trim()
+
 ];
 
 let correct =
@@ -372,9 +529,14 @@ document.querySelector(
 'input[name="correct"]:checked'
 );
 
-if(!q || options.includes("") || !correct){
+if(
+!q ||
+options.includes("") ||
+!correct
+){
 
 alert("Fill all fields");
+
 return;
 
 }
@@ -382,17 +544,26 @@ return;
 questions.push({
 
 q:q,
+
 options:options,
-correct:parseInt(correct.value)
+
+correct:
+parseInt(correct.value)
 
 });
 
 renderQuestions();
 
+/* RESET */
+
 question.value = "";
+
 opt1.value = "";
+
 opt2.value = "";
+
 opt3.value = "";
+
 opt4.value = "";
 
 document.querySelectorAll(
@@ -401,30 +572,31 @@ document.querySelectorAll(
 
 }
 
-/* =========================
-🔥 REAL AI GENERATOR
-========================= */
+/* ================= REAL AI ================= */
 
 async function generateAI(){
 
 let topic =
-document.getElementById("topic")
-.value
-.trim();
+document.getElementById(
+"topic"
+).value.trim();
 
 let count =
 parseInt(
-document.getElementById("qcount")
-.value
+document.getElementById(
+"qcount"
+).value
 );
 
 let level =
-document.getElementById("level")
-.value;
+document.getElementById(
+"level"
+).value;
 
 if(!topic || !count || !level){
 
-alert("Fill all fields");
+alert("Fill all AI fields");
+
 return;
 
 }
@@ -432,13 +604,16 @@ return;
 document.getElementById(
 "aiLoading"
 ).innerText =
-"🤖 AI is generating smart questions...";
+"🤖 AI Generating Smart Questions...";
 
 try{
 
-let response = await fetch(
+let res = await fetch(
+
 "/generate-ai-quiz",
+
 {
+
 method:"POST",
 
 headers:{
@@ -448,61 +623,64 @@ headers:{
 body:JSON.stringify({
 
 topic:topic,
+
 count:count,
+
 level:level
 
 })
 
 }
+
 );
 
-let data = await response.json();
+let data = await res.json();
 
 if(data.success){
 
+let added = 0;
+
 data.questions.forEach(q=>{
 
-/* NO DUPLICATE */
-
-if(!usedQuestions.has(q.q)){
-
-usedQuestions.add(q.q);
-
-/* CLEAN OPTIONS */
-
-let cleanOptions = [];
-
-q.options.forEach(opt=>{
-
 if(
-opt &&
-!cleanOptions.includes(opt)
+!usedQuestions.has(
+q.q.toLowerCase()
+)
 ){
-cleanOptions.push(opt);
-}
 
-});
-
-/* FIX DUPLICATE OPTIONS */
-
-while(cleanOptions.length < 4){
-
-cleanOptions.push(
-"Extra Option " +
-(Math.floor(Math.random()*100))
+usedQuestions.add(
+q.q.toLowerCase()
 );
 
-}
+/* VALIDATE */
 
-/* SAVE */
+if(
+q.options &&
+q.options.length === 4
+){
+
+/* UNIQUE OPTIONS */
+
+let uniqueOptions =
+[...new Set(q.options)];
+
+if(uniqueOptions.length === 4){
 
 questions.push({
 
 q:q.q,
-options:cleanOptions,
+
+options:uniqueOptions,
+
 correct:q.correct
 
 });
+
+added++;
+
+}
+
+}
 
 }
 
@@ -513,35 +691,34 @@ renderQuestions();
 document.getElementById(
 "aiLoading"
 ).innerText =
-"✅ AI Questions Generated Successfully";
 
-}
+`✅ ${added} Smart Questions Generated`;
 
-else{
+}else{
 
 document.getElementById(
 "aiLoading"
 ).innerText =
+
 "❌ AI Failed";
 
 }
 
-}
-
-catch(err){
+}catch(err){
 
 console.log(err);
 
 document.getElementById(
 "aiLoading"
 ).innerText =
+
 "❌ Server Error";
 
 }
 
 }
 
-/* RENDER */
+/* RENDER QUESTIONS */
 
 function renderQuestions(){
 
@@ -568,15 +745,20 @@ ${q.q}
 
 ${q.options.map((o,index)=>`
 
-<div class="${
-index==q.correct
+<div style="
+margin-top:8px;
+padding:10px;
+border-radius:10px;
+background:
+${index==q.correct
 ?
-'correct'
+'rgba(34,197,94,0.25)'
 :
-''
-}">
+'rgba(255,255,255,0.05)'
+};
+">
 
-${index==q.correct?"✅":""}
+${index==q.correct ? "✅" : "⭕"}
 
 ${o}
 
@@ -587,6 +769,149 @@ ${o}
 </div>
 
 `;
+
+});
+
+}
+
+/* SAVE QUIZ */
+
+function saveQuiz(){
+
+let title =
+document.getElementById(
+"title"
+).value.trim();
+
+let desc =
+document.getElementById(
+"desc"
+).value.trim();
+
+let hoursVal =
+parseInt(
+document.getElementById(
+"hours"
+).value || 0
+);
+
+let minutesVal =
+parseInt(
+document.getElementById(
+"minutes"
+).value || 0
+);
+
+let totalTime =
+(hoursVal * 60)
++
+minutesVal;
+
+let negativeEnabled =
+document.getElementById(
+"negativeCheck"
+).checked;
+
+let negativeMarks =
+document.getElementById(
+"negativeValue"
+).value;
+
+if(title.length < 3){
+
+alert("Enter title");
+
+return;
+
+}
+
+if(questions.length == 0){
+
+alert("Add questions");
+
+return;
+
+}
+
+if(totalTime <= 0){
+
+alert("Enter duration");
+
+return;
+
+}
+
+let code =
+
+"QUIZ" +
+
+Math.floor(
+Math.random()*100000
+);
+
+fetch("/save-quiz",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+
+code:code,
+
+title:title,
+
+description:desc,
+
+questions:questions,
+
+duration:totalTime,
+
+negative:negativeEnabled,
+
+negativeMarks:
+negativeMarks || 0,
+
+is_started:false
+
+})
+
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+if(data.success){
+
+alert(
+"✅ Quiz Saved Successfully"
+);
+
+window.location.href =
+"/home";
+
+}
+
+else{
+
+alert(
+"❌ Save Failed"
+);
+
+}
+
+})
+
+.catch(err=>{
+
+console.log(err);
+
+alert(
+"❌ Server Error"
+);
 
 });
 
