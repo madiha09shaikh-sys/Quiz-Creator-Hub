@@ -10,7 +10,7 @@ app.secret_key = "secret123"
 
 # ================= OPENAI API KEY =================
 
-OPENAI_API_KEY = "sk-YOUR-REAL-OPENAI-KEY"
+OPENAI_API_KEY = "sk-proj-xxxxxxxx"
 
 # ================= SESSION =================
 
@@ -322,6 +322,8 @@ def create():
 
 # ================= AI GENERATE =================
 
+# ================= AI GENERATE =================
+
 @app.route("/generate-ai-quiz", methods=["POST"])
 def generate_ai_quiz():
 
@@ -334,27 +336,23 @@ def generate_ai_quiz():
         level = data.get("level")
 
         prompt = f"""
-You are a professional AI Quiz Generator.
+Generate {count} UNIQUE MCQ questions about "{topic}".
 
-Generate {count} UNIQUE multiple choice questions about "{topic}".
+Difficulty: {level}
 
-Difficulty Level: {level}
+RULES:
+1. Questions must be REAL and topic related
+2. Every question must be UNIQUE
+3. Each question must contain 4 DIFFERENT options
+4. Only one option should be correct
+5. Wrong answers should look realistic
+6. Do NOT repeat questions
+7. Do NOT repeat options
+8. Return ONLY JSON
+9. No markdown
+10. No explanation
 
-IMPORTANT RULES:
-
-1. Every question MUST be unique.
-2. Questions MUST be related to the topic.
-3. Each question MUST have 4 DIFFERENT options.
-4. Only ONE option should be correct.
-5. Wrong options should look realistic.
-6. Do NOT repeat options.
-7. Do NOT repeat questions.
-8. Questions should feel like real exam/interview questions.
-9. Return ONLY valid JSON.
-10. No markdown.
-11. No explanation.
-
-JSON FORMAT:
+FORMAT:
 
 [
   {{
@@ -376,7 +374,7 @@ JSON FORMAT:
 
             headers={
 
-                "Authorization": f"Bearer {sk-xxxxxxxxxxxxxxxx}",
+                "Authorization": f"Bearer {OPENAI_API_KEY}",
                 "Content-Type": "application/json"
 
             },
@@ -386,14 +384,17 @@ JSON FORMAT:
                 "model":"gpt-3.5-turbo",
 
                 "messages":[
+
                     {
                         "role":"system",
-                        "content":"You are an expert AI quiz generator."
+                        "content":"You are a professional AI quiz generator."
                     },
+
                     {
                         "role":"user",
                         "content":prompt
                     }
+
                 ],
 
                 "temperature":0.9
@@ -404,31 +405,29 @@ JSON FORMAT:
 
         result = response.json()
 
-        # ================= API ERROR =================
+        print(result)
+
+        # API ERROR
 
         if "choices" not in result:
-
-            print(result)
 
             return jsonify({
 
                 "success": False,
 
-                "message": "OpenAI API Error"
+                "message": str(result)
 
             })
 
         text = result["choices"][0]["message"]["content"]
 
-        # ================= CLEAN RESPONSE =================
+        # CLEAN RESPONSE
 
         text = text.replace("```json", "")
         text = text.replace("```", "")
         text = text.strip()
 
         questions = json.loads(text)
-
-        # ================= FINAL CLEAN =================
 
         final_questions = []
 
@@ -445,9 +444,9 @@ JSON FORMAT:
             if len(q["options"]) != 4:
                 continue
 
-            # REMOVE DUPLICATE QUESTIONS
-
             question_text = q["q"].strip().lower()
+
+            # REMOVE DUPLICATE QUESTIONS
 
             if question_text in used_questions:
                 continue
@@ -462,7 +461,7 @@ JSON FORMAT:
 
                 clean_op = str(op).strip()
 
-                if clean_op not in unique_options:
+                if clean_op.lower() not in [x.lower() for x in unique_options]:
                     unique_options.append(clean_op)
 
             if len(unique_options) != 4:
