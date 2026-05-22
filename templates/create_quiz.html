@@ -8,9 +8,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
 body{
-font-family:Poppins;
+font-family:Poppins,sans-serif;
 background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
 color:white;
 min-height:100vh;
@@ -19,23 +25,46 @@ min-height:100vh;
 nav{
 display:flex;
 justify-content:space-between;
+align-items:center;
 padding:15px;
 flex-wrap:wrap;
 gap:10px;
 }
 
-.logo{color:#a855f7;font-size:22px;font-weight:700;}
+.logo{
+color:#a855f7;
+font-size:22px;
+font-weight:700;
+}
 
-.container{max-width:750px;margin:20px auto;padding:15px;}
+nav button{
+padding:10px 16px;
+border:none;
+border-radius:10px;
+background:#a855f7;
+color:white;
+cursor:pointer;
+font-weight:600;
+}
+
+.container{
+max-width:800px;
+margin:20px auto;
+padding:15px;
+}
 
 .section{
 background:rgba(255,255,255,0.06);
 padding:18px;
-border-radius:15px;
+border-radius:16px;
 margin-top:15px;
+backdrop-filter:blur(10px);
 }
 
-.mode-buttons{display:flex;gap:10px;}
+.mode-buttons{
+display:flex;
+gap:10px;
+}
 
 .mode-buttons button{
 flex:1;
@@ -46,13 +75,15 @@ background:rgba(255,255,255,0.1);
 color:white;
 cursor:pointer;
 font-weight:600;
+font-size:15px;
 }
 
 .active{
 background:linear-gradient(135deg,#a855f7,#6d28d9);
 }
 
-input,select{
+input,
+select{
 width:100%;
 padding:12px;
 margin-top:10px;
@@ -60,88 +91,238 @@ border:none;
 border-radius:12px;
 background:rgba(255,255,255,0.1);
 color:white;
+font-size:15px;
+outline:none;
+}
+
+input::placeholder{
+color:#ddd;
+}
+
+select option{
+color:black;
+}
+
+.option{
+display:flex;
+align-items:center;
+gap:10px;
+margin-top:10px;
+}
+
+.option input[type="radio"]{
+width:20px;
+height:20px;
 }
 
 .btn{
 width:100%;
-padding:12px;
+padding:13px;
 border:none;
 border-radius:12px;
 background:linear-gradient(135deg,#a855f7,#6d28d9);
 color:white;
-font-weight:bold;
+font-weight:700;
 cursor:pointer;
-margin-top:10px;
+margin-top:12px;
+font-size:15px;
 }
 
 .question-box{
 background:rgba(255,255,255,0.08);
-padding:12px;
-border-radius:12px;
-margin-top:10px;
+padding:15px;
+border-radius:14px;
+margin-top:12px;
+line-height:1.8;
+}
+
+.correct{
+color:#22c55e;
+font-weight:bold;
 }
 
 .ai-loading{
-margin-top:10px;
-color:#c084fc;
+margin-top:12px;
 font-weight:600;
+color:#c084fc;
 }
+
+@media(max-width:700px){
+
+.option{
+flex-direction:column;
+align-items:flex-start;
+}
+
+.mode-buttons{
+flex-direction:column;
+}
+
+}
+
 </style>
 </head>
 
 <body>
 
 <nav>
-<div class="logo">🧠 Quiz Pro</div>
-<button onclick="window.location.href='/home'">⬅ Home</button>
+
+<div class="logo">
+🧠 Quiz Pro
+</div>
+
+<button onclick="window.location.href='/home'">
+⬅ Home
+</button>
+
 </nav>
 
 <div class="container">
 
 <h2>Create Quiz</h2>
 
+<!-- MODE -->
+
 <div class="section">
+
 <div class="mode-buttons">
-<button id="manualBtn" class="active" onclick="showManual()">Manual</button>
-<button id="aiBtn" onclick="showAI()">AI Mode</button>
+
+<button id="manualBtn"
+class="active"
+onclick="showManual()">
+
+Manual
+
+</button>
+
+<button id="aiBtn"
+onclick="showAI()">
+
+AI Mode
+
+</button>
+
 </div>
+
 </div>
 
 <!-- MANUAL -->
-<div id="manual" class="section">
 
-<input id="question" placeholder="Enter Question">
+<div id="manual"
+class="section">
 
-<div class="option"><input id="opt1" placeholder="Option 1"><input type="radio" name="correct" value="0"></div>
-<div class="option"><input id="opt2" placeholder="Option 2"><input type="radio" name="correct" value="1"></div>
-<div class="option"><input id="opt3" placeholder="Option 3"><input type="radio" name="correct" value="2"></div>
-<div class="option"><input id="opt4" placeholder="Option 4"><input type="radio" name="correct" value="3"></div>
+<input id="question"
+placeholder="Enter Question">
 
-<button class="btn" onclick="addQuestion()">➕ Add Question</button>
+<div class="option">
+
+<input id="opt1"
+placeholder="Option 1">
+
+<input type="radio"
+name="correct"
+value="0">
+
+</div>
+
+<div class="option">
+
+<input id="opt2"
+placeholder="Option 2">
+
+<input type="radio"
+name="correct"
+value="1">
+
+</div>
+
+<div class="option">
+
+<input id="opt3"
+placeholder="Option 3">
+
+<input type="radio"
+name="correct"
+value="2">
+
+</div>
+
+<div class="option">
+
+<input id="opt4"
+placeholder="Option 4">
+
+<input type="radio"
+name="correct"
+value="3">
+
+</div>
+
+<button class="btn"
+onclick="addQuestion()">
+
+➕ Add Question
+
+</button>
+
 </div>
 
 <!-- AI -->
-<div id="ai" class="section" style="display:none;">
 
-<input id="topic" placeholder="Enter Topic">
-<input id="qcount" type="number" placeholder="Number of Questions">
+<div id="ai"
+class="section"
+style="display:none;">
+
+<input id="topic"
+placeholder="Enter Topic Example: Python">
+
+<input id="qcount"
+type="number"
+placeholder="Number of Questions">
 
 <select id="level">
-<option value="">Select Difficulty</option>
-<option value="easy">Easy</option>
-<option value="medium">Medium</option>
-<option value="hard">Hard</option>
+
+<option value="">
+Select Difficulty
+</option>
+
+<option value="easy">
+Easy
+</option>
+
+<option value="medium">
+Medium
+</option>
+
+<option value="hard">
+Hard
+</option>
+
 </select>
 
-<button class="btn" onclick="generateAI()">🤖 Generate AI</button>
+<button class="btn"
+onclick="generateAI()">
 
-<div id="aiLoading" class="ai-loading"></div>
+🤖 Generate AI Questions
+
+</button>
+
+<div id="aiLoading"
+class="ai-loading">
+</div>
+
 </div>
 
 <!-- QUESTIONS -->
+
 <div class="section">
-<h3>Questions</h3>
+
+<h3>
+📚 Questions
+</h3>
+
 <div id="questions"></div>
+
 </div>
 
 </div>
@@ -149,121 +330,262 @@ font-weight:600;
 <script>
 
 let questions = [];
-let usedQuestions = new Set(); // ✅ no duplicate questions
+let usedQuestions = new Set();
+
+/* MODE */
 
 function showManual(){
-manual.style.display="block";
-ai.style.display="none";
+
+document.getElementById("manual").style.display = "block";
+document.getElementById("ai").style.display = "none";
+
 manualBtn.classList.add("active");
 aiBtn.classList.remove("active");
+
 }
 
 function showAI(){
-manual.style.display="none";
-ai.style.display="block";
+
+document.getElementById("manual").style.display = "none";
+document.getElementById("ai").style.display = "block";
+
 aiBtn.classList.add("active");
 manualBtn.classList.remove("active");
+
 }
 
 /* MANUAL */
+
 function addQuestion(){
 
 let q = question.value.trim();
-let options = [opt1.value,opt2.value,opt3.value,opt4.value];
-let correct = document.querySelector('input[name="correct"]:checked');
+
+let options = [
+opt1.value.trim(),
+opt2.value.trim(),
+opt3.value.trim(),
+opt4.value.trim()
+];
+
+let correct =
+document.querySelector(
+'input[name="correct"]:checked'
+);
 
 if(!q || options.includes("") || !correct){
+
 alert("Fill all fields");
 return;
+
 }
 
 questions.push({
-q,
-options,
+
+q:q,
+options:options,
 correct:parseInt(correct.value)
+
 });
 
-render();
+renderQuestions();
+
+question.value = "";
+opt1.value = "";
+opt2.value = "";
+opt3.value = "";
+opt4.value = "";
+
+document.querySelectorAll(
+'input[name="correct"]'
+).forEach(r=>r.checked=false);
+
 }
 
 /* =========================
-🔥 REAL AI FIX (BACKEND CALL)
+🔥 REAL AI GENERATOR
 ========================= */
 
 async function generateAI(){
 
-let topic = document.getElementById("topic").value.trim();
-let count = parseInt(document.getElementById("qcount").value);
-let level = document.getElementById("level").value;
+let topic =
+document.getElementById("topic")
+.value
+.trim();
+
+let count =
+parseInt(
+document.getElementById("qcount")
+.value
+);
+
+let level =
+document.getElementById("level")
+.value;
 
 if(!topic || !count || !level){
+
 alert("Fill all fields");
 return;
+
 }
 
-document.getElementById("aiLoading").innerText = "🤖 Generating AI Questions...";
+document.getElementById(
+"aiLoading"
+).innerText =
+"🤖 AI is generating smart questions...";
 
 try{
 
-let res = await fetch("/generate-ai-quiz",{
+let response = await fetch(
+"/generate-ai-quiz",
+{
 method:"POST",
+
 headers:{
 "Content-Type":"application/json"
 },
-body:JSON.stringify({
-topic,
-count,
-level
-})
-});
 
-let data = await res.json();
+body:JSON.stringify({
+
+topic:topic,
+count:count,
+level:level
+
+})
+
+}
+);
+
+let data = await response.json();
 
 if(data.success){
 
-// 🔥 remove duplicates
 data.questions.forEach(q=>{
+
+/* NO DUPLICATE */
+
 if(!usedQuestions.has(q.q)){
+
 usedQuestions.add(q.q);
-questions.push(q);
+
+/* CLEAN OPTIONS */
+
+let cleanOptions = [];
+
+q.options.forEach(opt=>{
+
+if(
+opt &&
+!cleanOptions.includes(opt)
+){
+cleanOptions.push(opt);
 }
+
 });
 
-render();
+/* FIX DUPLICATE OPTIONS */
 
-document.getElementById("aiLoading").innerText =
-"✅ AI Questions Generated";
+while(cleanOptions.length < 4){
 
-}else{
-document.getElementById("aiLoading").innerText =
-"❌ AI Failed";
+cleanOptions.push(
+"Extra Option " +
+(Math.floor(Math.random()*100))
+);
+
 }
 
-}catch(err){
+/* SAVE */
+
+questions.push({
+
+q:q.q,
+options:cleanOptions,
+correct:q.correct
+
+});
+
+}
+
+});
+
+renderQuestions();
+
+document.getElementById(
+"aiLoading"
+).innerText =
+"✅ AI Questions Generated Successfully";
+
+}
+
+else{
+
+document.getElementById(
+"aiLoading"
+).innerText =
+"❌ AI Failed";
+
+}
+
+}
+
+catch(err){
+
 console.log(err);
-document.getElementById("aiLoading").innerText =
+
+document.getElementById(
+"aiLoading"
+).innerText =
 "❌ Server Error";
+
 }
 
 }
 
 /* RENDER */
-function render(){
 
-let box = document.getElementById("questions");
+function renderQuestions(){
+
+let box =
+document.getElementById(
+"questions"
+);
+
 box.innerHTML = "";
 
 questions.forEach((q,i)=>{
 
 box.innerHTML += `
-<div class="question-box">
-<b>Q${i+1}:</b> ${q.q}<br><br>
 
-${q.options.map((o,idx)=>`
-${idx==q.correct?"✅":""} ${o}<br>
+<div class="question-box">
+
+<b>
+Q${i+1}:
+</b>
+
+${q.q}
+
+<br><br>
+
+${q.options.map((o,index)=>`
+
+<div class="${
+index==q.correct
+?
+'correct'
+:
+''
+}">
+
+${index==q.correct?"✅":""}
+
+${o}
+
+</div>
+
 `).join("")}
 
 </div>
+
 `;
 
 });
