@@ -376,7 +376,7 @@ JSON FORMAT:
 
             headers={
 
-                "Authorization": f"Bearer {OPENAI_API_KEY}",
+                "Authorization": f"Bearer {sk-xxxxxxxxxxxxxxxx}",
                 "Content-Type": "application/json"
 
             },
