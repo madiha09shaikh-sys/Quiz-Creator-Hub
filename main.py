@@ -13,6 +13,8 @@ app.secret_key = "secret123"
 app.permanent_session_lifetime = timedelta(days=30)
 
 # ================= DATABASE =================
+api_key="sk-xxxxxxx"
+
 
 def get_db():
 
@@ -273,29 +275,56 @@ def generate_ai_quiz():
         data = request.get_json()
 
         topic = data.get("topic")
+
         count = int(data.get("count", 5))
+
         level = data.get("level")
 
-        questions = []
+        prompt = f"""
+        Generate {count} UNIQUE quiz questions.
 
-        for i in range(count):
+        Topic: {topic}
 
-            questions.append({
+        Difficulty: {level}
 
-                "q": f"{topic} Question {i+1} ({level})",
+        Rules:
 
-                "options":[
+        - Questions must be unique
+        - No repeated questions
+        - Generate 4 MCQ options
+        - Only one correct answer
+        - Return ONLY JSON
+        - No explanation
 
-                    f"{topic} Option A {i+1}",
-                    f"{topic} Option B {i+1}",
-                    f"{topic} Option C {i+1}",
-                    f"{topic} Option D {i+1}"
+        JSON Format:
 
-                ],
+        [
+          {{
+            "q":"Question",
+            "options":["A","B","C","D"],
+            "correct":1
+          }}
+        ]
+        """
 
-                "correct":0
+        response = client.chat.completions.create(
 
-            })
+            model="gpt-4.1-mini",
+
+            messages=[
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+
+            temperature=1.2
+
+        )
+
+        text = response.choices[0].message.content
+
+        questions = json.loads(text)
 
         return jsonify({
 
