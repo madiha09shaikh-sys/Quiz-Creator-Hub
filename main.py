@@ -271,12 +271,18 @@ def auth():
     )
 # ================= AI GENERATE =================
 
+# ================= AI GENERATE =================
+
 @app.route("/generate-ai-quiz", methods=["POST"])
 def generate_ai_quiz():
 
     try:
 
+        print("AI ROUTE HIT")
+
         data = request.get_json()
+
+        print("DATA:", data)
 
         topic = data.get("topic")
         count = int(data.get("count", 5))
@@ -286,37 +292,47 @@ def generate_ai_quiz():
 Generate {count} MCQ questions on {topic}.
 Difficulty: {level}
 
-Return ONLY valid JSON in this format:
+Return ONLY valid JSON.
+
+Example:
 
 [
   {{
-    "q":"question",
-    "options":["A","B","C","D"],
+    "q":"What is Python?",
+    "options":["Language","Car","Game","Browser"],
     "correct":0
   }}
 ]
 """
 
+        print("SENDING TO OPENAI")
+
         response = client.chat.completions.create(
 
-          model="gpt-4o-mini",
+            model="gpt-4o-mini",
 
             messages=[
                 {
-                    "role":"user",
-                    "content":prompt
+                    "role": "user",
+                    "content": prompt
                 }
             ]
 
         )
 
-        text = response.choices[0].message.content.strip()
+        print("OPENAI RESPONSE RECEIVED")
+
+        text = response.choices[0].message.content
+
+        print("RAW TEXT:", text)
 
         import re
 
         text = re.sub(r"```json|```", "", text).strip()
 
         questions = json.loads(text)
+
+        print("JSON PARSED SUCCESS")
 
         return jsonify({
             "success": True,
@@ -325,7 +341,8 @@ Return ONLY valid JSON in this format:
 
     except Exception as e:
 
-        print("AI ERROR:", e)
+        print("AI ERROR OCCURRED")
+        print(str(e))
 
         return jsonify({
             "success": False,
