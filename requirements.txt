@@ -1,6 +1,5 @@
-flask
-mysql-connector-python
-gunicorn
-requests
-openai
-
+Flask==3.0.3
+mysql-connector-python==9.0.0
+gunicorn==21.2.0
+requests==2.32.3
+openai==1.40.0
