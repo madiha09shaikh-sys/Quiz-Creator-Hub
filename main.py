@@ -279,23 +279,32 @@ def generate_ai_quiz():
         level = data.get("level")
 
         prompt = f"""
-        Generate {count} MCQ questions.
-        Topic: {topic}
-        Difficulty: {level}
+Return ONLY valid JSON (no markdown).
 
-        Return ONLY valid JSON like:
-        [
-          {{"q":"question","options":["A","B","C","D"],"correct":1}}
-        ]
-        """
+Generate {count} MCQ questions.
+Topic: {topic}
+Difficulty: {level}
+
+Format:
+[
+  {{
+    "q": "question",
+    "options": ["A","B","C","D"],
+    "correct": 1
+  }}
+]
+"""
 
         response = client.chat.completions.create(
-            model="gpt-4.1-mini",
+            model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
-            temperature=1
+            temperature=0.7
         )
 
         text = response.choices[0].message.content
+
+        import re
+        text = re.sub(r"```json|```", "", text).strip()
 
         questions = json.loads(text)
 
