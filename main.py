@@ -3,6 +3,7 @@ import mysql.connector
 import json
 from datetime import timedelta
 import requests
+import os
 from openai import OpenAI
 
 app = Flask(__name__)
@@ -14,6 +15,7 @@ app.secret_key = "secret123"
 app.permanent_session_lifetime = timedelta(days=30)
 
 # ================= DATABASE =================
+
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 def get_db():
@@ -277,7 +279,7 @@ def generate_ai_quiz():
         level = data.get("level")
 
         prompt = f"""
-Return ONLY valid JSON (no markdown).
+Return ONLY valid JSON.
 
 Generate {count} MCQ questions.
 Topic: {topic}
@@ -304,7 +306,14 @@ Format:
         import re
         text = re.sub(r"```json|```", "", text).strip()
 
-        questions = json.loads(text)
+        # ✅ SAFE JSON PARSE
+        try:
+            questions = json.loads(text)
+        except:
+            return jsonify({
+                "success": False,
+                "message": "AI returned invalid JSON"
+            })
 
         return jsonify({
             "success": True,
@@ -312,7 +321,6 @@ Format:
         })
 
     except Exception as e:
-        print("AI ERROR:", e)
         return jsonify({
             "success": False,
             "message": str(e)
