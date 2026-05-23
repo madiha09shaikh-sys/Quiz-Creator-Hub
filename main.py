@@ -5,7 +5,6 @@ from datetime import timedelta
 import requests
 import os
 from openai import OpenAI
-#from dotenv import load_dotenv
 
 app = Flask(__name__)
 
@@ -16,7 +15,7 @@ app.secret_key = "secret123"
 app.permanent_session_lifetime = timedelta(days=30)
 
 # ================= DATABASE =================
-#load_dotenv()   # 👈 .env load karega
+
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 def get_db():
