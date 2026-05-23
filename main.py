@@ -3,6 +3,7 @@ import mysql.connector
 import json
 from datetime import timedelta
 import requests
+from openai import OpenAI
 
 app = Flask(__name__)
 
@@ -13,8 +14,9 @@ app.secret_key = "secret123"
 app.permanent_session_lifetime = timedelta(days=30)
 
 # ================= DATABASE =================
-api_key="sk-xxxxxxx"
-
+client = OpenAI(
+    api_key="sk-xxxxxxxx"
+)
 
 def get_db():
 
@@ -281,7 +283,7 @@ def generate_ai_quiz():
         level = data.get("level")
 
         prompt = f"""
-        Generate {count} UNIQUE quiz questions.
+        Generate {count} UNIQUE MCQ quiz questions.
 
         Topic: {topic}
 
@@ -289,20 +291,27 @@ def generate_ai_quiz():
 
         Rules:
 
-        - Questions must be unique
+        - Every question must be unique
         - No repeated questions
-        - Generate 4 MCQ options
+        - Generate 4 options
         - Only one correct answer
-        - Return ONLY JSON
+        - Make intelligent questions
+        - Return ONLY valid JSON
         - No explanation
+        - No markdown
 
         JSON Format:
 
         [
           {{
-            "q":"Question",
-            "options":["A","B","C","D"],
-            "correct":1
+            "q":"Question here",
+            "options":[
+              "Option 1",
+              "Option 2",
+              "Option 3",
+              "Option 4"
+            ],
+            "correct":0
           }}
         ]
         """
@@ -312,6 +321,10 @@ def generate_ai_quiz():
             model="gpt-4.1-mini",
 
             messages=[
+                {
+                    "role": "system",
+                    "content": "You are a professional AI quiz generator."
+                },
                 {
                     "role": "user",
                     "content": prompt
@@ -324,19 +337,52 @@ def generate_ai_quiz():
 
         text = response.choices[0].message.content
 
+        # CLEAN RESPONSE
+
+        text = text.replace("```json", "")
+
+        text = text.replace("```", "")
+
+        text = text.strip()
+
+        # CONVERT TO JSON
+
         questions = json.loads(text)
+
+        # VALIDATE QUESTIONS
+
+        final_questions = []
+
+        for q in questions:
+
+            if (
+                "q" in q and
+                "options" in q and
+                "correct" in q and
+                len(q["options"]) == 4
+            ):
+
+                final_questions.append({
+
+                    "q": q["q"],
+
+                    "options": q["options"],
+
+                    "correct": int(q["correct"])
+
+                })
 
         return jsonify({
 
             "success": True,
 
-            "questions": questions
+            "questions": final_questions
 
         })
 
     except Exception as e:
 
-        print(e)
+        print("AI ERROR:", e)
 
         return jsonify({
 
