@@ -271,125 +271,44 @@ def auth():
 
 @app.route("/generate-ai-quiz", methods=["POST"])
 def generate_ai_quiz():
-
     try:
-
         data = request.get_json()
 
         topic = data.get("topic")
-
         count = int(data.get("count", 5))
-
         level = data.get("level")
 
         prompt = f"""
-        Generate {count} UNIQUE MCQ quiz questions.
-
+        Generate {count} MCQ questions.
         Topic: {topic}
-
         Difficulty: {level}
 
-        Rules:
-
-        - Every question must be unique
-        - No repeated questions
-        - Generate 4 options
-        - Only one correct answer
-        - Make intelligent questions
-        - Return ONLY valid JSON
-        - No explanation
-        - No markdown
-
-        JSON Format:
-
+        Return ONLY valid JSON like:
         [
-          {{
-            "q":"Question here",
-            "options":[
-              "Option 1",
-              "Option 2",
-              "Option 3",
-              "Option 4"
-            ],
-            "correct":0
-          }}
+          {{"q":"question","options":["A","B","C","D"],"correct":1}}
         ]
         """
 
         response = client.chat.completions.create(
-
             model="gpt-4.1-mini",
-
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are a professional AI quiz generator."
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-
-            temperature=1.2
-
+            messages=[{"role": "user", "content": prompt}],
+            temperature=1
         )
 
         text = response.choices[0].message.content
 
-        # CLEAN RESPONSE
-
-        text = text.replace("```json", "")
-
-        text = text.replace("```", "")
-
-        text = text.strip()
-
-        # CONVERT TO JSON
-
         questions = json.loads(text)
 
-        # VALIDATE QUESTIONS
-
-        final_questions = []
-
-        for q in questions:
-
-            if (
-                "q" in q and
-                "options" in q and
-                "correct" in q and
-                len(q["options"]) == 4
-            ):
-
-                final_questions.append({
-
-                    "q": q["q"],
-
-                    "options": q["options"],
-
-                    "correct": int(q["correct"])
-
-                })
-
         return jsonify({
-
             "success": True,
-
-            "questions": final_questions
-
+            "questions": questions
         })
 
     except Exception as e:
-
         print("AI ERROR:", e)
-
         return jsonify({
-
             "success": False,
-
             "message": str(e)
-
         })
 # ================= HOME =================
 
