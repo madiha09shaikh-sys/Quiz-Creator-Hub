@@ -45,93 +45,58 @@ def get_db():
 def create_tables():
 
     conn = get_db()
-
     cursor = conn.cursor()
 
     # USERS
-
     cursor.execute("""
-
     CREATE TABLE IF NOT EXISTS users (
-
         id INT AUTO_INCREMENT PRIMARY KEY,
-
         name VARCHAR(100),
-
         email VARCHAR(100) UNIQUE,
-
         password VARCHAR(100)
-
     )
-
     """)
 
     # QUIZZES
-
     cursor.execute("""
-
     CREATE TABLE IF NOT EXISTS quizzes (
-
         id INT AUTO_INCREMENT PRIMARY KEY,
-
         user_email VARCHAR(100),
-
         quiz_code VARCHAR(100),
-
         title VARCHAR(255),
-
         description TEXT,
-
         questions LONGTEXT,
-
         duration INT,
-
         negative BOOLEAN,
-
         negativeMarks FLOAT,
-
         is_started BOOLEAN DEFAULT FALSE,
-
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
     )
-
     """)
 
     # RESULTS
-
     cursor.execute("""
-
     CREATE TABLE IF NOT EXISTS results (
-
         id INT AUTO_INCREMENT PRIMARY KEY,
-
         quiz_code VARCHAR(100),
-
         student_name VARCHAR(100),
-
         roll_no VARCHAR(100),
-
         department VARCHAR(100),
-
         marks FLOAT,
-
         total_marks FLOAT,
-
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
     )
-
     """)
 
     conn.commit()
-
     cursor.close()
-
     conn.close()
 
-
+# IMPORTANT
 create_tables()
+
+
+
 
 # ================= INDEX =================
 
