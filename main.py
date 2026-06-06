@@ -130,33 +130,8 @@ def create_tables():
 
     conn.close()
 
-try:
-    create_tables()
-    print("Tables created successfully")
-except Exception as e:
-    print("Database connection error:", e)
 
-    conn = get_db()
-
-    cursor = conn.cursor()
-
-    # USERS
-
-    cursor.execute("""
-
-    CREATE TABLE IF NOT EXISTS users (
-
-        id INT AUTO_INCREMENT PRIMARY KEY,
-
-        name VARCHAR(100),
-
-        email VARCHAR(100) UNIQUE,
-
-        password VARCHAR(100)
-
-    )
-
-    """)
+create_tables()
 
 # ================= INDEX =================
 
