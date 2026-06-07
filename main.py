@@ -97,6 +97,10 @@ def index():
 
     return render_template("index.html")
 
+
+@app.route("/test")
+def test():
+    return "App Working"
 # ================= AUTH =================
 
 @app.route("/auth", methods=["GET", "POST"])
