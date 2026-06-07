@@ -97,7 +97,19 @@ def index():
 
     return render_template("index.html")
 
-
+@app.route("/dbtest")
+def dbtest():
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        result = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return f"DB OK: {result}"
+    except Exception as e:
+        return f"ERROR: {str(e)}"
+        
 @app.route("/test")
 def test():
     return "App Working"
