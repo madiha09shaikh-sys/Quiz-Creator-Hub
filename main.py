@@ -19,25 +19,13 @@ app.permanent_session_lifetime = timedelta(days=30)
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 def get_db():
-
-
-
     return mysql.connector.connect(
-
-        host="tramway.proxy.rlwy.net",
-
-        user="root",
-
-        password="aqrFUhLfxYapyZzojaZaqZlmpsuOAkld",
-
-        database="railway",
-
-        port=37240,
-
-        connection_timeout=60,
-
+        host=os.getenv("MYSQLHOST"),
+        user=os.getenv("MYSQLUSER"),
+        password=os.getenv("MYSQLPASSWORD"),
+        database=os.getenv("MYSQLDATABASE"),
+        port=int(os.getenv("MYSQLPORT")),
         autocommit=True
-
     )
 
 # ================= CREATE TABLES =================
