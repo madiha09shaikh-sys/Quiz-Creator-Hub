@@ -27,14 +27,26 @@ if OPENAI_API_KEY:
     client = OpenAI(api_key=OPENAI_API_KEY)
 
 
+# ================= DATABASE =================
+
 def get_db():
+
     return mysql.connector.connect(
-        host=os.getenv("MYSQLHOST"),
-        user=os.getenv("MYSQLUSER"),
-        password=os.getenv("MYSQLPASSWORD"),
-        database=os.getenv("MYSQLDATABASE"),
-        port=int(os.getenv("MYSQLPORT", 3306)),
+
+        host="acela.proxy.rlwy.net",
+
+        user="root",
+
+        password="BbAfyAZHCAhRlckyqPWdFocOYppipDFr",
+
+        database="railway",
+
+        port=18194,
+
+        connection_timeout=60,
+
         autocommit=True
+
     )
 
 # ================= CREATE TABLES =================
