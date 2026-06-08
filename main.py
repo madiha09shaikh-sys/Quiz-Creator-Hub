@@ -17,7 +17,16 @@ app.permanent_session_lifetime = timedelta(days=30)
 # ================= DATABASE =================
 
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# ================= DATABASE =================
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+client = None
+
+if OPENAI_API_KEY:
+    client = OpenAI(api_key=OPENAI_API_KEY)
+
+
 def get_db():
     return mysql.connector.connect(
         host=os.getenv("MYSQLHOST"),
