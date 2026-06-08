@@ -102,7 +102,7 @@ def create_tables():
     conn.close()
 
 # IMPORTANT
-#create_tables()
+create_tables()
 
 
 
