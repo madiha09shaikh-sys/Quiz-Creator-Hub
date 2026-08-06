@@ -1,23 +1,18 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
-import mysql.connector
+import psycopg2
+from psycopg2.extras import RealDictCursor
 import json
 from datetime import timedelta
-import requests
-import os
 from openai import OpenAI
+import os
 
 app = Flask(__name__)
 
-app.secret_key = "secret123"
-
-# ================= SESSION =================
+app.secret_key = os.getenv("SECRET_KEY", "secret123")
 
 app.permanent_session_lifetime = timedelta(days=30)
 
-# ================= DATABASE =================
-
-
-# ================= DATABASE =================
+# ================= OPENAI =================
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
@@ -26,28 +21,25 @@ client = None
 if OPENAI_API_KEY:
     client = OpenAI(api_key=OPENAI_API_KEY)
 
+# ================= SUPABASE DATABASE =================
 
-# ================= DATABASE =================
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_PORT = os.getenv("DB_PORT", "5432")
+
 
 def get_db():
-
-    return mysql.connector.connect(
-
-        host="acela.proxy.rlwy.net",
-
-        user="root",
-
-        password="BbAfyAZHCAhRlckyqPWdFocOYppipDFr",
-
-        database="railway",
-
-        port=18194,
-
-        connection_timeout=60,
-
-        autocommit=True
-
+    return psycopg2.connect(
+        host=DB_HOST,
+        database=DB_NAME,
+        user=DB_USER,
+        password=DB_PASSWORD,
+        port=DB_PORT,
+        sslmode="require"
     )
+
 
 # ================= CREATE TABLES =================
 
@@ -56,37 +48,34 @@ def create_tables():
     conn = get_db()
     cursor = conn.cursor()
 
-    # USERS
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS users(
+        id SERIAL PRIMARY KEY,
         name VARCHAR(100),
         email VARCHAR(100) UNIQUE,
-        password VARCHAR(100)
-    )
+        password VARCHAR(255)
+    );
     """)
 
-    # QUIZZES
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS quizzes (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS quizzes(
+        id SERIAL PRIMARY KEY,
         user_email VARCHAR(100),
         quiz_code VARCHAR(100),
-        title VARCHAR(255),
+        title TEXT,
         description TEXT,
-        questions LONGTEXT,
-        duration INT,
+        questions JSONB,
+        duration INTEGER,
         negative BOOLEAN,
         negativeMarks FLOAT,
         is_started BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
+    );
     """)
 
-    # RESULTS
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS results (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS results(
+        id SERIAL PRIMARY KEY,
         quiz_code VARCHAR(100),
         student_name VARCHAR(100),
         roll_no VARCHAR(100),
@@ -94,997 +83,389 @@ def create_tables():
         marks FLOAT,
         total_marks FLOAT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )
+    );
     """)
 
     conn.commit()
     cursor.close()
     conn.close()
 
-# IMPORTANT
+
 create_tables()
+# ================= DATABASE HELPERS =================
 
+def execute_query(query, values=None, fetchone=False, fetchall=False):
+    conn = get_db()
+    cursor = conn.cursor(cursor_factory=RealDictCursor)
 
+    cursor.execute(query, values)
 
+    result = None
 
-# ================= INDEX =================
-
-@app.route("/")
-def index():
-
-    if "user" in session:
-
-        return redirect("/home")
-
-    return render_template("index.html")
-
-@app.route("/dbtest")
-def dbtest():
-    try:
-        conn = get_db()
-        cursor = conn.cursor()
-        cursor.execute("SELECT 1")
+    if fetchone:
         result = cursor.fetchone()
-        cursor.close()
-        conn.close()
-        return f"DB OK: {result}"
-    except Exception as e:
-        return f"ERROR: {str(e)}"
-        
-@app.route("/test")
-def test():
-    return "App Working"
-# ================= AUTH =================
 
-@app.route("/auth", methods=["GET", "POST"])
-def auth():
-
-    if "user" in session:
-
-        return redirect("/home")
-
-    msg = ""
-
-    if request.method == "POST":
-
-        form_type = request.form["form_type"]
-
-        # REGISTER
-
-        if form_type == "register":
-
-            name = request.form["name"]
-
-            email = request.form["email"]
-
-            password = request.form["password"]
-
-            try:
-
-                conn = get_db()
-
-                cursor = conn.cursor()
-
-                cursor.execute("""
-
-                INSERT INTO users (
-
-                    name,
-
-                    email,
-
-                    password
-
-                )
-
-                VALUES (%s,%s,%s)
-
-                """, (
-
-                    name,
-
-                    email,
-
-                    password
-
-                ))
-
-                conn.commit()
-
-                msg = "Registered Successfully"
-
-            except:
-
-                msg = "Email already exists"
-
-            finally:
-
-                cursor.close()
-
-                conn.close()
-
-        # LOGIN
-
-        elif form_type == "login":
-
-            email = request.form["email"]
-
-            password = request.form["password"]
-
-            conn = get_db()
-
-            cursor = conn.cursor()
-
-            cursor.execute("""
-
-            SELECT *
-
-            FROM users
-
-            WHERE email=%s
-
-            AND password=%s
-
-            """, (
-
-                email,
-
-                password
-
-            ))
-
-            user = cursor.fetchone()
-
-            cursor.close()
-
-            conn.close()
-
-            if user:
-
-                session.permanent = True
-
-                session["user"] = user[1]
-
-                session["email"] = user[2]
-
-                return redirect("/home")
-
-            else:
-
-                msg = "Invalid Login"
-
-    return render_template(
-
-        "auth.html",
-
-        msg=msg
-
-    )
-# ================= AI GENERATE =================
-
-# ================= AI GENERATE =================
-
-@app.route("/generate-ai-quiz", methods=["POST"])
-def generate_ai_quiz():
-
-    try:
-
-        print("AI ROUTE HIT")
-
-        data = request.get_json()
-
-        print("DATA:", data)
-
-        topic = data.get("topic")
-        count = int(data.get("count", 5))
-        level = data.get("level")
-
-        prompt = f"""
-Generate {count} MCQ questions on {topic}.
-Difficulty: {level}
-
-Return ONLY valid JSON.
-
-Example:
-
-[
-  {{
-    "q":"What is Python?",
-    "options":["Language","Car","Game","Browser"],
-    "correct":0
-  }}
-]
-"""
-
-        print("SENDING TO OPENAI")
-
-        response = client.chat.completions.create(
-
-            model="gpt-4o-mini",
-
-            messages=[
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-
-        )
-
-        print("OPENAI RESPONSE RECEIVED")
-
-        text = response.choices[0].message.content
-
-        print("RAW TEXT:", text)
-
-        import re
-
-        text = re.sub(r"```json|```", "", text).strip()
-
-        questions = json.loads(text)
-
-        print("JSON PARSED SUCCESS")
-
-        return jsonify({
-            "success": True,
-            "questions": questions
-        })
-
-    except Exception as e:
-
-        print("AI ERROR OCCURRED")
-        print(str(e))
-
-        return jsonify({
-            "success": False,
-            "message": str(e)
-        })
-# ================= HOME =================
-
-@app.route("/home")
-def home():
-
-    if "user" not in session:
-
-        return redirect("/auth")
-
-    conn = get_db()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("""
-
-    SELECT *
-
-    FROM quizzes
-
-    WHERE user_email=%s
-
-    ORDER BY id DESC
-
-    """, (session["email"],))
-
-    quizzes = cursor.fetchall()
-
-    cursor.close()
-
-    conn.close()
-
-    return render_template(
-
-        "home.html",
-
-        user=session["user"],
-
-        quizzes=quizzes
-
-    )
-
-# ================= CREATE =================
-
-@app.route("/create")
-def create():
-
-    if "user" not in session:
-
-        return redirect("/auth")
-
-    return render_template("create_quiz.html")
-
-# ================= JOIN =================
-
-
-
-# ================= SAVE QUIZ =================
-
-@app.route("/save-quiz", methods=["POST"])
-def save_quiz():
-
-    if "email" not in session:
-
-        return jsonify({
-            "success": False
-        })
-
-    data = request.get_json()
-
-    code = data.get("code")
-
-    title = data.get("title")
-
-    description = data.get("description")
-
-    questions = json.dumps(
-        data.get("questions")
-    )
-
-    duration = data.get("duration")
-
-    negative = data.get("negative")
-
-    negativeMarks = data.get("negativeMarks")
-
-    conn = get_db()
-
-    cursor = conn.cursor()
-
-    cursor.execute("""
-
-    INSERT INTO quizzes (
-
-        user_email,
-
-        quiz_code,
-
-        title,
-
-        description,
-
-        questions,
-
-        duration,
-
-        negative,
-
-        negativeMarks,
-
-        is_started
-
-    )
-
-    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
-
-    """, (
-
-        session["email"],
-
-        code,
-
-        title,
-
-        description,
-
-        questions,
-
-        duration,
-
-        negative,
-
-        negativeMarks,
-
-        False
-
-    ))
+    elif fetchall:
+        result = cursor.fetchall()
 
     conn.commit()
 
     cursor.close()
-
     conn.close()
 
-    return jsonify({
-        "success": True
-    })
+    return result
 
-# ================= GET QUIZ =================
 
-@app.route("/get-quiz")
-def get_quiz():
+# ================= AUTH FUNCTIONS =================
 
-    code = request.args.get("code")
-
-    conn = get_db()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("""
-
-    SELECT *
-
-    FROM quizzes
-
-    WHERE quiz_code=%s
-
-    """, (code,))
-
-    quiz = cursor.fetchone()
-
-    cursor.close()
-
-    conn.close()
-
-    if not quiz:
-
-        return jsonify({
-
-            "success": False,
-
-            "message": "Quiz not found"
-
-        })
-
-    try:
-
-        if isinstance(quiz["questions"], str):
-
-            quiz["questions"] = json.loads(
-                quiz["questions"]
-            )
-
-    except Exception as e:
-
-        print(e)
-
-        quiz["questions"] = []
-
-    return jsonify({
-
-        "success": True,
-
-        "quiz": {
-
-            "id": quiz["id"],
-
-            "quiz_code": quiz["quiz_code"],
-
-            "title": quiz["title"],
-
-            "description": quiz["description"],
-
-            "questions": quiz["questions"],
-
-            "duration": quiz["duration"],
-
-            "negative": quiz["negative"],
-
-            "negativeMarks": quiz["negativeMarks"],
-
-            "is_started": quiz["is_started"]
-
-        }
-
-    })
-
-# ================= START QUIZ =================
-
-@app.route("/start-quiz/<code>")
-def start_quiz(code):
-
-    conn = get_db()
-
-    cursor = conn.cursor()
-
-    cursor.execute("""
-
-    UPDATE quizzes
-
-    SET is_started=TRUE
-
-    WHERE quiz_code=%s
-
-    """, (code,))
-
-    conn.commit()
-
-    cursor.close()
-
-    conn.close()
-
-    return jsonify({
-        "success": True
-    })
-
-# ================= STOP QUIZ =================
-
-@app.route("/stop-quiz/<code>")
-def stop_quiz(code):
-
-    conn = get_db()
-
-    cursor = conn.cursor()
-
-    cursor.execute("""
-
-    UPDATE quizzes
-
-    SET is_started=FALSE
-
-    WHERE quiz_code=%s
-
-    """, (code,))
-
-    conn.commit()
-
-    cursor.close()
-
-    conn.close()
-
-    return jsonify({
-        "success": True
-    })
-
-# ================= UPDATE QUIZ =================
-
-@app.route("/update-quiz", methods=["POST"])
-def update_quiz():
-
-    data = request.get_json()
-
-    code = data.get("code")
-
-    quiz = data.get("quiz")
-
-    questions = json.dumps(
-        quiz["questions"]
+def get_user_by_email(email):
+    return execute_query(
+        "SELECT * FROM users WHERE email=%s;",
+        (email,),
+        fetchone=True
     )
 
-    conn = get_db()
 
-    cursor = conn.cursor()
-
-    cursor.execute("""
-
-    UPDATE quizzes
-
-    SET
-
-    title=%s,
-    description=%s,
-    questions=%s,
-    duration=%s,
-    negative=%s,
-    negativeMarks=%s
-
-    WHERE quiz_code=%s
-
-    """, (
-
-        quiz["title"],
-        quiz["description"],
-        questions,
-        quiz["duration"],
-        quiz["negative"],
-        quiz["negativeMarks"],
-        code
-
-    ))
-
-    conn.commit()
-
-    cursor.close()
-
-    conn.close()
-
-    return jsonify({
-        "success": True
-    })
-
-# ================= DELETE QUIZ =================
-
-@app.route("/delete-quiz", methods=["POST"])
-def delete_quiz():
-
-    data = request.get_json()
-
-    code = data.get("code")
-
-    conn = get_db()
-
-    cursor = conn.cursor()
-
-    cursor.execute("""
-
-    DELETE FROM quizzes
-
-    WHERE quiz_code=%s
-
-    """, (code,))
-
-    conn.commit()
-
-    cursor.close()
-
-    conn.close()
-
-    return jsonify({
-        "success": True
-    })
-
-# ================= CHECK RESULT =================
-
-@app.route("/check-result")
-def check_result():
-
-    code = request.args.get("code")
-
-    roll = request.args.get("roll")
-
-    conn = get_db()
-
-    cursor = conn.cursor()
-
-    cursor.execute("""
-
-    SELECT id
-
-    FROM results
-
-    WHERE quiz_code=%s
-
-    AND roll_no=%s
-
-    LIMIT 1
-
-    """, (
-
-        code,
-
-        roll
-
-    ))
-
-    result = cursor.fetchone()
-
-    cursor.close()
-
-    conn.close()
-
-    return jsonify({
-        "exists": True if result else False
-    })
-
-# ================= SAVE RESULT =================
-
-@app.route("/save-result", methods=["POST"])
-def save_result():
-
-    try:
-
-        data = request.get_json()
-
-        code = data["code"]
-
-        roll = data["roll"]
-
-        conn = get_db()
-
-        cursor = conn.cursor()
-
-        # PREVENT SAME STUDENT AGAIN
-
-        cursor.execute("""
-
-        SELECT id
-
-        FROM results
-
-        WHERE quiz_code=%s
-
-        AND roll_no=%s
-
-        LIMIT 1
-
-        """, (
-
-            code,
-
-            roll
-
-        ))
-
-        already = cursor.fetchone()
-
-        if already:
-
-            cursor.close()
-
-            conn.close()
-
-            return jsonify({
-
-                "success": False,
-
-                "message": "Already Attempted"
-
-            })
-
-        cursor.execute("""
-
-        INSERT INTO results (
-
-            quiz_code,
-
-            student_name,
-
-            roll_no,
-
-            department,
-
-            marks,
-
-            total_marks
-
-        )
-
-        VALUES (%s,%s,%s,%s,%s,%s)
-
-        """, (
-
-            code,
-
-            data["name"],
-
-            roll,
-
-            data["department"],
-
-            data["marks"],
-
-            data["total"]
-
-        ))
-
-        conn.commit()
-
-        cursor.close()
-
-        conn.close()
-
-        return jsonify({
-            "success": True
-        })
-
-    except Exception as e:
-
-        print(e)
-
-        return jsonify({
-            "success": False
-        })
-
-# ================= RESULT PAGE =================
-
-@app.route("/result")
-def result_page():
-
-    if "user" not in session:
-
-        return redirect("/auth")
-
-    code = request.args.get("code")
-
-    conn = get_db()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("""
-
-    SELECT *
-
-    FROM results
-
-    WHERE quiz_code=%s
-
-    ORDER BY marks DESC
-
-    """, (code,))
-
-    students = cursor.fetchall()
-
-    cursor.close()
-
-    conn.close()
-
-    return render_template(
-
-        "result.html",
-
-        students=students,
-
-        code=code
-
+def create_user(name, email, password):
+
+    execute_query(
+        """
+        INSERT INTO users(name,email,password)
+        VALUES(%s,%s,%s);
+        """,
+        (name, email, password)
     )
 
-# ================= PLAY QUIZ =================
 
-@app.route("/play_quiz")
-def play_quiz():
+def login_user(email, password):
 
-    code = request.args.get("code")
-
-    return render_template(
-
-        "play_quiz.html",
-
-        code=code
-
-    )
-
-# ================= QUIZ DETAIL =================
-
-@app.route("/quiz_detail")
-def quiz_detail():
-
-    if "user" not in session:
-
-        return redirect("/auth")
-
-    code = request.args.get("code")
-
-    conn = get_db()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("""
-
-    SELECT *
-
-    FROM quizzes
-
-    WHERE quiz_code=%s
-
-    """, (code,))
-
-    quiz = cursor.fetchone()
-
-    cursor.close()
-
-    conn.close()
-
-    if not quiz:
-
-        return "Quiz Not Found"
-
-    try:
-
-        if isinstance(quiz["questions"], str):
-
-            quiz["questions"] = json.loads(
-                quiz["questions"]
-            )
-
-    except Exception as e:
-
-        print(e)
-
-        quiz["questions"] = []
-
-    return render_template(
-
-        "quiz_detail.html",
-
-        quiz=quiz
-
-    )
-
-# ================= PROFILE =================
-
-@app.route("/profile")
-def profile():
-
-    if "user" not in session:
-
-        return redirect("/auth")
-
-    email = session["email"]
-
-    conn = get_db()
-
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("""
+    user = execute_query(
+        """
         SELECT * FROM users
         WHERE email=%s
-    """, (email,))
+        AND password=%s;
+        """,
+        (email, password),
+        fetchone=True
+    )
 
-    user = cursor.fetchone()
+    return user
 
-    cursor.execute("""
-        SELECT COUNT(*) as total
+
+# ================= QUIZ HELPERS =================
+
+def save_quiz(
+    user_email,
+    quiz_code,
+    title,
+    description,
+    questions,
+    duration,
+    negative,
+    negativeMarks
+):
+
+    execute_query(
+        """
+        INSERT INTO quizzes(
+            user_email,
+            quiz_code,
+            title,
+            description,
+            questions,
+            duration,
+            negative,
+            negativeMarks
+        )
+
+        VALUES(%s,%s,%s,%s,%s,%s,%s,%s);
+        """,
+        (
+            user_email,
+            quiz_code,
+            title,
+            description,
+            json.dumps(questions),
+            duration,
+            negative,
+            negativeMarks
+        )
+    )
+
+
+def get_all_quizzes(email):
+
+    return execute_query(
+        """
+        SELECT *
         FROM quizzes
         WHERE user_email=%s
-    """, (email,))
-
-    quiz_count = cursor.fetchone()["total"]
-
-    cursor.close()
-
-    conn.close()
-
-    return render_template(
-
-        "profile.html",
-
-        name=user["name"],
-
-        email=user["email"],
-
-        quiz_count=quiz_count
-
+        ORDER BY id DESC;
+        """,
+        (email,),
+        fetchall=True
     )
-# ================= UPDATE PROFILE =================
 
-@app.route("/update-profile", methods=["POST"])
-def update_profile():
 
-    if "email" not in session:
+def get_quiz(quiz_code):
+
+    quiz = execute_query(
+        """
+        SELECT *
+        FROM quizzes
+        WHERE quiz_code=%s;
+        """,
+        (quiz_code,),
+        fetchone=True
+    )
+
+    if quiz and quiz["questions"]:
+        quiz["questions"] = json.loads(quiz["questions"])
+
+    return quiz
+    # ================= AUTH ROUTES =================
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+@app.route("/register", methods=["POST"])
+def register():
+
+    data = request.get_json()
+
+    name = data.get("name")
+    email = data.get("email")
+    password = data.get("password")
+
+    if not name or not email or not password:
         return jsonify({
-            "success": False
-        })
+            "success": False,
+            "message": "All fields are required."
+        }), 400
 
-    try:
+    existing_user = get_user_by_email(email)
 
-        data = request.get_json()
-
-        new_name = data.get("name")
-
-        conn = get_db()
-
-        cursor = conn.cursor()
-
-        cursor.execute("""
-
-        UPDATE users
-        SET name=%s
-        WHERE email=%s
-
-        """, (
-
-            new_name,
-            session["email"]
-
-        ))
-
-        conn.commit()
-
-        cursor.close()
-        conn.close()
-
-        # SESSION UPDATE
-        session["user"] = new_name
-
+    if existing_user:
         return jsonify({
-            "success": True
-        })
+            "success": False,
+            "message": "Email already registered."
+        }), 400
 
-    except Exception as e:
+    create_user(name, email, password)
 
-        print(e)
+    return jsonify({
+        "success": True,
+        "message": "Registration successful."
+    })
 
+
+@app.route("/login", methods=["POST"])
+def login():
+
+    data = request.get_json()
+
+    email = data.get("email")
+    password = data.get("password")
+
+    user = login_user(email, password)
+
+    if not user:
         return jsonify({
-            "success": False
-        })
-# ================= LOGOUT =================
+            "success": False,
+            "message": "Invalid email or password."
+        }), 401
+
+    session.permanent = True
+    session["user"] = user["email"]
+    session["name"] = user["name"]
+
+    return jsonify({
+        "success": True,
+        "message": "Login successful.",
+        "user": {
+            "name": user["name"],
+            "email": user["email"]
+        }
+    })
+
 
 @app.route("/logout")
 def logout():
 
     session.clear()
 
-    return redirect("/auth")
+    return jsonify({
+        "success": True,
+        "message": "Logged out successfully."
+    })
 
-# ================= RUN =================
+
+@app.route("/profile")
+def profile():
+
+    if "user" not in session:
+        return jsonify({
+            "success": False,
+            "message": "Unauthorized"
+        }), 401
+
+    return jsonify({
+        "success": True,
+        "name": session["name"],
+        "email": session["user"]
+    })
+
+# ================= QUIZ ROUTES =================
+
+@app.route("/create-quiz", methods=["POST"])
+def create_quiz():
+
+    if "user" not in session:
+        return jsonify({"success": False, "message": "Login required"}), 401
+
+    data = request.get_json()
+
+    quiz_code = data.get("quiz_code")
+    title = data.get("title")
+    description = data.get("description")
+    questions = data.get("questions", [])
+    duration = data.get("duration", 30)
+    negative = data.get("negative", False)
+    negativeMarks = data.get("negativeMarks", 0)
+
+    save_quiz(
+        session["user"],
+        quiz_code,
+        title,
+        description,
+        questions,
+        duration,
+        negative,
+        negativeMarks
+    )
+
+    return jsonify({
+        "success": True,
+        "message": "Quiz created successfully."
+    })
+
+
+@app.route("/my-quizzes")
+def my_quizzes():
+
+    if "user" not in session:
+        return jsonify({"success": False}), 401
+
+    quizzes = get_all_quizzes(session["user"])
+
+    return jsonify({
+        "success": True,
+        "quizzes": quizzes
+    })
+
+
+@app.route("/quiz/<quiz_code>")
+def quiz(quiz_code):
+
+    quiz = get_quiz(quiz_code)
+
+    if not quiz:
+        return jsonify({
+            "success": False,
+            "message": "Quiz not found."
+        }), 404
+
+    return jsonify({
+        "success": True,
+        "quiz": quiz
+    })
+
+
+@app.route("/submit-result", methods=["POST"])
+def submit_result():
+
+    data = request.get_json()
+
+    execute_query(
+        """
+        INSERT INTO results(
+            quiz_code,
+            student_name,
+            roll_no,
+            department,
+            marks,
+            total_marks
+        )
+        VALUES(%s,%s,%s,%s,%s,%s);
+        """,
+        (
+            data["quiz_code"],
+            data["student_name"],
+            data["roll_no"],
+            data["department"],
+            data["marks"],
+            data["total_marks"]
+        )
+    )
+
+    return jsonify({
+        "success": True,
+        "message": "Result submitted successfully."
+    })
+
+
+@app.route("/results/<quiz_code>")
+def results(quiz_code):
+
+    result = execute_query(
+        """
+        SELECT *
+        FROM results
+        WHERE quiz_code=%s
+        ORDER BY id DESC;
+        """,
+        (quiz_code,),
+        fetchall=True
+    )
+
+    return jsonify({
+        "success": True,
+        "results": result
+    })
+    # ================= HEALTH CHECK =================
+
+@app.route("/health")
+def health():
+    return jsonify({
+        "success": True,
+        "message": "AI Quiz Creator Backend Running"
+    })
+
+
+# ================= 404 =================
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({
+        "success": False,
+        "message": "Route not found."
+    }), 404
+
+
+# ================= 500 =================
+
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({
+        "success": False,
+        "message": "Internal server error."
+    }), 500
+
+
+# ================= START APP =================
 
 if __name__ == "__main__":
-
-    app.run(debug=True)  
+    port = int(os.getenv("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
