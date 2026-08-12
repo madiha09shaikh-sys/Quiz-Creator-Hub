@@ -1,1 +1,5 @@
 python-3.11
+Flask
+gunicorn
+openai
+psycopg2-binary
