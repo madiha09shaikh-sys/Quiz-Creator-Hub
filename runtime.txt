@@ -1,5 +1,6 @@
-python-3.11
 Flask
 gunicorn
+psycopg2-binary
+flask-cors
+bcrypt
 openai
-mysql-connector-python
